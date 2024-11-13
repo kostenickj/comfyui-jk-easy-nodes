@@ -1,13 +1,19 @@
+from torch import Tensor
 import comfy.sd
 import comfy.model_patcher
 import comfy.utils
 import folder_paths
 import logging
-from typing import TypedDict, List
+from typing import Any, Dict, TypedDict, List
 import re
 
 logging.basicConfig()
 log = logging.getLogger("comfyui-prompt-lora")
+
+class CachedLora(TypedDict):
+    name: str
+    filepath: str
+    lora: (Dict[str, Tensor] | Any)
 
 class LoraParams(TypedDict):
     name: str
@@ -72,9 +78,10 @@ class PromptLora:
     FUNCTION = "apply"
     CATEGORY = 'idk yet'
 
+    cache = dict()
+
     def apply(self, model: comfy.model_patcher.ModelPatcher, clip: comfy.sd.CLIP, positive: str, negative: str):
 
-        # TODO cache loras so u dont constantly reload them, uncache if removed from prompt
         # TODO, allow to pass just lora name, not the full path, will need to cache all names and their associated paths
 
         loras: list[LoraParams] = parse_lora_details(positive)
@@ -82,17 +89,31 @@ class PromptLora:
         model_lora = model
         clip_lora = clip
 
+        used_lora_names: List[str] = []
+
         for lora_detail in loras:
             lora_weight = lora_detail.get("weight")
             lora_clip_weight = lora_detail.get("weight_clip")
+            lora_name = lora_detail.get("name")
+
+            used_lora_names.append(lora_name)
+
+            if lora_name in self.cache:
+                cached: CachedLora = self.cache.get(lora_name)
+                lora = cached.get('lora')
+            else:
+                lora_path = folder_paths.get_full_path("loras", lora_name)
+                lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
+                self.cache[lora_name] = CachedLora(name=lora_name, lora=lora, filepath=lora_path)
+
             # remove the lora text from the positive prompt
             positive = positive.replace(lora_detail.get('text'), '')
-            lora_path = folder_paths.get_full_path("loras", lora_detail.get("name"))
-            lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
 
             model_lora, clip_lora = comfy.sd.load_lora_for_models(
                 model_lora, clip_lora, lora, lora_weight, lora_clip_weight
             )
+
+        # TODO, remove lora from cache if its not in used_lora_names
 
         p = prompt_encode(clip_lora, positive)[0]
         n = prompt_encode(clip_lora, negative)[0]
