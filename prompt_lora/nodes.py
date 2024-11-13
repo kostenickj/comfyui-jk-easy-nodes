@@ -32,6 +32,7 @@ def parse_lora_details(prompt) -> List[LoraParams]:
                         try:
                             weight_clip = float(spl(3))
                         except:
+                            log.debug(f'no clip weight found for {name}')
                             pass
                         ret.append({ "name": name, "weight": weight, 'weight_clip': weight_clip })
                         
@@ -71,9 +72,9 @@ class PromptLora:
 
     def apply(self, model: comfy.model_patcher.ModelPatcher, clip: comfy.sd.CLIP, positive: str, negative: str):
 
-        # TODO 
-        #  remove the lora text from the positive prompt
-        # TODO cache loras
+        # TODO remove the lora text from the positive prompt
+        # TODO cache loras so u dont constantly reload them, uncache if removed from prompt
+        # TODO, allow to pass just lora name, not the full path, will need to cache all names and their associated paths
 
         loras: list[LoraParams] = parse_lora_details(positive)
 
