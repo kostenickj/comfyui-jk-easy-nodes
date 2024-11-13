@@ -13,6 +13,7 @@ class LoraParams(TypedDict):
     name: str
     weight: float
     weight_clip: float
+    text: str
 
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
@@ -25,16 +26,17 @@ def parse_lora_details(prompt) -> List[LoraParams]:
             if m.startswith('lora'):
                 spl = m.split(':')
                 if len(spl) > 2:
-                    name = spl[1]
+                    name = spl[1].strip()
                     try:
-                        weight = float(spl[2])
+                        weight_str = spl[2].strip()
+                        weight = float(weight_str)
                         weight_clip = 1
                         try:
-                            weight_clip = float(spl(3))
+                            weight_clip = float(spl(3).strip())
                         except:
                             log.debug(f'no clip weight found for {name}')
                             pass
-                        ret.append({ "name": name, "weight": weight, 'weight_clip': weight_clip })
+                        ret.append({ "name": name, "weight": weight, 'weight_clip': weight_clip, "text": f'<{m}>' })
                         
                     except ValueError:
                         log.error(f'invalid weight for {name}')
@@ -72,7 +74,6 @@ class PromptLora:
 
     def apply(self, model: comfy.model_patcher.ModelPatcher, clip: comfy.sd.CLIP, positive: str, negative: str):
 
-        # TODO remove the lora text from the positive prompt
         # TODO cache loras so u dont constantly reload them, uncache if removed from prompt
         # TODO, allow to pass just lora name, not the full path, will need to cache all names and their associated paths
 
@@ -84,6 +85,8 @@ class PromptLora:
         for lora_detail in loras:
             lora_weight = lora_detail.get("weight")
             lora_clip_weight = lora_detail.get("weight_clip")
+            # remove the lora text from the positive prompt
+            positive = positive.replace(lora_detail.get('text'), '')
             lora_path = folder_paths.get_full_path("loras", lora_detail.get("name"))
             lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
 
