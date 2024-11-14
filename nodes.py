@@ -1,4 +1,7 @@
 from torch import Tensor
+import os
+import sys
+
 import comfy.sd
 import comfy.model_patcher
 import comfy.utils
@@ -7,6 +10,18 @@ import logging
 from typing import Any, Dict, TypedDict, List
 import re
 from pathlib import Path
+
+# Get the absolute path of various directories
+my_dir = os.path.dirname(os.path.abspath(__file__))
+custom_nodes_dir = os.path.abspath(os.path.join(my_dir, '..'))
+comfy_dir = os.path.abspath(os.path.join(my_dir, '..', '..'))
+# Append comfy_dir to sys.path & import files
+sys.path.append(comfy_dir)
+
+print(comfy_dir)
+from nodes import LatentUpscaleBy, VAEDecode, ImageScaleBy
+from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
+sys.path.remove(comfy_dir)
 
 logging.basicConfig()
 log = logging.getLogger("comfyui-prompt-lora")
@@ -37,6 +52,8 @@ def get_lora_full_name(lora_name: str):
                 return f
     return None
 
+def vae_decode_latent(vae: comfy.sd.VAE, samples):
+    return VAEDecode().decode(vae,samples)[0]
 
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
@@ -148,3 +165,79 @@ class PromptLora:
         n = prompt_encode(clip_lora, negative)[0]
 
         return (model_lora, clip_lora, p, n, positive)
+
+
+class EasyHRFix:
+
+    default_latent_upscalers = LatentUpscaleBy.INPUT_TYPES()["required"]["upscale_method"][0]
+    latent_upscalers = default_latent_upscalers
+    pixel_upscalers = folder_paths.get_filename_list("upscale_models")
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "vae": ("VAE", {"tooltip": "The VAE model used for decoding the latent."}),
+                "positive": ("CONDITIONING",),
+                "negative": ("CONDITIONING",),
+                "steps": ("INT", {"default": 12, "min": 1, "max": 10000}),
+                "cfg": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 100.0}),
+                "upscale_by": ("FLOAT", {"default": 1.25, "min": 1.05, "max": 8.0, "step": 0.05},),
+                "denoise": ("FLOAT",{"default": 0.56, "min": 0.00, "max": 1.00, "step": 0.01},),
+                "latent_image": ("LATENT",),
+                "use_same_seed": ("BOOLEAN", {"default": True}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
+                "latent_upscaler": (cls.latent_upscalers,),
+                "pixel_upscaler": (cls.pixel_upscalers,),     
+            },
+          #  "optional": {"script": ("SCRIPT",)},
+         #   "hidden": {"my_unique_id": "UNIQUE_ID"},
+        }
+
+    RETURN_TYPES = ("LATENT","IMAGE", )
+    RETURN_NAMES = ( "LATENT", "IMAGE", )
+    FUNCTION = "apply"
+    CATEGORY = "JK Easy Nodes"
+
+    def apply(
+        self,
+        model: comfy.model_patcher.ModelPatcher,
+        vae: comfy.sd.VAE,
+        positive,
+        negative,
+        steps: int,
+        cfg:float,
+        upscale_by: float,
+        denoise:float,
+        latent_image: Tensor,
+        use_same_seed: bool,
+        seed: int,
+        latent_upscaler: str,
+        pixel_upscaler: str
+    ):
+        #
+        print("yeet")
+        low_res = vae_decode_latent(vae, latent_image)
+        # base_w = low_res.shape[1]
+        # base_h = low_res.shape[2]
+        # target_width = int(base_w * upscale_by)
+        # target_height = int(base_h * upscale_by)
+        pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
+        #print(pixel_upscale_model)
+
+        # do the upscale with model, then resize to target res, copy the way comfyroll custom nodes does it (CR_UpscaleImage) to get it back to target res
+        # or the way this guy does it https://github.com/TheBill2001/comfyui-upscale-by-model/blob/main/nodes.py
+        # 
+        image = ImageUpscaleWithModel().upscale(pixel_upscale_model, low_res)[0]
+
+        # or just do this....
+        # TODO, test this
+        downsize_scale = upscale_by / pixel_upscale_model.scale
+        image = ImageScaleBy().upscale(image, latent_upscaler, downsize_scale)[0]
+
+        #then run img2img on it
+        # do i need to add latent noise ??? check that thread and watch the vid
+        # see https://www.reddit.com/r/comfyui/comments/18fcpk4/reproduce_a1111_hires_fix_with_resrgan_in_comfyui/
+
+        return (latent_image, image)
