@@ -12,11 +12,9 @@ from typing import Any, Dict, TypedDict, List
 import re
 from pathlib import Path
 
-# Get the absolute path of various directories
 my_dir = os.path.dirname(os.path.abspath(__file__))
 custom_nodes_dir = os.path.abspath(os.path.join(my_dir, '..'))
 comfy_dir = os.path.abspath(os.path.join(my_dir, '..', '..'))
-# Append comfy_dir to sys.path & import files
 sys.path.append(comfy_dir)
 
 from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler, CLIPTextEncode
@@ -24,7 +22,7 @@ from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModel
 sys.path.remove(comfy_dir)
 
 logging.basicConfig()
-log = logging.getLogger("comfyui-prompt-lora")
+log = logging.getLogger("jk-easy-nodes")
 
 class CachedLora(TypedDict):
     name: str

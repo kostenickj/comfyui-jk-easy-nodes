@@ -3,13 +3,13 @@ import sys
 import logging
 
 
-from  .nodes import PromptLora, EasyHRFix
+from  .easy_nodes import PromptLora, EasyHRFix
 
-log = logging.getLogger("comfyui-prompt-lora")
+log = logging.getLogger("jk-easy-nodes")
 log.propagate = False
 if not log.handlers:
     h = logging.StreamHandler(sys.stdout)
-    h.setFormatter(logging.Formatter("[%(levelname)s] PromptLora: %(message)s"))
+    h.setFormatter(logging.Formatter("[%(levelname)s] JKEasyNodes: %(message)s"))
     log.addHandler(h)
 
 if os.environ.get("COMFY_DEBUG"):
