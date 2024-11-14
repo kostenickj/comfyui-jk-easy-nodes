@@ -3,6 +3,7 @@ import os
 import sys
 
 import comfy.sd
+import comfy.samplers
 import comfy.model_patcher
 import comfy.utils
 import folder_paths
@@ -18,8 +19,7 @@ comfy_dir = os.path.abspath(os.path.join(my_dir, '..', '..'))
 # Append comfy_dir to sys.path & import files
 sys.path.append(comfy_dir)
 
-print(comfy_dir)
-from nodes import LatentUpscaleBy, VAEDecode, ImageScaleBy
+from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 sys.path.remove(comfy_dir)
 
@@ -54,6 +54,9 @@ def get_lora_full_name(lora_name: str):
 
 def vae_decode_latent(vae: comfy.sd.VAE, samples):
     return VAEDecode().decode(vae,samples)[0]
+
+def vae_encode_image(vae, pixels):
+    return VAEEncode().encode(vae,pixels)[0]
 
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
@@ -179,15 +182,16 @@ class EasyHRFix:
             "required": {
                 "model": ("MODEL",),
                 "vae": ("VAE", {"tooltip": "The VAE model used for decoding the latent."}),
-                "positive": ("CONDITIONING",),
-                "negative": ("CONDITIONING",),
-                "steps": ("INT", {"default": 12, "min": 1, "max": 10000}),
-                "cfg": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 100.0}),
-                "upscale_by": ("FLOAT", {"default": 1.25, "min": 1.05, "max": 8.0, "step": 0.05},),
-                "denoise": ("FLOAT",{"default": 0.56, "min": 0.00, "max": 1.00, "step": 0.01},),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "The random seed used for creating the noise."}),
+                "steps": ("INT", {"default": 20, "min": 1, "max": 10000, "tooltip": "The number of steps used in the denoising process."}),
+                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step":0.1, "round": 0.01, "tooltip": "The Classifier-Free Guidance scale balances creativity and adherence to the prompt. Higher values result in images more closely matching the prompt however too high values will negatively impact quality."}),
+                "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"tooltip": "The algorithm used when sampling, this can affect the quality, speed, and style of the generated output."}),
+                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"tooltip": "The scheduler controls how noise is gradually removed to form the image."}),
+                "positive": ("CONDITIONING", {"tooltip": "The conditioning describing the attributes you want to include in the image."}),
+                "negative": ("CONDITIONING", {"tooltip": "The conditioning describing the attributes you want to exclude from the image."}),
+                "upscale_by": ("FLOAT", {"default": 1.5, "min": 1.05, "max": 8.0, "step": 0.05},),
                 "latent_image": ("LATENT",),
-                "use_same_seed": ("BOOLEAN", {"default": True}),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
+                "denoise": ("FLOAT",{"default": 0.56, "min": 0.00, "max": 1.00, "step": 0.01},),
                 "latent_upscaler": (cls.latent_upscalers,),
                 "pixel_upscaler": (cls.pixel_upscalers,),     
             },
@@ -204,40 +208,49 @@ class EasyHRFix:
         self,
         model: comfy.model_patcher.ModelPatcher,
         vae: comfy.sd.VAE,
+        seed: int,
+        steps: int,
+        cfg: float,
+        sampler_name: str, 
+        scheduler: str,
         positive,
         negative,
-        steps: int,
-        cfg:float,
         upscale_by: float,
-        denoise:float,
         latent_image: Tensor,
-        use_same_seed: bool,
-        seed: int,
+        denoise: float,
         latent_upscaler: str,
-        pixel_upscaler: str
+        pixel_upscaler: str,
     ):
         #
         print("yeet")
         low_res = vae_decode_latent(vae, latent_image)
-        # base_w = low_res.shape[1]
-        # base_h = low_res.shape[2]
-        # target_width = int(base_w * upscale_by)
-        # target_height = int(base_h * upscale_by)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
-        #print(pixel_upscale_model)
 
-        # do the upscale with model, then resize to target res, copy the way comfyroll custom nodes does it (CR_UpscaleImage) to get it back to target res
-        # or the way this guy does it https://github.com/TheBill2001/comfyui-upscale-by-model/blob/main/nodes.py
-        # 
+        # pixel upscaled
         image = ImageUpscaleWithModel().upscale(pixel_upscale_model, low_res)[0]
 
-        # or just do this....
-        # TODO, test this
+        # TODO, dont do this if its already the right size
         downsize_scale = upscale_by / pixel_upscale_model.scale
         image = ImageScaleBy().upscale(image, latent_upscaler, downsize_scale)[0]
+        upscaled_samples = vae_encode_image(vae, image)
+
+        samples = KSampler().sample(
+            model,
+            seed,
+            steps,
+            cfg,
+            sampler_name,
+            scheduler,
+            positive,
+            negative,
+            upscaled_samples,
+            denoise
+        )[0]
+
+        # should i use KSamplerAdvanced and add noise ????
 
         #then run img2img on it
         # do i need to add latent noise ??? check that thread and watch the vid
         # see https://www.reddit.com/r/comfyui/comments/18fcpk4/reproduce_a1111_hires_fix_with_resrgan_in_comfyui/
 
-        return (latent_image, image)
+        return (samples, image)
