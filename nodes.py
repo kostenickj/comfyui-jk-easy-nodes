@@ -190,8 +190,6 @@ class EasyHRFix:
                 "latent_upscaler": (cls.latent_upscalers,{ "default": 'lanczos' }),
                 "pixel_upscaler": (cls.pixel_upscalers,),     
             },
-          #  "optional": {"script": ("SCRIPT",)},
-         #   "hidden": {"my_unique_id": "UNIQUE_ID"},
         }
 
     RETURN_TYPES = ("LATENT",)
@@ -243,11 +241,5 @@ class EasyHRFix:
             upscaled_samples,
             denoise
         )[0]
-
-        # should i use KSamplerAdvanced and add noise ????
-
-        #then run img2img on it
-        # do i need to add latent noise ??? check that thread and watch the vid
-        # see https://www.reddit.com/r/comfyui/comments/18fcpk4/reproduce_a1111_hires_fix_with_resrgan_in_comfyui/
 
         return (samples,)
