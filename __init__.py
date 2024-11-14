@@ -25,6 +25,6 @@ NODE_CLASS_MAPPINGS = {
     'EasyHRFix': EasyHRFix
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-  'PromptLora': 'Prompt Lora',
-  'EasyHRFix': 'Easy HiRes Fix'
+  'PromptLora': 'JK Easy Prompt',
+  'EasyHRFix': 'JK Easy HiRes Fix'
 }

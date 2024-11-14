@@ -19,7 +19,7 @@ comfy_dir = os.path.abspath(os.path.join(my_dir, '..', '..'))
 # Append comfy_dir to sys.path & import files
 sys.path.append(comfy_dir)
 
-from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler
+from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler, CLIPTextEncode
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 sys.path.remove(comfy_dir)
 
@@ -44,7 +44,6 @@ def get_lora_full_name(lora_name: str):
         return lora_name
     
     no_ext = lora_name.split('.')[0]
-    # Some autocompletion scripts replace _ with spaces
     for n in [no_ext, lora_name, lora_name.replace(" ", "_")]:
         for f in all_loras:
             p = Path(f).with_suffix("")
@@ -55,8 +54,8 @@ def get_lora_full_name(lora_name: str):
 def vae_decode_latent(vae: comfy.sd.VAE, samples):
     return VAEDecode().decode(vae,samples)[0]
 
-def vae_encode_image(vae, pixels):
-    return VAEEncode().encode(vae,pixels)[0]
+def vae_encode_image(vae: comfy.sd.VAE, image):
+    return VAEEncode().encode(vae,image)[0]
 
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
@@ -89,12 +88,8 @@ def parse_lora_details(prompt) -> List[LoraParams]:
         return []
 
 
-# CLIPTextEncode.encode
 def prompt_encode(clip: comfy.sd.CLIP, text: str):
-    tokens = clip.tokenize(text)
-    output = clip.encode_from_tokens(tokens, return_pooled=True, return_dict=True)
-    cond = output.pop("cond")
-    return ([[cond, output]], )
+    return CLIPTextEncode().encode(clip, text)
 
 class PromptLora:
 
@@ -173,7 +168,7 @@ class PromptLora:
 class EasyHRFix:
 
     default_latent_upscalers = LatentUpscaleBy.INPUT_TYPES()["required"]["upscale_method"][0]
-    latent_upscalers = default_latent_upscalers
+    latent_upscalers = default_latent_upscalers + ['lanczos']
     pixel_upscalers = folder_paths.get_filename_list("upscale_models")
 
     @classmethod
@@ -189,18 +184,18 @@ class EasyHRFix:
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"tooltip": "The scheduler controls how noise is gradually removed to form the image."}),
                 "positive": ("CONDITIONING", {"tooltip": "The conditioning describing the attributes you want to include in the image."}),
                 "negative": ("CONDITIONING", {"tooltip": "The conditioning describing the attributes you want to exclude from the image."}),
-                "upscale_by": ("FLOAT", {"default": 1.5, "min": 1.05, "max": 8.0, "step": 0.05},),
+                "upscale_by": ("FLOAT", {"default": 1.5, "min": 1.05, "max": 4.0, "step": 0.05},),
                 "latent_image": ("LATENT",),
-                "denoise": ("FLOAT",{"default": 0.56, "min": 0.00, "max": 1.00, "step": 0.01},),
-                "latent_upscaler": (cls.latent_upscalers,),
+                "denoise": ("FLOAT",{"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},),
+                "latent_upscaler": (cls.latent_upscalers,{ "default": 'lanczos' }),
                 "pixel_upscaler": (cls.pixel_upscalers,),     
             },
           #  "optional": {"script": ("SCRIPT",)},
          #   "hidden": {"my_unique_id": "UNIQUE_ID"},
         }
 
-    RETURN_TYPES = ("LATENT","IMAGE", )
-    RETURN_NAMES = ( "LATENT", "IMAGE", )
+    RETURN_TYPES = ("LATENT",)
+    RETURN_NAMES = ( "LATENT",)
     FUNCTION = "apply"
     CATEGORY = "JK Easy Nodes"
 
@@ -221,19 +216,21 @@ class EasyHRFix:
         latent_upscaler: str,
         pixel_upscaler: str,
     ):
-        #
-        print("yeet")
+
         low_res = vae_decode_latent(vae, latent_image)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
 
-        # pixel upscaled
+        # pixel upscale
         image = ImageUpscaleWithModel().upscale(pixel_upscale_model, low_res)[0]
 
-        # TODO, dont do this if its already the right size
+        # downscale it to target size
         downsize_scale = upscale_by / pixel_upscale_model.scale
-        image = ImageScaleBy().upscale(image, latent_upscaler, downsize_scale)[0]
+        if downsize_scale != 1:
+            image = ImageScaleBy().upscale(image, latent_upscaler, downsize_scale)[0]
+        
         upscaled_samples = vae_encode_image(vae, image)
 
+        # img2img
         samples = KSampler().sample(
             model,
             seed,
@@ -253,4 +250,4 @@ class EasyHRFix:
         # do i need to add latent noise ??? check that thread and watch the vid
         # see https://www.reddit.com/r/comfyui/comments/18fcpk4/reproduce_a1111_hires_fix_with_resrgan_in_comfyui/
 
-        return (samples, image)
+        return (samples,)
