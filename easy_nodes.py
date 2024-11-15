@@ -69,11 +69,11 @@ def parse_lora_details(prompt) -> List[LoraParams]:
                     try:
                         weight_str = spl[2].strip()
                         weight = float(weight_str)
-                        weight_clip = 1.0
+                        weight_clip = weight
                         try:
                             weight_clip = float(spl(3).strip())
                         except:
-                            log.debug(f'no clip weight found for lora {name}, using 1.0')
+                            log.debug(f'no clip weight found for lora {name}, using {weight}')
                             pass
                         ret.append({ "name": name, "weight": weight, 'weight_clip': weight_clip, "text": f'<{m}>' })
                         
