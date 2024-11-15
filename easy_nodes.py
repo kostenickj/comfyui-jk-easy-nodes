@@ -16,7 +16,7 @@ my_dir = os.path.dirname(os.path.abspath(__file__))
 custom_nodes_dir = os.path.abspath(os.path.join(my_dir, '..'))
 comfy_dir = os.path.abspath(os.path.join(my_dir, '..', '..'))
 sys.path.append(comfy_dir)
-
+import nodes
 from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler, CLIPTextEncode
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 sys.path.remove(comfy_dir)
@@ -212,6 +212,8 @@ class EasyHRFix:
         latent_upscaler: str,
         pixel_upscaler: str,
     ):
+        if 'KSamplerAdvanced //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
 
         low_res = vae_decode_latent(vae, latent_image)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
@@ -225,6 +227,10 @@ class EasyHRFix:
             image = ImageScaleBy().upscale(image, latent_upscaler, downsize_scale)[0]
         
         upscaled_samples = vae_encode_image(vae, image)
+
+        
+        # TODO, use this and add the noise options....
+        inspire_sampler = nodes.NODE_CLASS_MAPPINGS['KSamplerAdvanced //Inspire']
 
         # img2img
         samples = KSampler().sample(
