@@ -248,3 +248,14 @@ class EasyHRFix:
         )[0]
 
         return (samples,)
+
+
+    
+NODE_CLASS_MAPPINGS = {
+    "PromptLora": PromptLora,
+    'EasyHRFix': EasyHRFix
+}
+NODE_DISPLAY_NAME_MAPPINGS = {
+  'PromptLora': 'JK Easy Prompt',
+  'EasyHRFix': 'JK Easy HiRes Fix'
+}
