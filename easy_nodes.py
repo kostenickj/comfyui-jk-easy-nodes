@@ -186,7 +186,8 @@ class EasyHRFix:
                 "latent_image": ("LATENT",),
                 "denoise": ("FLOAT",{"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},),
                 "latent_upscaler": (cls.latent_upscalers,{ "default": 'lanczos' }),
-                "pixel_upscaler": (cls.pixel_upscalers,),     
+                "pixel_upscaler": (cls.pixel_upscalers,),
+                "noise_mode": (["GPU(=A1111)", "CPU"], { "default": "GPU(=A1111)" }),   
             },
         }
 
@@ -211,8 +212,9 @@ class EasyHRFix:
         denoise: float,
         latent_upscaler: str,
         pixel_upscaler: str,
+        noise_mode: str
     ):
-        if 'KSamplerAdvanced //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
+        if 'KSampler //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
 
         low_res = vae_decode_latent(vae, latent_image)
@@ -228,12 +230,9 @@ class EasyHRFix:
         
         upscaled_samples = vae_encode_image(vae, image)
 
-        
-        # TODO, use this and add the noise options....
-        inspire_sampler = nodes.NODE_CLASS_MAPPINGS['KSamplerAdvanced //Inspire']
-
-        # img2img
-        samples = KSampler().sample(
+        inspire_sampler = nodes.NODE_CLASS_MAPPINGS['KSampler //Inspire']
+        # img2img with gpu noise like a1111
+        samples = inspire_sampler.doit(
             model,
             seed,
             steps,
@@ -243,7 +242,9 @@ class EasyHRFix:
             positive,
             negative,
             upscaled_samples,
-            denoise
+            denoise,
+            noise_mode,
+            "comfy",
         )[0]
 
         return (samples,)
