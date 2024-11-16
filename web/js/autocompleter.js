@@ -419,8 +419,27 @@ app.registerExtension({
 			TextAreaAutoComplete.updateWords("jk-nodes.embeddings", words);
 		}
 
+		async function addWildcards()
+		{
+			/** @type Array<string> */
+			const wildcards = await api.fetchApi("/jk-nodes/wildcards", { cache: "no-store" }).then((res) => res.json());
+			const words = {};
+
+			for (const w of wildcards) {
+				const v = `__${w.replace('.txt','')}__`;
+				words[v] = {
+					text: v,
+					use_replacer: false,
+				};
+			}
+
+			TextAreaAutoComplete.updateWords("jk-nodes.wildcards", words);
+
+			return Promise.resolve();
+		}
+
 		// store global words with/without loras
-		Promise.all([addEmbeddings(), loadTags()])
+		Promise.all([addEmbeddings(), loadTags(), addWildcards()])
 			.then(() => {
 				TextAreaAutoComplete.globalWordsExclLoras = Object.assign({}, TextAreaAutoComplete.globalWords);
 			})

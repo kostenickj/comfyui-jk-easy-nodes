@@ -453,8 +453,7 @@ export class TextAreaAutoComplete {
 							this.#insertItem();
 							e.preventDefault();
 						}
-						else if(isLora && typeof this.selected.info === 'function')
-						{
+						else if (isLora && typeof this.selected.info === 'function') {
 							this.selected.info()
 						}
 					}
@@ -510,6 +509,9 @@ export class TextAreaAutoComplete {
 		const termIsLora = term?.startsWith('<lora:');
 		const termAfterLora = termIsLora ? term.substring(6) : undefined;
 
+		const termIsWildcard = term?.startsWith('__')
+		const termAfterWildcard = termIsWildcard ? term.substring(2) : undefined;
+
 		for (const word of Object.keys(this.words)) {
 			const lowerWord = word.toLocaleLowerCase();
 
@@ -517,16 +519,27 @@ export class TextAreaAutoComplete {
 				// Dont include exact matches
 				continue;
 			}
+			const wordIsWildcard = word.startsWith('__')
+			if (wordIsWildcard && !termIsWildcard) {
+				continue;
+			}
+			if (termIsWildcard && !wordIsWildcard) {
+				continue;
+			}
 
 			const wordIsLora = word.startsWith('<lora:');
-			const includeIt = (wordIsLora && termIsLora) || (!wordIsLora && !termIsLora)
+
+			const includeIt = (wordIsLora && termIsLora) || (!wordIsLora && !termIsLora);
 			if (!includeIt) {
 				continue;
 			}
 
 			if (wordIsLora && termIsLora) {
 				term = termAfterLora;
+			} else if (termIsWildcard && wordIsWildcard) {
+				term = termAfterWildcard
 			}
+
 			const pos = lowerWord.indexOf(term);
 			if (pos === -1) {
 				// No match
