@@ -6,6 +6,26 @@ import { TextAreaAutoComplete } from "./common/autocomplete.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
 import { LoraInfoDialog } from "./modelInfo.js";
 
+
+export const loadLoras = async () => {
+	const loras = await api.fetchApi("/jk-nodes/loras", { cache: "no-store" }).then((res) => res.json());
+
+	const words = {};
+	words["lora:"] = { text: "lora:" };
+
+	for (const lora of loras) {
+		let v = `<lora:${lora.lora_name}:${lora.preferred_weight}>`;
+		words[v] = {
+			text: v,
+			info: () => new LoraInfoDialog(lora).show("loras", lora),
+			use_replacer: false,
+			activation_text: lora.activation_text
+		};
+	}
+
+	TextAreaAutoComplete.updateWords("jk-nodes.loras", words);
+};
+
 function parseCSV(csvText) {
 	const rows = [];
 	const delimiter = ",";
@@ -378,7 +398,9 @@ app.registerExtension({
 		TextAreaAutoComplete.lorasEnabled = true;
 		TextAreaAutoComplete.suggestionCount = +localStorage.getItem(ext_id + ".SuggestionCount") || 20;
 	},
-	setup() {
+
+
+	setup: () => {
 		async function addEmbeddings() {
 			const embeddings = await api.getEmbeddings();
 			const words = {};
@@ -397,31 +419,12 @@ app.registerExtension({
 			TextAreaAutoComplete.updateWords("jk-nodes.embeddings", words);
 		}
 
-		async function addLoras() {
-
-			const loras = await api.fetchApi("/jk-nodes/loras", { cache: "no-store" }).then((res) => res.json());
-
-			const words = {};
-			words["lora:"] = { text: "lora:" };
-
-			for (const lora of loras) {
-				let v = `<lora:${lora.lora_name}:${lora.preferred_weight}>`;
-				words[v] = {
-					text: v,
-					info: () => new LoraInfoDialog(lora).show("loras", lora),
-					use_replacer: false,
-					activation_text: lora.activation_text
-				};
-			}
-
-			TextAreaAutoComplete.updateWords("jk-nodes.loras", words);
-		}
 		// store global words with/without loras
 		Promise.all([addEmbeddings(), loadTags()])
 			.then(() => {
 				TextAreaAutoComplete.globalWordsExclLoras = Object.assign({}, TextAreaAutoComplete.globalWords);
 			})
-			.then(addLoras)
+			.then(loadLoras)
 			.then(() => {
 				if (!TextAreaAutoComplete.lorasEnabled) {
 					toggleLoras(); // off by default

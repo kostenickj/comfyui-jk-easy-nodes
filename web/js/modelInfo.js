@@ -2,6 +2,8 @@ import { app } from "../../../scripts/app.js";
 import { api } from "../../../scripts/api.js";
 import { $el } from "../../../scripts/ui.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
+import { TextAreaAutoComplete } from "./common/autocomplete.js";
+import { loadLoras } from "./autocompleter.js";
 
 const MAX_TAGS = 500;
 const NsfwLevel = {
@@ -249,7 +251,7 @@ export class LoraInfoDialog extends ModelInfoDialog {
 
 	async saveLoraPrefs(activation_text, weight, lora_name) {
 		try {
-			
+
 			await api.fetchApi("/jk-nodes/lora-preference", {
 				method: "POST",
 				body: JSON.stringify({
@@ -261,8 +263,12 @@ export class LoraInfoDialog extends ModelInfoDialog {
 					"content-type": "application/json",
 				},
 			});
-			
-			//TODO, refresh loras....
+
+			// refresh tags
+			const ext = window?.app?.enabledExtensions?.find(x => x.name === 'jk-nodes.AutoCompleter');
+			if (ext) {
+				ext.setup();
+			}
 
 			alert("Saved!");
 		} catch (error) {
