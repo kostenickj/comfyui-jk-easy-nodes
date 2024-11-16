@@ -9,7 +9,7 @@ import json
 user_dir = folder_paths.get_user_directory()
 if not os.path.exists(user_dir):
     os.mkdir(user_dir)
-autocomplete_file = os.path.join(dir, "jk-autocomplete.txt")
+autocomplete_file = os.path.join(user_dir, "jk-autocomplete.txt")
 
 class LoraPreference(TypedDict):
     activation_text: str
@@ -62,21 +62,15 @@ def try_find_lora_config(lora_name: str):
         return None
 
 
-@PromptServer.instance.routes.get("/jk/autocomplete")
+@PromptServer.instance.routes.get("/jk-nodes/autocomplete")
 async def get_autocomplete(request):
+    #TODO, change this to dynamically read from dirs
     if os.path.isfile(autocomplete_file):
         return web.FileResponse(autocomplete_file)
     return web.Response(status=404)
 
 
-@PromptServer.instance.routes.post("/jk/autocomplete")
-async def update_autocomplete(request):
-    with open(autocomplete_file, "w", encoding="utf-8") as f:
-        f.write(await request.text())
-    return web.Response(status=200)
-
-
-@PromptServer.instance.routes.get("/jk/loras")
+@PromptServer.instance.routes.get("/jk-nodes/loras")
 async def get_loras(request):
     loras = folder_paths.get_filename_list("loras")
     ret: List[LoraPreference] = []
