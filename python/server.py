@@ -121,28 +121,32 @@ async def get_autocomplete_files(request):
 @PromptServer.instance.routes.post("/jk-nodes/lora-preference")
 async def save_lora_pref(request):
     
-    pref_data =  await request.json()
-    
-    path_to_lora = try_find_lora_file_path(pref_data['lora_name'])
-    if path_to_lora is None:
-        return web.Response(status=400)
-    
-    file_path_no_ext = os.path.splitext(path_to_lora)[0]
-    config_full_path = file_path_no_ext + '.json'
+    try:
+        pref_data =  await request.json()
+        
+        path_to_lora = try_find_lora_file_path(pref_data['lora_name'])
+        if path_to_lora is None:
+            return web.Response(status=400)
+        
+        file_path_no_ext = os.path.splitext(path_to_lora)[0]
+        config_full_path = file_path_no_ext + '.json'
 
-    save_me = pref_data
-    
-    # update existing config
-    if os.path.isfile(config_full_path):
-        with open(config_full_path, "r") as f:
-            save_me = json.load(f)
-            save_me['activation_text'] = pref_data['activation_text']
-            save_me['preferred_weight'] = pref_data.get['preferred_weight']
+        save_me = pref_data
+        
+        # update existing config
+        if os.path.isfile(config_full_path):
+            with open(config_full_path, "r") as f:
+                save_me = json.load(f)
+                save_me['activation_text'] = pref_data['activation_text']
+                save_me['preferred_weight'] = pref_data['preferred_weight']
 
-    with open(config_full_path, 'w') as f:
-        json.dump(save_me, f, ensure_ascii=False, indent=4)
-    
-    return web.Response(status=200)
+        with open(config_full_path, 'w') as f:
+            json.dump(save_me, f, ensure_ascii=False, indent=4)
+        
+        return web.Response(status=200)
+
+    except Exception as e:
+        return web.Response(status=500)
 
 
 @PromptServer.instance.routes.get("/jk-nodes/loras")

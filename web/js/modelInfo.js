@@ -143,6 +143,7 @@ export class LoraInfoDialog extends ModelInfoDialog {
 
 		const weight = $el("input", {
 			type: "number",
+			step: '.05',
 			value: prefWeight ?? 1.0,
 			style: {
 				width: "80px"
@@ -152,20 +153,33 @@ export class LoraInfoDialog extends ModelInfoDialog {
 				console.log(value)
 			},
 		});
-		
+
 		$el(
 			"p",
 			{
 				parent: this.content,
-				textContent: `Preffered Weight: `,
+				textContent: `Default Weight: `,
 			},
 			[
 				weight,
+			]
+		);
+
+		$el(
+			"p",
+			{
+				parent: this.content,
+				textContent: `Default Activation Text: `,
+			},
+			[
+				textArea,
 				$el("button", {
 					onclick: async () => {
-						console.log('todo')
+						const weightVal = parseFloat(weight.value);
+						const activationVal = textArea.value;
+						this.saveLoraPrefs(activationVal, weightVal, this.name);
 					},
-					textContent: "Save Preferences",
+					textContent: "Save Lora Defaults",
 					style: {
 						fontSize: "14px",
 					},
@@ -193,26 +207,6 @@ export class LoraInfoDialog extends ModelInfoDialog {
 				width: "calc(100% - 10px)",
 			},
 		});
-		$el(
-			"p",
-			{
-				parent: this.content,
-				textContent: `${title}: `,
-			},
-			[
-				textArea,
-				$el("button", {
-					onclick: async () => {
-						await this.saveAsExample(textArea.value, `${name}.txt`);
-					},
-					textContent: "Save as Example",
-					style: {
-						fontSize: "14px",
-					},
-				}),
-				$el("hr"),
-			]
-		);
 	}
 
 	async addInfo() {
@@ -230,11 +224,13 @@ export class LoraInfoDialog extends ModelInfoDialog {
 
 		super.addInfo();
 		const p = this.addCivitaiInfo();
+		this.addPreferredWeightAndActivationText(this.lora_pref);
+
 		this.addTags();
 
 		const info = await p;
 		this.addExample("Trained Words", info?.trainedWords?.join(", ") ?? "", "trainedwords");
-		this.addPreferredWeightAndActivationText(this.lora_pref);
+
 
 		const triggerPhrase = this.metadata["modelspec.trigger_phrase"];
 		if (triggerPhrase) {
@@ -251,25 +247,23 @@ export class LoraInfoDialog extends ModelInfoDialog {
 		});
 	}
 
-	async saveAsExample(example, name = "example.txt") {
-		if (!example.length) {
-			return;
-		}
+	async saveLoraPrefs(activation_text, weight, lora_name) {
 		try {
-			name = prompt("Enter example name", name);
-			if (!name) return;
-
-			await api.fetchApi("/jk-nodes/examples/" + encodeURIComponent(`${this.type}/${this.name}`), {
+			
+			await api.fetchApi("/jk-nodes/lora-preference", {
 				method: "POST",
 				body: JSON.stringify({
-					name,
-					example,
+					lora_name: lora_name,
+					activation_text: activation_text,
+					preferred_weight: weight,
 				}),
 				headers: {
 					"content-type": "application/json",
 				},
 			});
-			this.node?.["jk-nodes.updateExamples"]?.();
+			
+			//TODO, refresh loras....
+
 			alert("Saved!");
 		} catch (error) {
 			console.error(error);
@@ -308,14 +302,6 @@ export class LoraInfoDialog extends ModelInfoDialog {
 		}
 
 		btns.unshift(
-			$el("button", {
-				type: "button",
-				textContent: "Save Selected as Example",
-				onclick: async (e) => {
-					const tags = tagsToCsv([...this.tags.querySelectorAll(".jk-nodes-model-tag--selected")]);
-					await this.saveAsExample(tags);
-				},
-			}),
 			$el("button", {
 				type: "button",
 				textContent: "Copy Selected",
