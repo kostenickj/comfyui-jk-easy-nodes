@@ -1,4 +1,4 @@
-from typing import List, TypedDict
+from typing import Dict, List, TypedDict
 from server import PromptServer
 from aiohttp import web
 import os
@@ -84,16 +84,29 @@ class TagFile(TypedDict):
     file_name: str
     file_path: str
 
+tagfile_cache: Dict[str,TagFile] = dict()
+
 @PromptServer.instance.routes.get("/jk-nodes/autocomplete-files")
 async def get_autocomplete_files(request):
+
+    global tagfile_cache
+
     ext_dir = os.path.join(folder_paths.folder_names_and_paths['custom_nodes'][0][0], 'comfyui-jk-easy-nodes')
     tags_dir = os.path.join(ext_dir, 'tags')
-    all_tag_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(tags_dir) for f in filenames if f.endswith('.csv') or f.endswith('.txt')]
+    all_tag_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(tags_dir) for f in filenames if f.lower().endswith('.csv') or f.lower().endswith('.txt')]
     ret: List[TagFile] = []
     for f in all_tag_files:
+
+        if f in tagfile_cache:
+            ret.append(tagfile_cache[f])
+            log.debug(f'returning cached tag file {f}')
+            continue
+
         try:
             encoding = from_path(f)
             contents = Path(f).read_text(encoding=encoding.best().encoding)
+            tags = TagFile(contents=contents, file_name=os.path.basename(f), file_path=f)
+            tagfile_cache[f] = tags
             ret.append(TagFile(contents=contents, file_name=os.path.basename(f), file_path=f))
         except:
             log.error(f'failed to read tag file: "{f}"')
