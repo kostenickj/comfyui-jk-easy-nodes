@@ -19,12 +19,3 @@ export function getUrl(path, baseUrl) {
 		return new URL("../" + path, import.meta.url).toString();
 	}
 }
-
-export async function loadImage(url) {
-	return new Promise((res, rej) => {
-		const img = new Image();
-		img.onload = res;
-		img.onerror = rej;
-		img.src = url;
-	});
-}
