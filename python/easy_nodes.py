@@ -12,9 +12,9 @@ from typing import Any, Dict, TypedDict, List
 import re
 from pathlib import Path
 
-my_dir = os.path.dirname(os.path.abspath(__file__))
-custom_nodes_dir = os.path.abspath(os.path.join(my_dir, '..'))
-comfy_dir = os.path.abspath(os.path.join(my_dir, '..', '..'))
+this_dir = os.path.dirname(os.path.abspath(__file__))
+custom_nodes_dir = os.path.abspath(os.path.join(this_dir, '..'))
+comfy_dir = os.path.abspath(os.path.join(this_dir, '..', '..'))
 sys.path.append(comfy_dir)
 import nodes
 from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler, CLIPTextEncode

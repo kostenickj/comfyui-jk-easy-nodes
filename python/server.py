@@ -6,6 +6,11 @@ import folder_paths
 from pathlib import Path
 import json
 import hashlib
+from charset_normalizer import from_path
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("jk-easy-nodes")
 
 def get_metadata(filepath):
     with open(filepath, "rb") as file:
@@ -74,12 +79,25 @@ def try_find_lora_config(lora_name: str):
         return None
 
 
-@PromptServer.instance.routes.get("/jk-nodes/autocomplete")
-async def get_autocomplete(request):
-    #TODO, change this to dynamically read from dirs
-    # if os.path.isfile(autocomplete_file):
-    #     return web.FileResponse(autocomplete_file)
-    return web.Response(status=404)
+class TagFile(TypedDict):
+    contents: str
+    file_name: str
+    file_path: str
+
+@PromptServer.instance.routes.get("/jk-nodes/autocomplete-files")
+async def get_autocomplete_files(request):
+    ext_dir = os.path.join(folder_paths.folder_names_and_paths['custom_nodes'][0][0], 'comfyui-jk-easy-nodes')
+    tags_dir = os.path.join(ext_dir, 'tags')
+    all_tag_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(tags_dir) for f in filenames if f.endswith('.csv') or f.endswith('.txt')]
+    ret: List[TagFile] = []
+    for f in all_tag_files:
+        try:
+            encoding = from_path(f)
+            contents = Path(f).read_text(encoding=encoding.best().encoding)
+            ret.append(TagFile(contents=contents, file_name=os.path.basename(f), file_path=f))
+        except:
+            log.error(f'failed to read tag file: "{f}"')
+    return web.json_response(ret)
 
 
 @PromptServer.instance.routes.get("/jk-nodes/loras")

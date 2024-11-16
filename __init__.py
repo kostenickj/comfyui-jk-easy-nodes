@@ -44,10 +44,3 @@ for mod in modules:
 
 WEB_DIRECTORY = "./web"
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
-
-
-#TODO, copy all the web stuff over, get rid of the stuff u dont want, only want autocomplete and model window popup for loras
-# customize the autocomplete, get rid of tag manager and everything else u dont actually need
-# replace all pyss classes etc with ur own, can probably do a global find and replace
-# i dont want the tag manager, just add your own shit to the tags folder
-# once u figure out what wildcard nodes u want to use, u can also auto search those for autcomplete...

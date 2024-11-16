@@ -280,25 +280,6 @@ export class LoraInfoDialog extends ModelInfoDialog {
 	}
 }
 
-class CheckpointInfoDialog extends ModelInfoDialog {
-	async addInfo() {
-		super.addInfo();
-		const info = await this.addCivitaiInfo();
-		if (info) {
-			this.addInfoEntry("Base Model", info.baseModel || "⚠️ Unknown");
-
-			$el("div", {
-				parent: this.content,
-				innerHTML: info.description,
-				style: {
-					maxHeight: "250px",
-					overflow: "auto",
-				},
-			});
-		}
-	}
-}
-
 const lookups = {};
 
 function addInfoOption(node, type, infoClass, widgetNamePattern, opts) {
@@ -331,11 +312,10 @@ function addTypeOptions(node, typeName, options) {
 	if (!values) return;
 
 	const widgets = Object.keys(values);
-	const cls = type === "loras" ? LoraInfoDialog : CheckpointInfoDialog;
 
 	const opts = [];
 	for (const w of widgets) {
-		addInfoOption(node, type, cls, w, opts);
+		addInfoOption(node, type, LoraInfoDialog, w, opts);
 	}
 
 	if (!opts.length) return;
@@ -357,37 +337,10 @@ function addTypeOptions(node, typeName, options) {
 app.registerExtension({
 	name: "jk-nodes.ModelInfo",
 	setup() {
-		const addSetting = (type, defaultValue) => {
-			app.ui.settings.addSetting({
-				id: `jk-nodes.ModelInfo.${type}Nodes`,
-				name: `🐍 Model Info - ${type} Nodes/Widgets`,
-				type: "text",
-				defaultValue,
-				tooltip: `Comma separated list of NodeTypeName or NodeTypeName.WidgetName that contain ${type} node names that should have the View Info option available.\nIf no widget name is specifed the first widget will be used. Regex matches (e.g. NodeName..*lora_\\d+) are supported in the widget name.`,
-				onChange(value) {
-					lookups[type] = value.split(",").reduce((p, n) => {
-						n = n.trim();
-						const pos = n.indexOf(".");
-						const split = pos === -1 ? [n] : [n.substring(0, pos), n.substring(pos + 1)];
-						p[split[0]] ??= {};
-						p[split[0]][split[1] ?? ""] = true;
-						return p;
-					}, {});
-				},
-			});
-		};
-		addSetting(
-			"Lora",
-			["LoraLoader.lora_name", "LoraLoader|jk-nodes", "LoraLoaderModelOnly.lora_name", "LoRA Stacker.lora_name.*"].join(",")
-		);
-		addSetting(
-			"Checkpoint",
-			["CheckpointLoader.ckpt_name", "CheckpointLoaderSimple", "CheckpointLoader|jk-nodes", "Efficient Loader", "Eff. Loader SDXL"].join(",")
-		);
 
 		app.ui.settings.addSetting({
 			id: `jk-nodes.ModelInfo.NsfwLevel`,
-			name: `🐍 Model Info - Image Preview Max NSFW Level`,
+			name: `Model Info - Image Preview Max NSFW Level`,
 			type: "combo",
 			defaultValue: "PG13",
 			options: Object.keys(NsfwLevel),

@@ -1,7 +1,7 @@
 import { app } from "../../../scripts/app.js";
 import { ComfyWidgets } from "../../../scripts/widgets.js";
 import { api } from "../../../scripts/api.js";
-import { $el, ComfyDialog } from "../../../scripts/ui.js";
+import { $el } from "../../../scripts/ui.js";
 import { TextAreaAutoComplete } from "./common/autocomplete.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
 import { LoraInfoDialog } from "./modelInfo.js";
@@ -77,68 +77,71 @@ function parseCSV(csvText) {
 	return rows;
 }
 
-async function getCustomWords() {
-	const resp = await api.fetchApi("/jk-nodes/autocomplete", { cache: "no-store" });
+async function getCustomWordsFiles() {
+	const resp = await api.fetchApi("/jk-nodes/autocomplete-files", { cache: "no-store" });
 	if (resp.status === 200) {
-		return await resp.text();
+		return await resp.json();
 	}
 	return undefined;
 }
 
-async function addCustomWords(text) {
-	if (!text) {
-		text = await getCustomWords();
-	}
-	if (text) {
-		TextAreaAutoComplete.updateWords(
-			"jk-nodes.customwords",
-			parseCSV(text).reduce((p, n) => {
-				let text;
-				let priority;
-				let value;
-				let num;
-				switch (n.length) {
-					case 0:
-						return;
-					case 1:
-						// Single word
-						text = n[0];
-						break;
-					case 2:
-						// Word,[priority|alias]
-						num = +n[1];
-						if (isNaN(num)) {
-							text = n[0] + "🔄️" + n[1];
-							value = n[0];
-						} else {
+async function loadTags() {
+
+	const tagfiles = await getCustomWordsFiles();
+
+	if (tagfiles && Array.isArray(tagfiles)) {
+		tagfiles.forEach(t => {
+			TextAreaAutoComplete.updateWords(
+				`jk-nodes.customwords.${t.file_name}`,
+				parseCSV(t.contents).reduce((p, n) => {
+					let text;
+					let priority;
+					let value;
+					let num;
+					switch (n.length) {
+						case 0:
+							return;
+						case 1:
+							// Single word
 							text = n[0];
-							priority = num;
-						}
-						break;
-					case 4:
-						// a1111 csv format?
-						value = n[0];
-						priority = +n[2];
-						const aliases = n[3]?.trim();
-						if (aliases && aliases !== "null") { // Weird null in an example csv, maybe they are JSON.parsing the last column?
-							const split = aliases.split(",");
-							for (const text of split) {
-								p[text] = { text, priority, value };
+							break;
+						case 2:
+							// Word,[priority|alias]
+							num = +n[1];
+							if (isNaN(num)) {
+								text = n[0] + "🔄️" + n[1];
+								value = n[0];
+							} else {
+								text = n[0];
+								priority = num;
 							}
-						}
-						text = value;
-						break;
-					default:
-						// Word,alias,priority
-						text = n[1];
-						value = n[0];
-						priority = +n[2];
-						break;
-				}
-				p[text] = { text, priority, value };
-				return p;
-			}, {})
-		);
+							break;
+						case 4:
+							// a1111 csv format?
+							value = n[0];
+							priority = +n[2];
+							const aliases = n[3]?.trim();
+							if (aliases && aliases !== "null") { // Weird null in an example csv, maybe they are JSON.parsing the last column?
+								const split = aliases.split(",");
+								for (const text of split) {
+									p[text] = { text, priority, value };
+								}
+							}
+							text = value;
+							break;
+						default:
+							// Word,alias,priority
+							text = n[1];
+							value = n[0];
+							priority = +n[2];
+							break;
+					}
+					p[text] = { text, priority, value };
+					return p;
+				}, {})
+			);
+		})
+
 	}
 }
 
@@ -163,110 +166,6 @@ class EmbeddingInfoDialog extends ModelInfoDialog {
 				},
 			});
 		}
-	}
-}
-
-class CustomWordsDialog extends ComfyDialog {
-	async show() {
-		const text = await getCustomWords();
-		this.words = $el("textarea", {
-			textContent: text,
-			style: {
-				width: "70vw",
-				height: "70vh",
-			},
-		});
-
-		const input = $el("input", {
-			style: {
-				flex: "auto",
-			},
-			value:
-				"https://gist.githubusercontent.com/pythongosssss/1d3efa6050356a08cea975183088159a/raw/a18fb2f94f9156cf4476b0c24a09544d6c0baec6/danbooru-tags.txt",
-		});
-
-		super.show(
-			$el(
-				"div",
-				{
-					style: {
-						display: "flex",
-						flexDirection: "column",
-						overflow: "hidden",
-						maxHeight: "100%",
-					},
-				},
-				[
-					$el("h2", {
-						textContent: "Custom Autocomplete Words",
-						style: {
-							color: "#fff",
-							marginTop: 0,
-							textAlign: "center",
-							fontFamily: "sans-serif",
-						},
-					}),
-					$el(
-						"div",
-						{
-							style: {
-								color: "#fff",
-								fontFamily: "sans-serif",
-								display: "flex",
-								alignItems: "center",
-								gap: "5px",
-							},
-						},
-						[
-							$el("label", { textContent: "Load Custom List: " }),
-							input,
-							$el("button", {
-								textContent: "Load",
-								onclick: async () => {
-									try {
-										const res = await fetch(input.value);
-										if (res.status !== 200) {
-											throw new Error("Error loading: " + res.status + " " + res.statusText);
-										}
-										this.words.value = await res.text();
-									} catch (error) {
-										alert("Error loading custom list, try manually copy + pasting the list");
-									}
-								},
-							}),
-						]
-					),
-					this.words,
-				]
-			)
-		);
-	}
-
-	createButtons() {
-		const btns = super.createButtons();
-		const save = $el("button", {
-			type: "button",
-			textContent: "Save",
-			onclick: async (e) => {
-				try {
-					const res = await api.fetchApi("/jk-nodes/autocomplete", { method: "POST", body: this.words.value });
-					if (res.status !== 200) {
-						throw new Error("Error saving: " + res.status + " " + res.statusText);
-					}
-					save.textContent = "Saved!";
-					addCustomWords(this.words.value);
-					setTimeout(() => {
-						save.textContent = "Save";
-					}, 500);
-				} catch (error) {
-					alert("Error saving word list!");
-					console.error(error);
-				}
-			},
-		});
-
-		btns.unshift(save);
-		return btns;
 	}
 }
 
@@ -518,7 +417,7 @@ app.registerExtension({
 			TextAreaAutoComplete.updateWords("jk-nodes.loras", words);
 		}
 		// store global words with/without loras
-		Promise.all([addEmbeddings(), addCustomWords()])
+		Promise.all([addEmbeddings(), loadTags()])
 			.then(() => {
 				TextAreaAutoComplete.globalWordsExclLoras = Object.assign({}, TextAreaAutoComplete.globalWords);
 			})
