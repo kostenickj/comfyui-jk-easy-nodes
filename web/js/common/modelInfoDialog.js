@@ -49,6 +49,7 @@ export class ModelInfoDialog extends ComfyDialog {
 		this.type = type;
 
 		const val = type === 'loras' ? value.lora_name : value;
+		this.lora_pref = type === 'loras' ? value : undefined;
 
 		const req = api.fetchApi("/jk-nodes/metadata/" + encodeURIComponent(`${type}/${val}`));
 		this.info = $el("div", { style: { flex: "auto" } });
@@ -62,6 +63,7 @@ export class ModelInfoDialog extends ComfyDialog {
 		super.show(this.content);
 
 		this.metadata = await (await req).json();
+
 		this.viewMetadata.style.cursor = this.viewMetadata.style.opacity = "";
 		this.viewMetadata.removeAttribute("disabled");
 

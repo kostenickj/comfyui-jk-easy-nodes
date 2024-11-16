@@ -121,6 +121,61 @@ export class LoraInfoDialog extends ModelInfoDialog {
 		}
 	}
 
+	addPreferredWeightAndActivationText(prefs) {
+		const prefWeight = prefs?.preferred_weight;
+		const prefText = prefs?.activation_text;
+		const textArea = $el("textarea", {
+			textContent: prefText ?? '',
+			style: {
+				whiteSpace: "pre-wrap",
+				margin: "10px 0",
+				color: "#fff",
+				background: "#222",
+				padding: "5px",
+				borderRadius: "5px",
+				maxHeight: "250px",
+				overflow: "auto",
+				display: "block",
+				border: "none",
+				width: "calc(100% - 10px)",
+			},
+		});
+
+		const weight = $el("input", {
+			type: "number",
+			value: prefWeight ?? 1.0,
+			style: {
+				width: "80px"
+			},
+			onchange: (event) => {
+				const value = event.target.value;
+				console.log(value)
+			},
+		});
+		
+		$el(
+			"p",
+			{
+				parent: this.content,
+				textContent: `Preffered Weight: `,
+			},
+			[
+				weight,
+				$el("button", {
+					onclick: async () => {
+						console.log('todo')
+					},
+					textContent: "Save Preferences",
+					style: {
+						fontSize: "14px",
+					},
+				}),
+				$el("hr"),
+			]
+		);
+
+	}
+
 	addExample(title, value, name) {
 		const textArea = $el("textarea", {
 			textContent: value,
@@ -179,6 +234,7 @@ export class LoraInfoDialog extends ModelInfoDialog {
 
 		const info = await p;
 		this.addExample("Trained Words", info?.trainedWords?.join(", ") ?? "", "trainedwords");
+		this.addPreferredWeightAndActivationText(this.lora_pref);
 
 		const triggerPhrase = this.metadata["modelspec.trigger_phrase"];
 		if (triggerPhrase) {
