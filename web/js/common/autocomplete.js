@@ -448,9 +448,14 @@ export class TextAreaAutoComplete {
 			switch (e.key) {
 				case "Enter":
 					if (!e.ctrlKey) {
-						if (TextAreaAutoComplete.insertOnEnter) {
+						const isLora = this.selected?.text?.toLowerCase().startsWith('<lora:');
+						if (TextAreaAutoComplete.insertOnEnter && !isLora) {
 							this.#insertItem();
 							e.preventDefault();
+						}
+						else if(isLora && typeof this.selected.info === 'function')
+						{
+							this.selected.info()
 						}
 					}
 					break;
