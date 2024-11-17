@@ -64,10 +64,10 @@ def create_noisy_latent(source:str, seed: int, width:int, height: int):
     else:
         device = comfy.model_management.get_torch_device()
     noise = torch.randn((1,  4, height // 8, width // 8), dtype=torch.float32, device=device).cpu()
-    return ({"samples":noise}, )
+    return {"samples":noise}
 
 # https://github.com/BlenderNeko/ComfyUI_Noise
-def inject_noise_to_latent(latents, strength, noise=None):
+def inject_noise_to_latent(latents: Tensor, strength: float, noise: Tensor):
     s = latents.copy()
     if noise is None:
         return (s,)
@@ -77,7 +77,7 @@ def inject_noise_to_latent(latents, strength, noise=None):
     noised = s["samples"].clone() + noise["samples"].clone() * strength
    
     s["samples"] = noised
-    return (s,)
+    return s
 
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
@@ -248,11 +248,10 @@ class EasyHRFix:
         inject_noise = inject_extra_noise == 'enable'
 
         if(inject_noise and extra_noise_strength > 0):
-            # inject the noise
             h = latent_image['samples'].shape[2] * 8
             w = latent_image['samples'].shape[3] * 8
             noise_latent = create_noisy_latent(noise_mode, seed, w, h)
-            latent_image = inject_noise_to_latent(latent_image, noise_latent)
+            latent_image = inject_noise_to_latent(latent_image, extra_noise_strength, noise_latent)
 
         low_res = vae_decode_latent(vae, latent_image)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
