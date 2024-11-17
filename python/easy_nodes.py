@@ -1,14 +1,15 @@
 from torch import Tensor
 import os
 import sys
-
+import torch
 import comfy.sd
 import comfy.samplers
 import comfy.model_patcher
+import comfy.model_management
 import comfy.utils
 import folder_paths
 import logging
-from typing import Any, Dict, TypedDict, List
+from typing import Any, Dict, Literal, TypedDict, List
 import re
 from pathlib import Path
 
@@ -54,6 +55,29 @@ def vae_decode_latent(vae: comfy.sd.VAE, samples):
 
 def vae_encode_image(vae: comfy.sd.VAE, image):
     return VAEEncode().encode(vae,image)[0]
+
+# https://github.com/BlenderNeko/ComfyUI_Noise
+def create_noisy_latent(source:str, seed: int, width:int, height: int):
+    torch.manual_seed(seed)
+    if source == "CPU":
+        device = "cpu"
+    else:
+        device = comfy.model_management.get_torch_device()
+    noise = torch.randn((1,  4, height // 8, width // 8), dtype=torch.float32, device=device).cpu()
+    return ({"samples":noise}, )
+
+# https://github.com/BlenderNeko/ComfyUI_Noise
+def inject_noise_to_latent(latents, strength, noise=None):
+    s = latents.copy()
+    if noise is None:
+        return (s,)
+    if latents["samples"].shape != noise["samples"].shape:
+        log.error("shapes in InjectNoise not the same, ignoring")
+        return (s,)
+    noised = s["samples"].clone() + noise["samples"].clone() * strength
+   
+    s["samples"] = noised
+    return (s,)
 
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
@@ -187,7 +211,9 @@ class EasyHRFix:
                 "denoise": ("FLOAT",{"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},),
                 "latent_upscaler": (cls.latent_upscalers,{ "default": 'lanczos' }),
                 "pixel_upscaler": (cls.pixel_upscalers,),
-                "noise_mode": (["GPU(=A1111)", "CPU"], { "default": "GPU(=A1111)" }),   
+                "noise_mode": (["GPU(=A1111)", "CPU"], { "default": "GPU(=A1111)" }),
+                "inject_extra_noise" : (["disable", "enable"],{ "default": "enable" } ),
+                "extra_noise_strength" : ("FLOAT",{"default": 2.5, "min": 0.00, "max": 100, "step": 0.1},),
             },
         }
 
@@ -212,10 +238,21 @@ class EasyHRFix:
         denoise: float,
         latent_upscaler: str,
         pixel_upscaler: str,
-        noise_mode: str
+        noise_mode: Literal["GPU(=A1111)", "CPU"],
+        inject_extra_noise: Literal["disable", "enable"],
+        extra_noise_strength: float
     ):
         if 'KSampler //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
+
+        inject_noise = inject_extra_noise == 'enable'
+
+        if(inject_noise and extra_noise_strength > 0):
+            # inject the noise
+            h = latent_image['samples'].shape[2] * 8
+            w = latent_image['samples'].shape[3] * 8
+            noise_latent = create_noisy_latent(noise_mode, seed, w, h)
+            latent_image = inject_noise_to_latent(latent_image, noise_latent)
 
         low_res = vae_decode_latent(vae, latent_image)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
