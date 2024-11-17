@@ -1,3 +1,6 @@
+// this code is originally from https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+// all i did was modify some stuff to work better with my custom lora prompt node and add a couple of new features
+
 import { app } from "../../../scripts/app.js";
 import { ComfyWidgets } from "../../../scripts/widgets.js";
 import { api } from "../../../scripts/api.js";

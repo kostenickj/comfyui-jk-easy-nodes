@@ -1,3 +1,6 @@
+// this code is originally from https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+// all i did was modify some stuff to work better with my custom lora prompt node and add a couple of new features
+
 import { $el } from "../../../../scripts/ui.js";
 import { addStylesheet } from "./utils.js";
 
