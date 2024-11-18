@@ -163,20 +163,17 @@ async def get_loras(request):
 @PromptServer.instance.routes.get("/jk-nodes/wildcards")
 async def load_wildcards(request):
 
+    #TODO, support yaml?
     custom_nodes_dir = Path(folder_paths.folder_names_and_paths['custom_nodes'][0][0]).absolute()
-    wildcard_dir = Path(os.path.join(custom_nodes_dir, 'comfyui-dynamicprompts', 'wildcards'))
-
-    if not wildcard_dir.exists():
-        return web.json_response([])
-
-    # not sure if i want to include these, i dont think dynamicprompts supports external dirs like in a1111.
-    # ext_wildcard_dirs = list(custom_nodes_dir.glob("*/wildcards/"))
-
-    wildcard_files = list(wildcard_dir.rglob("*.txt"))
-    # taken from a1111-sd-webui-tagcomplete
-    resolved = [(w.relative_to(wildcard_dir).as_posix())
-                    for w in wildcard_files
+    ext_wildcard_dirs = list(custom_nodes_dir.glob("*/wildcards/"))
+    wildcard_files: List[str] = []
+    for path in ext_wildcard_dirs:
+        wildcard_files.append(path.as_posix())
+        resolved = [(w.relative_to(path).as_posix())
+                    for w in path.rglob("*.txt")
                     if w.name != "put wildcards here.txt"
                     and w.is_file()]
-    return web.json_response(resolved)
+        wildcard_files.extend(resolved)
+    
+    return web.json_response(wildcard_files)
 
