@@ -56,29 +56,6 @@ def vae_decode_latent(vae: comfy.sd.VAE, samples):
 def vae_encode_image(vae: comfy.sd.VAE, image):
     return VAEEncode().encode(vae,image)[0]
 
-# https://github.com/BlenderNeko/ComfyUI_Noise
-def create_noisy_latent(source:str, seed: int, width:int, height: int):
-    torch.manual_seed(seed)
-    if source == "CPU":
-        device = "cpu"
-    else:
-        device = comfy.model_management.get_torch_device()
-    noise = torch.randn((1,  4, height // 8, width // 8), dtype=torch.float32, device=device).cpu()
-    return {"samples":noise}
-
-# https://github.com/BlenderNeko/ComfyUI_Noise
-def inject_noise_to_latent(latents: Tensor, strength: float, noise: Tensor):
-    s = latents.copy()
-    if noise is None:
-        return (s,)
-    if latents["samples"].shape != noise["samples"].shape:
-        log.error("shapes in InjectNoise not the same, ignoring")
-        return (s,)
-    noised = s["samples"].clone() + noise["samples"].clone() * strength
-   
-    s["samples"] = noised
-    return s
-
 # Function to parse LoRA details from the prompt
 def parse_lora_details(prompt) -> List[LoraParams]:
     try:
@@ -245,13 +222,20 @@ class EasyHRFix:
         if 'KSampler //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
 
+        size = latent_image['samples'].shape
         inject_noise = inject_extra_noise == 'enable'
 
         if(inject_noise and extra_noise_strength > 0):
-            h = latent_image['samples'].shape[2] * 8
-            w = latent_image['samples'].shape[3] * 8
-            noise_latent = create_noisy_latent(noise_mode, seed, w, h)
-            latent_image = inject_noise_to_latent(latent_image, extra_noise_strength, noise_latent)
+
+            if "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS:
+                NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
+                InjectNoise = nodes.NODE_CLASS_MAPPINGS["BNK_InjectNoise"]
+                noise = NoisyLatentImage().create_noisy_latents(noise_mode, seed, size[3] * 8, size[2] * 8, size[0])[0]
+                latent_image = InjectNoise().inject_noise(latent_image, extra_noise_strength, noise)[0]
+
+            else:
+                raise Exception("'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed.")
+
 
         low_res = vae_decode_latent(vae, latent_image)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
