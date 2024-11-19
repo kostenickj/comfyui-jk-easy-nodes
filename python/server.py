@@ -177,3 +177,52 @@ async def load_wildcards(request):
     
     return web.json_response(wildcard_files)
 
+@PromptServer.instance.routes.get("/jk-nodes/metadata/{name}")
+async def load_metadata(request):
+    name = request.match_info["name"]
+    pos = name.index("/")
+    type = name[0:pos]
+    name = name[pos+1:]
+
+    file_path = None
+    if type == "embeddings" or type == "loras":
+        name = name.lower()
+        files = folder_paths.get_filename_list(type)
+        for f in files:
+            lower_f = f.lower()
+            if lower_f == name:
+                file_path = folder_paths.get_full_path(type, f)
+            else:
+                n = os.path.splitext(f)[0].lower()
+                if n == name:
+                    file_path = folder_paths.get_full_path(type, f)
+
+            if file_path is not None:
+                break
+    else:
+        file_path = folder_paths.get_full_path(
+            type, name)
+    if not file_path:
+        return web.Response(status=404)
+
+    try:
+        meta = get_metadata(file_path)
+    except:
+        meta = None
+
+    if meta is None:
+        meta = {}
+
+    file_no_ext = os.path.splitext(file_path)[0]
+
+    hash_file = file_no_ext + ".sha256"
+    if os.path.isfile(hash_file):
+        with open(hash_file, "rt") as f:
+            meta["jk-nodes.sha256"] = f.read()
+    else:
+        with open(file_path, "rb") as f:
+            meta["jk-nodes.sha256"] = hashlib.sha256(f.read()).hexdigest()
+        with open(hash_file, "wt") as f:
+            f.write(meta["jk-nodes.sha256"])
+
+    return web.json_response(meta)
