@@ -1,3 +1,4 @@
+import json
 from torch import Tensor
 import os
 import sys
@@ -8,6 +9,8 @@ import comfy.model_patcher
 import comfy.model_management
 import comfy.utils
 import folder_paths
+from PIL import Image
+import numpy as np
 import logging
 from typing import Any, Dict, Literal, TypedDict, List
 import re
@@ -90,78 +93,100 @@ def parse_lora_details(prompt) -> List[LoraParams]:
 def prompt_encode(clip: comfy.sd.CLIP, text: str):
     return CLIPTextEncode().encode(clip, text)
 
-class PromptLora:
+
+# region processors
+
+def process_list(anything):
+    text = []
+    if not anything:
+        return {"text": []}
+
+    first_element = anything[0]
+    if (
+        isinstance(first_element, list)
+        and first_element
+        and isinstance(first_element[0], torch.Tensor)
+    ):
+        text.append(
+            "List of List of Tensors: "
+            f"{first_element[0].shape} (x{len(anything)})"
+        )
+
+    elif isinstance(first_element, torch.Tensor):
+        text.append(
+            f"List of Tensors: {first_element.shape} (x{len(anything)})"
+        )
+    else:
+        text.append(f"Array ({len(anything)}): {anything}")
+
+    return {"text": text}
+
+
+def process_dict(anything):
+    text = []
+    if "samples" in anything:
+        is_empty = (
+            "(empty)" if torch.count_nonzero(anything["samples"]) == 0 else ""
+        )
+        text.append(f"Latent Samples: {anything['samples'].shape} {is_empty}")
+
+    else:
+        text.append(json.dumps(anything, indent=2))
+
+    return {"text": text}
+
+
+def process_bool(anything):
+    return {"text": ["True" if anything else "False"]}
+
+
+def process_text(anything):
+    return {"text": [str(anything)]}
+
+
+# endregion
+class AnyType(str):
+  """A special class that is always equal in not equal comparisons. Credit to pythongosssss"""
+
+  def __ne__(self, __value: object) -> bool:
+    return False
+
+any = AnyType("*")
+
+# originally from MTB nodes, modified to actually work with anything using AnyType
+class JKAnythingToString:
 
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
-                "model": ("MODEL",),
-                "clip": ("CLIP",),
-                "positive": ("STRING", {"multiline": True}),
-                "negative": ("STRING", {"multiline": True}),
-            }
+            "required": {"input": (any, {})},
         }
 
-    RETURN_TYPES = ("MODEL", "CLIP", "CONDITIONING", "CONDITIONING", "STRING")
-    RETURN_NAMES = ("model", "clip", "positive", "negative", "filtered prompt (no lora tag)")
-    FUNCTION = "apply"
-    CATEGORY = 'JK Easy Nodes'
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "do_str"
+    CATEGORY = "JK Easy Nodes ( ͡° ͜ʖ ͡°)"
 
-    cache = dict()
-
-    def apply(self, model: comfy.model_patcher.ModelPatcher, clip: comfy.sd.CLIP, positive: str, negative: str):
-
-        loras: list[LoraParams] = parse_lora_details(positive)
-
-        model_lora = model
-        clip_lora = clip
-
-        used_lora_names: List[str] = []
-
-        for lora_detail in loras:
-
-            lora_base_name = lora_detail.get("name")
-            lora_full_name = get_lora_full_name(lora_base_name)
-
-            if lora_full_name is None:
-                log.error(f'failed to find lora {lora_base_name}')
-                continue
-
-            lora_weight = lora_detail.get("weight")
-            lora_clip_weight = lora_detail.get("weight_clip")
-     
-            used_lora_names.append(lora_full_name)
-
-            if lora_full_name in self.cache:
-                cached: CachedLora = self.cache.get(lora_full_name)
-                lora = cached.get('lora')
-            else:
-                lora_path = folder_paths.get_full_path("loras", lora_full_name)
-                lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
-                self.cache[lora_full_name] = CachedLora(name=lora_full_name, lora=lora, filepath=lora_path)
-
-            # remove the lora text from the positive prompt
-            positive = positive.replace(lora_detail.get('text'), '')
-
-            log.info(f'applying lora "{lora_full_name}" with weight {lora_weight} and clip weight {lora_clip_weight}')
-
-            model_lora, clip_lora = comfy.sd.load_lora_for_models(
-                model_lora, clip_lora, lora, lora_weight, lora_clip_weight
+    def do_str(self, input):
+        if isinstance(input, str):
+            return (input,)
+        elif isinstance(input, torch.Tensor):
+            return (f"Tensor of shape {input.shape} and dtype {input.dtype}",)
+        elif isinstance(input, Image.Image):
+            return (f"PIL Image of size {input.size} and mode {input.mode}",)
+        elif isinstance(input, np.ndarray):
+            return (
+                f"Numpy array of shape {input.shape} and dtype {input.dtype}",
             )
 
-        # remove lora from cache if its not in used_lora_names
-        loaded_loras = list(self.cache.keys())
-        for lname in loaded_loras:
-            if lname not in used_lora_names:
-                log.debug(f'removing lora {lname} from cache.')
-                self.cache.pop(lname, None)
-        
+        elif isinstance(input, dict):
+            return (
+                f"Dictionary of {len(input)} items, with keys {input.keys()}",
+            )
 
-        p = prompt_encode(clip_lora, positive)[0]
-        n = prompt_encode(clip_lora, negative)[0]
+        else:
+            log.debug(f"Falling back to string conversion of {input}")
+            return (str(input),)
 
-        return (model_lora, clip_lora, p, n, positive)
 
 
 class EasyHRFix:
@@ -197,7 +222,7 @@ class EasyHRFix:
     RETURN_TYPES = ("LATENT",)
     RETURN_NAMES = ( "LATENT",)
     FUNCTION = "apply"
-    CATEGORY = "JK Easy Nodes"
+    CATEGORY = "JK Easy Nodes ( ͡° ͜ʖ ͡°)"
 
     def apply(
         self,
@@ -272,10 +297,10 @@ class EasyHRFix:
 
     
 NODE_CLASS_MAPPINGS = {
-    "PromptLora": PromptLora,
-    'EasyHRFix': EasyHRFix
+    'EasyHRFix': EasyHRFix,
+    'JKAnythingToString': JKAnythingToString
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-  'PromptLora': 'JK Easy Prompt ( ͡° ͜ʖ ͡°)',
+  'JKAnythingToString': 'JK Anything to string ( ͡° ͜ʖ ͡°)',
   'EasyHRFix': 'JK Easy HiRes Fix ( ͡° ͜ʖ ͡°)'
 }
