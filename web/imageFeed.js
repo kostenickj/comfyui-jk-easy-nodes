@@ -212,7 +212,6 @@ app.registerExtension({
   name: "jk.ImageFeed",
   async setup() {
     let visible = true;
-    debugger;
     const seenImages = /* @__PURE__ */ new Map();
     const showButton = $el("button.comfy-settings-btn", {
       textContent: "\u{1F5BC}\uFE0F",
@@ -488,26 +487,7 @@ Click label to set custom value.`;
       window.onmessage = (e) => {
         console.log(e, "received");
       };
-      const newWindow = window.open(``, `_blank`, `width=1280,height=720,location=no,toolbar=no,menubar=no`);
-      newWindow.document.write(`
-				<!DOCTYPE html>
-				<html lang="en">
-					<head>
-						<meta charset="UTF-8" />
-						<title>mape's Helpers - Image Preview</title>
-					</head>
-					<body>
-						<script>
-							window.jkImageFeed = true;
-							window.onmessage = (e) => {
-								debugger 
-								console.log('todo',e);
-							};
-							import('${`/extensions/ComfyUI-mape-Helpers/tweak/mape-helpers.js`}');
-						<\/script>
-					</body>
-				</html>
-				`);
+      const newWindow = window.open(`/extensions/comfyui-jk-easy-nodes/jk-image-window.html`, `_blank`, `width=1280,height=720,location=no,toolbar=no,menubar=no`);
       setInterval(() => {
         newWindow.postMessage("test message!!!");
       }, 1e3);
