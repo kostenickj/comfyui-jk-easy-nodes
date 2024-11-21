@@ -1,4 +1,7 @@
 "use strict";
-setInterval(() => {
-    console.log('test!');
-}, 10000);
+(() => {
+  // src_web/test.ts
+  setInterval(() => {
+    console.log("test!");
+  }, 1e4);
+})();
