@@ -1,62 +1,55 @@
 .jk-nodes-autocomplete {
-	color: var(--descrip-text);
-	background-color: var(--comfy-menu-bg);
-	position: absolute;
-	font-family: sans-serif;
-	box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
-	z-index: 9999;
-	overflow: auto;
+  color: var(--descrip-text);
+  background-color: var(--comfy-menu-bg);
+  position: absolute;
+  font-family: sans-serif;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  overflow: auto;
 }
-
 .jk-nodes-autocomplete-item {
-	cursor: pointer;
-	padding: 3px 7px;
-	display: flex;
-	border-left: 3px solid transparent;
-	align-items: center;
+  cursor: pointer;
+  padding: 3px 7px;
+  display: flex;
+  border-left: 3px solid transparent;
+  align-items: center;
 }
-
 .jk-nodes-autocomplete-item--selected {
-	border-left-color: dodgerblue;
+  border-left-color: dodgerblue;
 }
-
 .jk-nodes-autocomplete-highlight {
-	font-weight: bold;
-	text-decoration: underline;
-	text-decoration-color: dodgerblue;
+  font-weight: bold;
+  text-decoration: underline;
+  text-decoration-color: dodgerblue;
 }
-
 .jk-nodes-autocomplete-pill {
-	margin-left: auto;
-	font-size: 10px;
-	color: #fff;
-	padding: 2px 4px 2px 14px;
-	position: relative;
+  margin-left: auto;
+  font-size: 10px;
+  color: #fff;
+  padding: 2px 4px 2px 14px;
+  position: relative;
 }
-
 .jk-nodes-autocomplete-pill::after {
-	content: "";
-	display: block;
-	background: rgba(255, 255, 255, 0.25);
-	width: calc(100% - 10px);
-	height: 100%;
-	position: absolute;
-	left: 10px;
-	top: 0;
-	border-radius: 5px;
+  content: "";
+  display: block;
+  background: rgba(255, 255, 255, 0.25);
+  width: calc(100% - 10px);
+  height: 100%;
+  position: absolute;
+  left: 10px;
+  top: 0;
+  border-radius: 5px;
 }
-
 .jk-nodes-autocomplete-pill + .jk-nodes-autocomplete-pill {
-	margin-left: 0;
+  margin-left: 0;
 }
-
 .jk-nodes-autocomplete-item-info {
-	margin-left: auto;
-	transition: filter 0.2s;
-	will-change: filter;
-	text-decoration: none;
-	padding-left: 10px;
+  margin-left: auto;
+  transition: filter 0.2s;
+  will-change: filter;
+  text-decoration: none;
+  padding-left: 10px;
 }
 .jk-nodes-autocomplete-item-info:hover {
-	filter: invert(1);
+  filter: invert(1);
 }

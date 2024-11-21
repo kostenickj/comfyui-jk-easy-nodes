@@ -5,7 +5,7 @@ esbuild.build({
     entryPoints: ['./src_web/**/*.ts', './src_web/**/*.scss'],
     entryNames: '[dir]/[name]',
     external: [],
-    bundle: true,
+    bundle: false,
     platform: 'browser',
     target: ['es2020'],
     sourcemap: false,
