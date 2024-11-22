@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "broadcast-channel": "^7.0.0",
-    "lightgallery": "^2.8.1"
+    "photoswipe": "^5.4.4"
   }
 }

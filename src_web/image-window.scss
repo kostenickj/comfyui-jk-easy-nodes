@@ -1,5 +1,21 @@
-@import url('lightgallery/css/lightgallery-bundle.css');
+@import url('photoswipe/dist/photoswipe.css');
+
+html{
+    display: flex;
+    flex: 1 auto;
+    height: 100%;
+    background-color: black;
+}
+
+body{
+    display: flex;
+    flex: 1 auto;
+    height: 100%;
+}
 
 #jk-img-container{
-    
+    display: flex;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
 }

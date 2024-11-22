@@ -1,7 +1,8 @@
 import { BroadcastChannel } from 'broadcast-channel';
 
 // TODO, the actual gallery
-import lightGallery from 'lightgallery';
+import PhotoSwipeLightbox from 'photoswipe/lightbox';
+import PhotoSwipe from 'photoswipe';
 import { SessionStorageHelper } from './common/storage.js';
 
 interface ImageData {
@@ -39,10 +40,27 @@ let CURRENT_IMAGES: ImageData[] = SessionStorageHelper.getJSON('feed') ?? [];
 const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
 
 if (IS_FEED_WINDOW) {
+    const container = document.getElementById('jk-img-container');
+   
+    const lightbox = new PhotoSwipeLightbox({
+        gallery: container!,
+        pswpModule: PhotoSwipe,
+        dataSource: [{ src: "https://cdn.photoswipe.com/photoswipe-demo-images/photos/1/img-2500.jpg", width: 1875, height: 2500, alt: 'dddd', srcset: 'https://cdn.photoswipe.com/photoswipe-demo-images/photos/1/img-2500.jpg'}]
+      });
+      setTimeout(() => {
+        window.lb = lightbox;
+        lightbox.init();
+      }, 1);
+
     const addImageToGallery = (m: ImageData) => {
-        const img = document.createElement('img');
-        img.src = m.href;
-        document.getElementById('jk-img-container')!.appendChild(img);
+        //const img = document.createElement('img');
+        //img.src = m.href;
+        //document.getElementById('jk-img-container')!.appendChild(img);
+        
+        //lg.refresh([{ src: m.href, subHtml: '<h4>Image 4 title</h4><p>Image 4 descriptions.</p>', thumb: m.href }]);
+        // lg.openGallery()
+       // lightbox.options.dataSource = [{ src: m.href, width: 100, height: 50 }]
+       //lightbox.pswp!.options.dataSource = [{ src: m.href, width: 100, height: 50 }]
     };
 
     channel.addEventListener('message', (m) => {
