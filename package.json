@@ -18,6 +18,7 @@
     "esbuild-sass-plugin": "^3.3.1"
   },
   "dependencies": {
-    "broadcast-channel": "^7.0.0"
+    "broadcast-channel": "^7.0.0",
+    "lightgallery": "^2.8.1"
   }
 }

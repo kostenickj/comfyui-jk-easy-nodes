@@ -11,6 +11,9 @@ importers:
       broadcast-channel:
         specifier: ^7.0.0
         version: 7.0.0
+      lightgallery:
+        specifier: ^2.8.1
+        version: 2.8.1
     devDependencies:
       '@types/node':
         specifier: ^22.9.1
@@ -422,6 +425,10 @@ packages:
 
   jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
+
+  lightgallery@2.8.1:
+    resolution: {integrity: sha512-K9bRsrKQM4UyjNUXOX+mW1IMWKvWbDmK42x5nNzgxsi5CNEYMfLoRsA27F1lXp+yegeqdXusymS9w16Fd8a3Rg==}
+    engines: {node: '>=6.0.0'}
 
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -1011,6 +1018,8 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  lightgallery@2.8.1: {}
 
   merge2@1.4.1: {}
 

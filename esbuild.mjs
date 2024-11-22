@@ -12,6 +12,15 @@ const options = {
     format: 'esm',
     sourcemap: false,
     outdir: './web',
+    loader: {
+        '.png': 'dataurl',
+        '.woff': 'dataurl',
+        '.woff2': 'dataurl',
+        '.eot': 'dataurl',
+        '.ttf': 'dataurl',
+        '.svg': 'dataurl',
+        '.gif': 'dataurl'
+    },
     plugins: [sassPlugin({}), copy({
         assets: [{
             from: './src_web/**/*.html',
@@ -21,7 +30,7 @@ const options = {
     }), {
         name: 'bundle node modules stuff only', setup: (build) => {
             build.onResolve({ filter: /\.js$/i }, args => {
-                return { external: args.resolveDir.includes('node_modules') ? false: true }
+                return { external: args.resolveDir.includes('node_modules') ? false : true }
             })
         }
     }]

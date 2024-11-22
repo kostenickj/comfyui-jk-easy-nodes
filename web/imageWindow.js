@@ -884,9 +884,6 @@ var require_imageWindow = __commonJS({
         }
       });
       channel.postMessage({ type: "request-all", data: [] });
-      window.addEventListener("beforeunload", (e) => {
-        channel.postMessage({ type: "closed", data: void 0 });
-      });
     } else {
       const setup = async () => {
         const { api } = await import("../../../scripts/api.js");
@@ -894,8 +891,9 @@ var require_imageWindow = __commonJS({
         const { $el } = await import("../../../scripts/ui.js");
         let feedWindow = null;
         const toggleWindow = () => {
-          if (feedWindow) {
-            feedWindow.close();
+          const isOpen = feedWindow ? !feedWindow.closed : false;
+          if (isOpen) {
+            feedWindow?.close();
             feedWindow = null;
           } else {
             feedWindow = window.open(
@@ -915,7 +913,6 @@ var require_imageWindow = __commonJS({
               break;
             case "closed":
               console.log("feed window was closed");
-              feedWindow?.close();
               feedWindow = null;
           }
         });

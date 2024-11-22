@@ -1,5 +1,5 @@
 import { BroadcastChannel } from 'broadcast-channel';
-
+import lightGallery from 'lightgallery';
 interface ImageData {
     subfolder: string;
     type: string;
@@ -30,15 +30,6 @@ const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestA
 // TODO, get these to persist over page reloads, the built in queue can do this.
 let CURRENT_IMAGES: ImageData[] = [];
 
-/**
- *
- * find a lightbox to use, maybe one of these
- * https://photoswipe.com/
- * https://fslightbox.com/javascript
- * https://nextapps-de.github.io/spotlight/
- * add 1d grid or carousel mode...
- * can u reuse the ligthbox from pyss? - no its too custom to to comfy
- */
 
 if ((window as any).jkImageWindow) {
     // we are in the custom window
@@ -59,17 +50,13 @@ if ((window as any).jkImageWindow) {
             case 'request-all':
                 CURRENT_IMAGES = m.data;
                 CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
-                // TODO, also reload lightbox or whatever
+            // TODO, also reload lightbox or whatever
         }
     });
 
     // on first load, request all images that the main window has
     channel.postMessage({ type: 'request-all', data: [] });
 
-    // let the main window know when we are closed
-    window.addEventListener('beforeunload', (e) => {
-        channel.postMessage({ type: 'closed', data: undefined });
-    });
 } else {
     // setup the extension, we in comfy main window
     const setup = async () => {
@@ -82,8 +69,11 @@ if ((window as any).jkImageWindow) {
         let feedWindow: Window | null = null;
 
         const toggleWindow = () => {
-            if (feedWindow) {
-                feedWindow.close();
+
+            const isOpen = feedWindow ? !feedWindow.closed : false;
+
+            if (isOpen) {
+                feedWindow?.close();
                 feedWindow = null;
             } else {
                 feedWindow = window.open(
@@ -92,7 +82,6 @@ if ((window as any).jkImageWindow) {
                     `width=1280,height=720,location=no,toolbar=no,menubar=no`
                 )!;
             }
-
             window.addEventListener('beforeunload', (e) => {
                 feedWindow?.close();
             });
@@ -104,8 +93,7 @@ if ((window as any).jkImageWindow) {
                     channel.postMessage({ type: 'request-all', data: CURRENT_IMAGES });
                     break;
                 case 'closed':
-                    console.log('feed window was closed')
-                    feedWindow?.close();
+                    console.log('feed window was closed');
                     feedWindow = null;
             }
         });
@@ -126,11 +114,11 @@ if ((window as any).jkImageWindow) {
                 showMenuButton.element.style.display = 'block';
                 window.dispatchEvent(new Event('resize'));
                 app.menu.settingsGroup.append(showMenuButton);
-                
+
                 const addImageToFeed = (data: ImageData) => {
                     CURRENT_IMAGES.push(data);
                     channel.postMessage({ type: 'new-image', data: data });
-                }
+                };
 
                 // from pysss
                 api.addEventListener('executed', ({ detail }: any) => {
@@ -155,7 +143,7 @@ if ((window as any).jkImageWindow) {
                                 } else {
                                     seenImages.set(fingerprint, true);
                                     let img = $el('img', { src: href });
-                                    
+
                                     img.onload = () => {
                                         // redraw the image onto a canvas to strip metadata (resize if performance mode)
                                         let imgCanvas = document.createElement('canvas');
@@ -197,7 +185,6 @@ if ((window as any).jkImageWindow) {
 }
 
 // also add option to ignore temp dir, etc.
-// keep it simple for now, just a ligthbox maybe?
 
 // also try what this guy is doing here: https://github.com/tachyon-beep/comfyui-simplefeed/blob/main/web/js/imageTray.js#L1252
 // detecting image nodes, would that be better?
