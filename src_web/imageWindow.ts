@@ -1,9 +1,15 @@
 import { BroadcastChannel } from 'broadcast-channel';
+
+// TODO, the actual gallery
 import lightGallery from 'lightgallery';
+import { SessionStorageHelper } from './common/storage.js';
+
 interface ImageData {
     subfolder: string;
     type: string;
     href: string;
+    nodeTitle: string;
+    nodeId: number;
 }
 
 interface BaseImageViewMessage<T> {
@@ -27,12 +33,12 @@ interface RequestAllImages extends BaseImageViewMessage<ImageData[]> {
 
 const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestAllImages | ClosedMessage>('jk-image-viewer');
 
-// TODO, get these to persist over page reloads, the built in queue can do this.
-let CURRENT_IMAGES: ImageData[] = [];
+let CURRENT_IMAGES: ImageData[] = SessionStorageHelper.getJSON('feed') ?? [];
 
+// set in the html file first script
+const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
 
-if ((window as any).jkImageWindow) {
-    // we are in the custom window
+if (IS_FEED_WINDOW) {
     const addImageToGallery = (m: ImageData) => {
         const img = document.createElement('img');
         img.src = m.href;
@@ -56,10 +62,15 @@ if ((window as any).jkImageWindow) {
 
     // on first load, request all images that the main window has
     channel.postMessage({ type: 'request-all', data: [] });
-
 } else {
     // setup the extension, we in comfy main window
     const setup = async () => {
+        const addImageToFeed = (data: ImageData) => {
+            CURRENT_IMAGES.push(data);
+            SessionStorageHelper.setJSONVal('feed', CURRENT_IMAGES);
+            channel.postMessage({ type: 'new-image', data: data });
+        };
+
         // @ts-ignore
         const { api } = await import('../../../scripts/api.js');
         // @ts-ignore
@@ -69,7 +80,6 @@ if ((window as any).jkImageWindow) {
         let feedWindow: Window | null = null;
 
         const toggleWindow = () => {
-
             const isOpen = feedWindow ? !feedWindow.closed : false;
 
             if (isOpen) {
@@ -115,21 +125,19 @@ if ((window as any).jkImageWindow) {
                 window.dispatchEvent(new Event('resize'));
                 app.menu.settingsGroup.append(showMenuButton);
 
-                const addImageToFeed = (data: ImageData) => {
-                    CURRENT_IMAGES.push(data);
-                    channel.postMessage({ type: 'new-image', data: data });
-                };
-
                 // from pysss
                 api.addEventListener('executed', ({ detail }: any) => {
-                    if (feedWindow && detail?.output?.images) {
+                    const nodeId: number = parseInt(detail.node, 10);
+                    const node = app.graph.getNodeById(nodeId);
+                    const title: string = node.title;
+                    if (detail?.output?.images) {
                         if (detail.node?.includes?.(':')) {
                             // Ignore group nodes
                             const n = app.graph.getNodeById(detail.node.split(':')[0]);
                             if (n?.getInnerNodes) return;
                         }
 
-                        for (const src of detail.output.images) {
+                        (detail.output.images as Array<any>).forEach((src) => {
                             const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&subfolder=${encodeURIComponent(
                                 src.subfolder
                             )}&t=${+new Date()}`;
@@ -167,13 +175,15 @@ if ((window as any).jkImageWindow) {
                                         } else {
                                             // if we got to here, then the image is unique--so add to feed
                                             seenImages.set(hash, true);
-                                            addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
+                                            addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title });
                                         }
                                     };
                                 }
                             } else {
-                                addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
+                                addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title });
                             }
+                        });
+                        for (const src of detail.output.images) {
                         }
                     }
                 });

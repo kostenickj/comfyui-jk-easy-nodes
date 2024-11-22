@@ -2,15 +2,9 @@
     "compilerOptions": {
       "target": "es2019",
       "module": "ESNext",
-      // "typeRoots": [
-      //   "./ts/typings",
-      // ],
       "baseUrl": "./",
       "paths": {
-        "typings/*": ["src_web/typings/*"],
-        "rgthree/common/*": ["src_web/common/*"],
-        "node_modules": ["node_modules/*"],
-        "scripts/*":  ["src_web/scripts_comfy/*"],
+        "node_modules": ["node_modules/*"]
       },
       "outDir": "./web",
       "removeComments": true,
@@ -34,7 +28,7 @@
       "skipLibCheck": true,
     },
     "include": [
-      "src_web/*.ts", "src_web/**/*.ts", "src_web/typings/index.d.ts",
+      "src_web/*.ts", "src_web/**/*.ts",
     ],
     "exclude": [
       "**/*.spec.ts",

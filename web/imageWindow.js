@@ -859,12 +859,14 @@ var init_esbrowser = __esm({
 });
 
 // src_web/imageWindow.ts
+import { SessionStorageHelper } from "./common/storage.js";
 var require_imageWindow = __commonJS({
   "src_web/imageWindow.ts"() {
     init_esbrowser();
     var channel = new BroadcastChannel2("jk-image-viewer");
-    var CURRENT_IMAGES = [];
-    if (window.jkImageWindow) {
+    var CURRENT_IMAGES = SessionStorageHelper.getJSON("feed") ?? [];
+    var IS_FEED_WINDOW = !!window.jkImageWindow;
+    if (IS_FEED_WINDOW) {
       const addImageToGallery = (m) => {
         const img = document.createElement("img");
         img.src = m.href;
@@ -886,6 +888,11 @@ var require_imageWindow = __commonJS({
       channel.postMessage({ type: "request-all", data: [] });
     } else {
       const setup = async () => {
+        const addImageToFeed = (data) => {
+          CURRENT_IMAGES.push(data);
+          SessionStorageHelper.setJSONVal("feed", CURRENT_IMAGES);
+          channel.postMessage({ type: "new-image", data });
+        };
         const { api } = await import("../../../scripts/api.js");
         const { app } = await import("../../../scripts/app.js");
         const { $el } = await import("../../../scripts/ui.js");
@@ -930,17 +937,16 @@ var require_imageWindow = __commonJS({
             showMenuButton.element.style.display = "block";
             window.dispatchEvent(new Event("resize"));
             app.menu.settingsGroup.append(showMenuButton);
-            const addImageToFeed = (data) => {
-              CURRENT_IMAGES.push(data);
-              channel.postMessage({ type: "new-image", data });
-            };
             api.addEventListener("executed", ({ detail }) => {
-              if (feedWindow && detail?.output?.images) {
+              const nodeId = parseInt(detail.node, 10);
+              const node = app.graph.getNodeById(nodeId);
+              const title = node.title;
+              if (detail?.output?.images) {
                 if (detail.node?.includes?.(":")) {
                   const n = app.graph.getNodeById(detail.node.split(":")[0]);
                   if (n?.getInnerNodes) return;
                 }
-                for (const src of detail.output.images) {
+                detail.output.images.forEach((src) => {
                   const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&subfolder=${encodeURIComponent(
                     src.subfolder
                   )}&t=${+/* @__PURE__ */ new Date()}`;
@@ -966,13 +972,15 @@ var require_imageWindow = __commonJS({
                         if (seenImages.has(hash)) {
                         } else {
                           seenImages.set(hash, true);
-                          addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
+                          addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title });
                         }
                       };
                     }
                   } else {
-                    addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
+                    addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title });
                   }
+                });
+                for (const src of detail.output.images) {
                 }
               }
             });
