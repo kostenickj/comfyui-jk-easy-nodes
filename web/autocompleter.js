@@ -1,4 +1,4 @@
-"use strict";
+// src_web/autocompleter.ts
 import { app } from "../../../scripts/app.js";
 import { ComfyWidgets } from "../../../scripts/widgets.js";
 import { api } from "../../../scripts/api.js";
@@ -6,7 +6,7 @@ import { $el } from "../../../scripts/ui.js";
 import { TextAreaAutoComplete } from "./common/autocomplete.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
 import { LoraInfoDialog } from "./modelInfo.js";
-export const loadLoras = async () => {
+var loadLoras = async () => {
   const loras = await api.fetchApi("/jk-nodes/loras", { cache: "no-store" }).then((res) => res.json());
   const words = {};
   words["lora:"] = { text: "lora:" };
@@ -145,7 +145,7 @@ function toggleLoras() {
     TextAreaAutoComplete.globalWords
   ];
 }
-class EmbeddingInfoDialog extends ModelInfoDialog {
+var EmbeddingInfoDialog = class extends ModelInfoDialog {
   async addInfo() {
     super.addInfo();
     const info = await this.addCivitaiInfo();
@@ -160,8 +160,8 @@ class EmbeddingInfoDialog extends ModelInfoDialog {
       });
     }
   }
-}
-const ext_id = "jk-nodes.AutoCompleter";
+};
+var ext_id = "jk-nodes.AutoCompleter";
 app.registerExtension({
   name: ext_id,
   init() {
@@ -410,3 +410,6 @@ app.registerExtension({
     }
   }
 });
+export {
+  loadLoras
+};

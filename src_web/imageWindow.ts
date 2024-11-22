@@ -1,24 +1,47 @@
-interface FeedWindowMessage{
-    type: 'new-image'
+import { BroadcastChannel } from 'broadcast-channel';
+
+interface BaseImageViewMessage<T> {
+    data: T;
+    type: 'new-image' | 'heartbeat';
 }
 
+interface HeartBeatMessage extends BaseImageViewMessage<undefined> {
+    type: 'heartbeat';
+}
+interface NewImgMessage extends BaseImageViewMessage<{ img: string }> {
+    type: 'new-image';
+}
+
+const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage>('jk-image-viewer');
+/**
+ *
+ * find a lightbox to use, maybe one of these
+ * https://photoswipe.com/
+ * https://fslightbox.com/javascript
+ * https://nextapps-de.github.io/spotlight/
+ * add 1d grid or carousel mode...
+ * can u reuse the ligthbox from pyss? - no its too custom to to comfy
+ */
 
 if ((window as any).jkImageWindow) {
     console.log('in custom window!');
 
-    window.addEventListener('message', (e) => {
+    channel.addEventListener('message', (m) => {
+        if (m.type === 'heartbeat') {
+            console.log(m);
+        } else {
+            console.log(m.data.img);
 
-        if(e && typeof e.data === 'object')
-        {
-            console.log('feedwindow', e);
+            const img = document.createElement('img');
+            img.src = m.data.img;
+            document.getElementById('jk-img-container')!.appendChild(img);
+
         }
-      
     });
 
     // we are in the custom window
 } else {
     // setup the extensions, we in comfy main window
-
     const setup = async () => {
         // @ts-ignore
         const { api } = await import('../../../scripts/api.js');
@@ -29,10 +52,6 @@ if ((window as any).jkImageWindow) {
         let feedWindow: Window | null = null;
 
         const toggleWindow = () => {
-            // window.onmessage = (e) => {
-            //     console.log(e, 'received');
-            // };
-
             if (feedWindow) {
                 //
                 feedWindow.close();
@@ -46,7 +65,7 @@ if ((window as any).jkImageWindow) {
             }
 
             setInterval(() => {
-                feedWindow?.postMessage({blah: 'test'});
+                channel.postMessage({ type: 'heartbeat', data: undefined });
             }, 1000);
         };
 
@@ -74,27 +93,12 @@ if ((window as any).jkImageWindow) {
                 function addImageToFeed(href: string) {
                     const method = 'prepend';
 
+                    channel.postMessage({ type: 'new-image', data: { img: href } });
+
                     // if (maxImages.value > 0 && imageList.children.length >= maxImages.value) {
                     // 	imageList.children[method === "prepend" ? imageList.children.length - 1 : 0].remove();
                     // }
 
-                    imageList[method](
-                        $el('div', [
-                            $el(
-                                'a',
-                                {
-                                    target: '_blank',
-                                    href,
-                                    onclick: (e: any) => {
-                                        const imgs = [...imageList.querySelectorAll('img')].map((img) => img.getAttribute('src'));
-                                        //lightbox.show(imgs, imgs.indexOf(href));
-                                        e.preventDefault();
-                                    }
-                                },
-                                [$el('img', { src: href })]
-                            )
-                        ])
-                    );
                     // If lightbox is open, update it with new image
                     //lightbox.updateWithNewImage(href, feedDirection.value);
                 }
@@ -110,7 +114,7 @@ if ((window as any).jkImageWindow) {
                         }
 
                         for (const src of detail.output.images) {
-                            const href = `./view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&
+                            const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&
 					subfolder=${encodeURIComponent(src.subfolder)}&t=${+new Date()}`;
 
                             //TODO

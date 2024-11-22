@@ -6,10 +6,10 @@ import { copy } from 'esbuild-plugin-copy';
 const options = {
     entryPoints: ['./src_web/**/*.ts', './src_web/**/*.scss'],
     entryNames: '[dir]/[name]',
-    external: [],
-    bundle: false,
+    bundle: true,
     platform: 'browser',
     target: ['es2020'],
+    format: 'esm',
     sourcemap: false,
     outdir: './web',
     plugins: [sassPlugin({}), copy({
@@ -18,14 +18,19 @@ const options = {
             // this is relative to outdir, so go to root of that
             to: './'
         }]
-    })]
+    }), {
+        name: 'bundle node modules stuff only', setup: (build) => {
+            build.onResolve({ filter: /\.js$/i }, args => {
+                return { external: args.resolveDir.includes('node_modules') ? false: true }
+            })
+        }
+    }]
 }
 
-if(process.argv.includes('--watch'))
-{
+if (process.argv.includes('--watch')) {
     const ctx = await esbuild.context(options);
-    ctx.watch({  });
+    ctx.watch({});
 }
-else{
+else {
     esbuild.build(options);
 }

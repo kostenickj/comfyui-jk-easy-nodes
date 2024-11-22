@@ -1,9 +1,9 @@
-"use strict";
+// src_web/common/modelInfoDialog.ts
 import { $el, ComfyDialog } from "../../../../scripts/ui.js";
 import { api } from "../../../../scripts/api.js";
 import { addStylesheet } from "./utils.js";
 addStylesheet(import.meta.url);
-class MetadataDialog extends ComfyDialog {
+var MetadataDialog = class extends ComfyDialog {
   constructor() {
     super();
     this.element.classList.add("jk-nodes-model-metadata");
@@ -21,8 +21,8 @@ class MetadataDialog extends ComfyDialog {
       )
     );
   }
-}
-export class ModelInfoDialog extends ComfyDialog {
+};
+var ModelInfoDialog = class _ModelInfoDialog extends ComfyDialog {
   constructor(name, node) {
     super();
     this.name = typeof name === "string" ? name : name.lora_name;
@@ -224,7 +224,7 @@ export class ModelInfoDialog extends ComfyDialog {
         })
       );
       const allPreviews = info.images?.filter((i) => i.type === "image");
-      const previews = allPreviews?.filter((i) => i.nsfwLevel <= ModelInfoDialog.nsfwLevel);
+      const previews = allPreviews?.filter((i) => i.nsfwLevel <= _ModelInfoDialog.nsfwLevel);
       if (previews?.length) {
         let previewIndex = 0;
         let preview;
@@ -308,4 +308,7 @@ export class ModelInfoDialog extends ComfyDialog {
       content.textContent = "\u26A0\uFE0F " + err.message;
     });
   }
-}
+};
+export {
+  ModelInfoDialog
+};

@@ -1,15 +1,15 @@
-"use strict";
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
-var _TextAreaCaretHelper_instances, calculateElementOffset_fn, isDigit_fn, getLineHeightPx_fn, calculateLineHeightPx_fn, getElScroll_fn, getCursorPosition_fn, _TextAreaAutoComplete_instances, setup_fn, keyDown_fn, keyPress_fn, keyUp_fn, setSelected_fn, insertItem_fn, getFilteredWords_fn, update_fn, escapeParentheses_fn, hide_fn;
+
+// src_web/common/autocomplete.ts
 import { $el } from "../../../../scripts/ui.js";
 import { addStylesheet } from "./utils.js";
 addStylesheet(import.meta.url);
-const getCaretCoordinates = function() {
+var getCaretCoordinates = function() {
   var properties = [
     "direction",
     // RTL support
@@ -112,9 +112,10 @@ const getCaretCoordinates = function() {
     return coordinates;
   };
 }();
-const CHAR_CODE_ZERO = "0".charCodeAt(0);
-const CHAR_CODE_NINE = "9".charCodeAt(0);
-class TextAreaCaretHelper {
+var CHAR_CODE_ZERO = "0".charCodeAt(0);
+var CHAR_CODE_NINE = "9".charCodeAt(0);
+var _TextAreaCaretHelper_instances, calculateElementOffset_fn, isDigit_fn, getLineHeightPx_fn, calculateLineHeightPx_fn, getElScroll_fn, getCursorPosition_fn;
+var TextAreaCaretHelper = class {
   constructor(el, getScale) {
     __privateAdd(this, _TextAreaCaretHelper_instances);
     this.el = el;
@@ -181,7 +182,7 @@ class TextAreaCaretHelper {
       }
     }
   }
-}
+};
 _TextAreaCaretHelper_instances = new WeakSet();
 calculateElementOffset_fn = function() {
   const rect = this.el.getBoundingClientRect();
@@ -243,7 +244,8 @@ getElScroll_fn = function() {
 getCursorPosition_fn = function() {
   return getCaretCoordinates(this.el, this.el.selectionEnd);
 };
-const _TextAreaAutoComplete = class _TextAreaAutoComplete {
+var _TextAreaAutoComplete_instances, setup_fn, keyDown_fn, keyPress_fn, keyUp_fn, setSelected_fn, insertItem_fn, getFilteredWords_fn, update_fn, escapeParentheses_fn, hide_fn;
+var _TextAreaAutoComplete = class _TextAreaAutoComplete {
   /**
    * @param {HTMLTextAreaElement} el
    */
@@ -555,4 +557,7 @@ _TextAreaAutoComplete.globalGroups = /* @__PURE__ */ new Set();
 _TextAreaAutoComplete.globalWords = {};
 /** @type {Record<string, AutoCompleteEntry>} */
 _TextAreaAutoComplete.globalWordsExclLoras = {};
-export let TextAreaAutoComplete = _TextAreaAutoComplete;
+var TextAreaAutoComplete = _TextAreaAutoComplete;
+export {
+  TextAreaAutoComplete
+};

@@ -1,10 +1,10 @@
-"use strict";
+// src_web/modelInfo.ts
 import { app } from "../../../scripts/app.js";
 import { api } from "../../../scripts/api.js";
 import { $el } from "../../../scripts/ui.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
-const MAX_TAGS = 500;
-const NsfwLevel = {
+var MAX_TAGS = 500;
+var NsfwLevel = {
   PG: 1,
   PG13: 2,
   R: 4,
@@ -12,7 +12,7 @@ const NsfwLevel = {
   XXX: 16,
   Blocked: 32
 };
-export class LoraInfoDialog extends ModelInfoDialog {
+var LoraInfoDialog = class extends ModelInfoDialog {
   getTagFrequency() {
     if (!this.metadata.ss_tag_frequency) return [];
     const datasets = JSON.parse(this.metadata.ss_tag_frequency);
@@ -294,8 +294,8 @@ export class LoraInfoDialog extends ModelInfoDialog {
     );
     return btns;
   }
-}
-const lookups = {};
+};
+var lookups = {};
 function addInfoOption(node, type, infoClass, widgetNamePattern, opts) {
   const widgets = widgetNamePattern ? node.widgets.filter((w) => w.name === widgetNamePattern || w.name.match(`^${widgetNamePattern}$`)) : [node.widgets[0]];
   for (const widget of widgets) {
@@ -367,3 +367,6 @@ app.registerExtension({
     };
   }
 });
+export {
+  LoraInfoDialog
+};
