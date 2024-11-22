@@ -863,17 +863,29 @@ var require_imageWindow = __commonJS({
   "src_web/imageWindow.ts"() {
     init_esbrowser();
     var channel = new BroadcastChannel2("jk-image-viewer");
+    var CURRENT_IMAGES = [];
     if (window.jkImageWindow) {
-      console.log("in custom window!");
+      const addImageToGallery = (m) => {
+        const img = document.createElement("img");
+        img.src = m.href;
+        document.getElementById("jk-img-container").appendChild(img);
+      };
       channel.addEventListener("message", (m) => {
-        if (m.type === "heartbeat") {
-          console.log(m);
-        } else {
-          console.log(m.data.img);
-          const img = document.createElement("img");
-          img.src = m.data.img;
-          document.getElementById("jk-img-container").appendChild(img);
+        switch (m.type) {
+          case "heartbeat":
+            break;
+          case "new-image":
+            CURRENT_IMAGES.push(m.data);
+            addImageToGallery(m.data);
+            break;
+          case "request-all":
+            CURRENT_IMAGES = m.data;
+            CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
         }
+      });
+      channel.postMessage({ type: "request-all", data: [] });
+      window.addEventListener("beforeunload", (e) => {
+        channel.postMessage({ type: "closed", data: void 0 });
       });
     } else {
       const setup = async () => {
@@ -892,10 +904,21 @@ var require_imageWindow = __commonJS({
               `width=1280,height=720,location=no,toolbar=no,menubar=no`
             );
           }
-          setInterval(() => {
-            channel.postMessage({ type: "heartbeat", data: void 0 });
-          }, 1e3);
+          window.addEventListener("beforeunload", (e) => {
+            feedWindow?.close();
+          });
         };
+        channel.addEventListener("message", (m) => {
+          switch (m.type) {
+            case "request-all":
+              channel.postMessage({ type: "request-all", data: CURRENT_IMAGES });
+              break;
+            case "closed":
+              console.log("feed window was closed");
+              feedWindow?.close();
+              feedWindow = null;
+          }
+        });
         app.registerExtension({
           name: "jk.ImageFeed",
           async setup() {
@@ -908,15 +931,12 @@ var require_imageWindow = __commonJS({
             });
             showMenuButton.enabled = true;
             showMenuButton.element.style.display = "block";
-            app.menu.settingsGroup.append(showMenuButton);
-            app.menu?.settingsGroup.element.before(showMenuButton.element);
-            const imageFeed = $el("div.jk-image-feed");
-            const imageList = $el("div.jk-image-feed-list");
-            function addImageToFeed(href) {
-              const method = "prepend";
-              channel.postMessage({ type: "new-image", data: { img: href } });
-            }
             window.dispatchEvent(new Event("resize"));
+            app.menu.settingsGroup.append(showMenuButton);
+            const addImageToFeed = (data) => {
+              CURRENT_IMAGES.push(data);
+              channel.postMessage({ type: "new-image", data });
+            };
             api.addEventListener("executed", ({ detail }) => {
               if (feedWindow && detail?.output?.images) {
                 if (detail.node?.includes?.(":")) {
@@ -924,21 +944,19 @@ var require_imageWindow = __commonJS({
                   if (n?.getInnerNodes) return;
                 }
                 for (const src of detail.output.images) {
-                  const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&
-					subfolder=${encodeURIComponent(src.subfolder)}&t=${+/* @__PURE__ */ new Date()}`;
-                  const deduplicateFeed = { value: 0 };
-                  if (deduplicateFeed.value > 0) {
+                  const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&subfolder=${encodeURIComponent(
+                    src.subfolder
+                  )}&t=${+/* @__PURE__ */ new Date()}`;
+                  const deduplicateFeed = true;
+                  if (deduplicateFeed) {
                     const fingerprint = JSON.stringify({ filename: src.filename, type: src.type, subfolder: src.subfolder });
                     if (seenImages.has(fingerprint)) {
                     } else {
                       seenImages.set(fingerprint, true);
                       let img = $el("img", { src: href });
-                      img.onerror = () => {
-                        addImageToFeed(href);
-                      };
                       img.onload = () => {
                         let imgCanvas = document.createElement("canvas");
-                        let imgScalar = deduplicateFeed.value;
+                        let imgScalar = 1;
                         imgCanvas.width = imgScalar * img.width;
                         imgCanvas.height = imgScalar * img.height;
                         let imgContext = imgCanvas.getContext("2d");
@@ -951,12 +969,12 @@ var require_imageWindow = __commonJS({
                         if (seenImages.has(hash)) {
                         } else {
                           seenImages.set(hash, true);
-                          addImageToFeed(href);
+                          addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
                         }
                       };
                     }
                   } else {
-                    addImageToFeed(href);
+                    addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
                   }
                 }
               }

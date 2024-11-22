@@ -1,18 +1,35 @@
 import { BroadcastChannel } from 'broadcast-channel';
 
+interface ImageData {
+    subfolder: string;
+    type: string;
+    href: string;
+}
+
 interface BaseImageViewMessage<T> {
     data: T;
-    type: 'new-image' | 'heartbeat';
+    type: 'new-image' | 'heartbeat' | 'request-all' | 'closed';
 }
 
 interface HeartBeatMessage extends BaseImageViewMessage<undefined> {
     type: 'heartbeat';
 }
-interface NewImgMessage extends BaseImageViewMessage<{ img: string }> {
+interface ClosedMessage extends BaseImageViewMessage<undefined> {
+    type: 'closed';
+}
+interface NewImgMessage extends BaseImageViewMessage<ImageData> {
     type: 'new-image';
 }
 
-const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage>('jk-image-viewer');
+interface RequestAllImages extends BaseImageViewMessage<ImageData[]> {
+    type: 'request-all';
+}
+
+const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestAllImages | ClosedMessage>('jk-image-viewer');
+
+// TODO, get these to persist over page reloads, the built in queue can do this.
+let CURRENT_IMAGES: ImageData[] = [];
+
 /**
  *
  * find a lightbox to use, maybe one of these
@@ -24,24 +41,37 @@ const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage>('jk-image
  */
 
 if ((window as any).jkImageWindow) {
-    console.log('in custom window!');
+    // we are in the custom window
+    const addImageToGallery = (m: ImageData) => {
+        const img = document.createElement('img');
+        img.src = m.href;
+        document.getElementById('jk-img-container')!.appendChild(img);
+    };
 
     channel.addEventListener('message', (m) => {
-        if (m.type === 'heartbeat') {
-            console.log(m);
-        } else {
-            console.log(m.data.img);
-
-            const img = document.createElement('img');
-            img.src = m.data.img;
-            document.getElementById('jk-img-container')!.appendChild(img);
-
+        switch (m.type) {
+            case 'heartbeat':
+                break;
+            case 'new-image':
+                CURRENT_IMAGES.push(m.data);
+                addImageToGallery(m.data);
+                break;
+            case 'request-all':
+                CURRENT_IMAGES = m.data;
+                CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
+                // TODO, also reload lightbox or whatever
         }
     });
 
-    // we are in the custom window
+    // on first load, request all images that the main window has
+    channel.postMessage({ type: 'request-all', data: [] });
+
+    // let the main window know when we are closed
+    window.addEventListener('beforeunload', (e) => {
+        channel.postMessage({ type: 'closed', data: undefined });
+    });
 } else {
-    // setup the extensions, we in comfy main window
+    // setup the extension, we in comfy main window
     const setup = async () => {
         // @ts-ignore
         const { api } = await import('../../../scripts/api.js');
@@ -53,7 +83,6 @@ if ((window as any).jkImageWindow) {
 
         const toggleWindow = () => {
             if (feedWindow) {
-                //
                 feedWindow.close();
                 feedWindow = null;
             } else {
@@ -64,15 +93,27 @@ if ((window as any).jkImageWindow) {
                 )!;
             }
 
-            setInterval(() => {
-                channel.postMessage({ type: 'heartbeat', data: undefined });
-            }, 1000);
+            window.addEventListener('beforeunload', (e) => {
+                feedWindow?.close();
+            });
         };
+
+        channel.addEventListener('message', (m) => {
+            switch (m.type) {
+                case 'request-all':
+                    channel.postMessage({ type: 'request-all', data: CURRENT_IMAGES });
+                    break;
+                case 'closed':
+                    console.log('feed window was closed')
+                    feedWindow?.close();
+                    feedWindow = null;
+            }
+        });
 
         app.registerExtension({
             name: 'jk.ImageFeed',
             async setup() {
-                const seenImages = new Map();
+                const seenImages = new Map<string | number, boolean>();
 
                 // @ts-ignore
                 const showMenuButton = new (await import('../../../scripts/ui/components/button.js')).ComfyButton({
@@ -83,28 +124,15 @@ if ((window as any).jkImageWindow) {
                 });
                 showMenuButton.enabled = true;
                 showMenuButton.element.style.display = 'block';
+                window.dispatchEvent(new Event('resize'));
                 app.menu.settingsGroup.append(showMenuButton);
-
-                app.menu?.settingsGroup.element.before(showMenuButton.element);
-
-                const imageFeed = $el('div.jk-image-feed');
-                const imageList = $el('div.jk-image-feed-list');
-
-                function addImageToFeed(href: string) {
-                    const method = 'prepend';
-
-                    channel.postMessage({ type: 'new-image', data: { img: href } });
-
-                    // if (maxImages.value > 0 && imageList.children.length >= maxImages.value) {
-                    // 	imageList.children[method === "prepend" ? imageList.children.length - 1 : 0].remove();
-                    // }
-
-                    // If lightbox is open, update it with new image
-                    //lightbox.updateWithNewImage(href, feedDirection.value);
+                
+                const addImageToFeed = (data: ImageData) => {
+                    CURRENT_IMAGES.push(data);
+                    channel.postMessage({ type: 'new-image', data: data });
                 }
 
-                window.dispatchEvent(new Event('resize'));
-
+                // from pysss
                 api.addEventListener('executed', ({ detail }: any) => {
                     if (feedWindow && detail?.output?.images) {
                         if (detail.node?.includes?.(':')) {
@@ -114,14 +142,12 @@ if ((window as any).jkImageWindow) {
                         }
 
                         for (const src of detail.output.images) {
-                            const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&
-					subfolder=${encodeURIComponent(src.subfolder)}&t=${+new Date()}`;
+                            const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&subfolder=${encodeURIComponent(
+                                src.subfolder
+                            )}&t=${+new Date()}`;
 
-                            //TODO
-                            const deduplicateFeed = { value: 0 };
-                            // deduplicateFeed.value is essentially the scaling factor used for image hashing
-                            // but when deduplication is disabled, this value is "0"
-                            if (deduplicateFeed.value > 0) {
+                            const deduplicateFeed = true;
+                            if (deduplicateFeed) {
                                 // deduplicate by ignoring images with the same filename/type/subfolder
                                 const fingerprint = JSON.stringify({ filename: src.filename, type: src.type, subfolder: src.subfolder });
                                 if (seenImages.has(fingerprint)) {
@@ -129,14 +155,11 @@ if ((window as any).jkImageWindow) {
                                 } else {
                                     seenImages.set(fingerprint, true);
                                     let img = $el('img', { src: href });
-                                    img.onerror = () => {
-                                        // fall back to default behavior
-                                        addImageToFeed(href);
-                                    };
+                                    
                                     img.onload = () => {
                                         // redraw the image onto a canvas to strip metadata (resize if performance mode)
                                         let imgCanvas = document.createElement('canvas');
-                                        let imgScalar = deduplicateFeed.value;
+                                        let imgScalar = 1;
                                         imgCanvas.width = imgScalar * img.width;
                                         imgCanvas.height = imgScalar * img.height;
 
@@ -156,12 +179,12 @@ if ((window as any).jkImageWindow) {
                                         } else {
                                             // if we got to here, then the image is unique--so add to feed
                                             seenImages.set(hash, true);
-                                            addImageToFeed(href);
+                                            addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
                                         }
                                     };
                                 }
                             } else {
-                                addImageToFeed(href);
+                                addImageToFeed({ href, subfolder: src.subfolder, type: src.type });
                             }
                         }
                     }
@@ -173,8 +196,6 @@ if ((window as any).jkImageWindow) {
     setup();
 }
 
-// setup a watch dev script for esbuild
-// commmunicate between imageFeed.ts and here with window.postmessage and onMessage, etc
 // also add option to ignore temp dir, etc.
 // keep it simple for now, just a ligthbox maybe?
 
