@@ -870,7 +870,7 @@ var require_imageWindow = __commonJS({
       const container = document.getElementById("jk-image-gallery");
       const addImageToGallery = (m) => {
         const div = document.createElement("div");
-        div.classList.add("jm-img-wrapper");
+        div.classList.add("jk-img-wrapper");
         const img = document.createElement("img");
         img.src = m.href;
         img.classList.add("jk-img");

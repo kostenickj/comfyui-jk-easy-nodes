@@ -43,7 +43,7 @@ if (IS_FEED_WINDOW) {
         // TODO, the actual gallery, on click open a simple lightbox with the zoom etc
 
         const div = document.createElement('div');
-        div.classList.add('jm-img-wrapper');
+        div.classList.add('jk-img-wrapper');
         const img = document.createElement('img');
         img.src = m.href;
         img.classList.add('jk-img');
@@ -70,7 +70,7 @@ if (IS_FEED_WINDOW) {
         }
     });
 
-    // on first load, request all images that the main window has
+    // on first load, request all data that the main window has
     channel.postMessage({ type: 'request-all', data: { images: [], cssVars: {} } });
 } else {
     // setup the extension, we in comfy main window

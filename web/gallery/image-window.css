@@ -4,15 +4,31 @@ html {
   flex: 1 auto;
   height: 100%;
   background-color: var(--bg-color);
+  --max-image-width: 250px;
 }
 body {
   display: flex;
   flex: 1 auto;
   height: 100%;
+  flex-direction: column;
+  margin: 0;
 }
-#jk-img-container {
+.jk-img-wrapper {
+  margin: 0.25rem;
+}
+.jk-img-wrapper .jk-img {
+  padding: 0.25rem;
+  display: flex;
+  max-width: var(--max-image-width);
+}
+#jk-image-gallery {
   display: flex;
   height: 100%;
   width: 100%;
-  z-index: 1;
+  flex-direction: column;
+}
+#jk-feed-bar {
+  height: 64px;
+  background-color: var(--comfy-menu-bg);
+  width: 100%;
 }
