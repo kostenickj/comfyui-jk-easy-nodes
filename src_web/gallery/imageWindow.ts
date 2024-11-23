@@ -1,14 +1,7 @@
 import { BroadcastChannel } from 'broadcast-channel';
 
 import { SessionStorageHelper } from '../common/storage.js';
-
-interface ImageData {
-    subfolder: string;
-    type: string;
-    href: string;
-    nodeTitle: string;
-    nodeId: number;
-}
+import { GalleryImageData, JKImageGallery } from './gallery.js';
 
 interface BaseImageViewMessage<T> {
     data: T;
@@ -21,47 +14,32 @@ interface HeartBeatMessage extends BaseImageViewMessage<undefined> {
 interface ClosedMessage extends BaseImageViewMessage<undefined> {
     type: 'closed';
 }
-interface NewImgMessage extends BaseImageViewMessage<ImageData> {
+interface NewImgMessage extends BaseImageViewMessage<GalleryImageData> {
     type: 'new-image';
 }
 
-interface RequestAllImages extends BaseImageViewMessage<{ images: ImageData[]; cssVars: Record<string, string> }> {
+interface RequestAllImages extends BaseImageViewMessage<{ images: GalleryImageData[]; cssVars: Record<string, string> }> {
     type: 'request-all';
 }
 
 const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestAllImages | ClosedMessage>('jk-image-viewer');
-
-let CURRENT_IMAGES: ImageData[] = SessionStorageHelper.getJSON('feed') ?? [];
 
 // set in the html file first script
 const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
 
 if (IS_FEED_WINDOW) {
     const container = document.getElementById('jk-image-gallery');
-
-    const addImageToGallery = (m: ImageData) => {
-        // TODO, the actual gallery, on click open a simple lightbox with the zoom etc
-
-        const div = document.createElement('div');
-        div.classList.add('jk-img-wrapper');
-        const img = document.createElement('img');
-        img.src = m.href;
-        img.classList.add('jk-img');
-        div.appendChild(img);
-        container?.prepend(div);
-    };
+    const Gallery = new JKImageGallery(container!);
 
     channel.addEventListener('message', (m) => {
         switch (m.type) {
             case 'heartbeat':
                 break;
             case 'new-image':
-                CURRENT_IMAGES.push(m.data);
-                addImageToGallery(m.data);
+                Gallery.addImage(m.data);
                 break;
             case 'request-all':
-                CURRENT_IMAGES = m.data.images;
-                CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
+                Gallery.addImages(m.data.images);
                 for (const [key, value] of Object.entries(m.data.cssVars)) {
                     document.documentElement.style.setProperty(key, value);
                 }
@@ -74,8 +52,10 @@ if (IS_FEED_WINDOW) {
     channel.postMessage({ type: 'request-all', data: { images: [], cssVars: {} } });
 } else {
     // setup the extension, we in comfy main window
+    let CURRENT_IMAGES: GalleryImageData[] = SessionStorageHelper.getJSON('feed') ?? [];
+
     const setup = async () => {
-        const addImageToFeed = (data: ImageData) => {
+        const sendImageToFeed = (data: GalleryImageData) => {
             CURRENT_IMAGES.push(data);
             SessionStorageHelper.setJSONVal('feed', CURRENT_IMAGES);
             channel.postMessage({ type: 'new-image', data: data });
@@ -188,12 +168,12 @@ if (IS_FEED_WINDOW) {
                                         } else {
                                             // if we got to here, then the image is unique--so add to feed
                                             seenImages.set(hash, true);
-                                            addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title });
+                                            sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title, fileName: src.filename });
                                         }
                                     };
                                 }
                             } else {
-                                addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title });
+                                sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title, fileName: src.filename });
                             }
                         });
                     }

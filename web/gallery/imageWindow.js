@@ -860,34 +860,24 @@ var init_esbrowser = __esm({
 
 // src_web/gallery/imageWindow.ts
 import { SessionStorageHelper } from "../common/storage.js";
+import { JKImageGallery } from "./gallery.js";
 var require_imageWindow = __commonJS({
   "src_web/gallery/imageWindow.ts"() {
     init_esbrowser();
     var channel = new BroadcastChannel2("jk-image-viewer");
-    var CURRENT_IMAGES = SessionStorageHelper.getJSON("feed") ?? [];
     var IS_FEED_WINDOW = !!window.jkImageWindow;
     if (IS_FEED_WINDOW) {
       const container = document.getElementById("jk-image-gallery");
-      const addImageToGallery = (m) => {
-        const div = document.createElement("div");
-        div.classList.add("jk-img-wrapper");
-        const img = document.createElement("img");
-        img.src = m.href;
-        img.classList.add("jk-img");
-        div.appendChild(img);
-        container?.prepend(div);
-      };
+      const Gallery = new JKImageGallery(container);
       channel.addEventListener("message", (m) => {
         switch (m.type) {
           case "heartbeat":
             break;
           case "new-image":
-            CURRENT_IMAGES.push(m.data);
-            addImageToGallery(m.data);
+            Gallery.addImage(m.data);
             break;
           case "request-all":
-            CURRENT_IMAGES = m.data.images;
-            CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
+            Gallery.addImages(m.data.images);
             for (const [key, value] of Object.entries(m.data.cssVars)) {
               document.documentElement.style.setProperty(key, value);
             }
@@ -895,8 +885,9 @@ var require_imageWindow = __commonJS({
       });
       channel.postMessage({ type: "request-all", data: { images: [], cssVars: {} } });
     } else {
+      let CURRENT_IMAGES = SessionStorageHelper.getJSON("feed") ?? [];
       const setup = async () => {
-        const addImageToFeed = (data) => {
+        const sendImageToFeed = (data) => {
           CURRENT_IMAGES.push(data);
           SessionStorageHelper.setJSONVal("feed", CURRENT_IMAGES);
           channel.postMessage({ type: "new-image", data });
@@ -982,12 +973,12 @@ var require_imageWindow = __commonJS({
                         if (seenImages.has(hash)) {
                         } else {
                           seenImages.set(hash, true);
-                          addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title });
+                          sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title, fileName: src.filename });
                         }
                       };
                     }
                   } else {
-                    addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title });
+                    sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title, fileName: src.filename });
                   }
                 });
               }
