@@ -1,23 +1,21 @@
 {
-  "name": "comfyui-jk-easy-nodes",
-  "version": "1.0.0",
-  "description": "",
-  "type": "commonjs",
-  "main": "index.js",
-  "scripts": {
-    "build": "node ./esbuild.mjs",
-    "dev": "node ./esbuild.mjs --watch"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^22.9.1",
-    "esbuild": "^0.24.0",
-    "esbuild-plugin-copy": "^2.1.1",
-    "esbuild-sass-plugin": "^3.3.1"
-  },
-  "dependencies": {
-    "broadcast-channel": "^7.0.0"
-  }
+    "name": "comfyui-jk-easy-nodes",
+    "version": "1.0.0",
+    "description": "",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "build": "node ./esbuild.mjs",
+        "dev": "node ./esbuild.mjs --watch"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^22.9.1",
+        "esbuild": "^0.24.0",
+        "esbuild-plugin-copy": "^2.1.1",
+        "esbuild-sass-plugin": "^3.3.1",
+        "broadcast-channel": "^7.0.0"
+    }
 }

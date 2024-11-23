@@ -1,9 +1,9 @@
-/* src_web/image-window.scss */
+/* src_web/gallery/image-window.scss */
 html {
   display: flex;
   flex: 1 auto;
   height: 100%;
-  background-color: black;
+  background-color: var(--bg-color);
 }
 body {
   display: flex;

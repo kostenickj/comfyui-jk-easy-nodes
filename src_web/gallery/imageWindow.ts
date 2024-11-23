@@ -1,6 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel';
 
-import { SessionStorageHelper } from './common/storage.js';
+import { SessionStorageHelper } from '../common/storage.js';
 
 interface ImageData {
     subfolder: string;
@@ -25,7 +25,7 @@ interface NewImgMessage extends BaseImageViewMessage<ImageData> {
     type: 'new-image';
 }
 
-interface RequestAllImages extends BaseImageViewMessage<ImageData[]> {
+interface RequestAllImages extends BaseImageViewMessage<{ images: ImageData[]; cssVars: Record<string, string> }> {
     type: 'request-all';
 }
 
@@ -37,20 +37,18 @@ let CURRENT_IMAGES: ImageData[] = SessionStorageHelper.getJSON('feed') ?? [];
 const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
 
 if (IS_FEED_WINDOW) {
-    const container = document.getElementById('jk-img-container');
-
+    const container = document.getElementById('jk-image-gallery');
 
     const addImageToGallery = (m: ImageData) => {
-
         // TODO, the actual gallery, on click open a simple lightbox with the zoom etc
 
-        //const img = document.createElement('img');
-        //img.src = m.href;
-        //document.getElementById('jk-img-container')!.appendChild(img);
-        //lg.refresh([{ src: m.href, subHtml: '<h4>Image 4 title</h4><p>Image 4 descriptions.</p>', thumb: m.href }]);
-        // lg.openGallery()
-        // lightbox.options.dataSource = [{ src: m.href, width: 100, height: 50 }]
-        //lightbox.pswp!.options.dataSource = [{ src: m.href, width: 100, height: 50 }]
+        const div = document.createElement('div');
+        div.classList.add('jm-img-wrapper');
+        const img = document.createElement('img');
+        img.src = m.href;
+        img.classList.add('jk-img');
+        div.appendChild(img);
+        container?.prepend(div);
     };
 
     channel.addEventListener('message', (m) => {
@@ -62,14 +60,18 @@ if (IS_FEED_WINDOW) {
                 addImageToGallery(m.data);
                 break;
             case 'request-all':
-                CURRENT_IMAGES = m.data;
+                CURRENT_IMAGES = m.data.images;
                 CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
-            // TODO, also reload lightbox or whatever
+                for (const [key, value] of Object.entries(m.data.cssVars)) {
+                    document.documentElement.style.setProperty(key, value);
+                }
+
+            // TODO, also reload lightbox or whatever once u make it
         }
     });
 
     // on first load, request all images that the main window has
-    channel.postMessage({ type: 'request-all', data: [] });
+    channel.postMessage({ type: 'request-all', data: { images: [], cssVars: {} } });
 } else {
     // setup the extension, we in comfy main window
     const setup = async () => {
@@ -80,12 +82,15 @@ if (IS_FEED_WINDOW) {
         };
 
         // @ts-ignore
-        const { api } = await import('../../../scripts/api.js');
+        const { api } = await import('../../../../scripts/api.js');
         // @ts-ignore
-        const { app } = await import('../../../scripts/app.js');
+        const { app } = await import('../../../../scripts/app.js');
         // @ts-ignore
-        const { $el } = await import('../../../scripts/ui.js');
+        const { $el } = await import('../../../../scripts/ui.js');
         let feedWindow: Window | null = null;
+
+        const { getElementCSSVariables } = await import('../common/utils.js');
+        const comfyCssVars = getElementCSSVariables();
 
         const toggleWindow = () => {
             const isOpen = feedWindow ? !feedWindow.closed : false;
@@ -95,7 +100,7 @@ if (IS_FEED_WINDOW) {
                 feedWindow = null;
             } else {
                 feedWindow = window.open(
-                    `/extensions/comfyui-jk-easy-nodes/jk-image-window.html`,
+                    `/extensions/comfyui-jk-easy-nodes/gallery/jk-image-window.html`,
                     `_blank`,
                     `width=1280,height=720,location=no,toolbar=no,menubar=no`
                 )!;
@@ -108,7 +113,7 @@ if (IS_FEED_WINDOW) {
         channel.addEventListener('message', (m) => {
             switch (m.type) {
                 case 'request-all':
-                    channel.postMessage({ type: 'request-all', data: CURRENT_IMAGES });
+                    channel.postMessage({ type: 'request-all', data: { images: CURRENT_IMAGES, cssVars: comfyCssVars } });
                     break;
                 case 'closed':
                     console.log('feed window was closed');
@@ -191,8 +196,6 @@ if (IS_FEED_WINDOW) {
                                 addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title });
                             }
                         });
-                        for (const src of detail.output.images) {
-                        }
                     }
                 });
             }

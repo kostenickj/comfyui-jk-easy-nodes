@@ -23,7 +23,7 @@ const options = {
     },
     plugins: [sassPlugin({}), copy({
         assets: [{
-            from: './src_web/**/*.html',
+            from: './src_web/**/*.{html,js}',
             // this is relative to outdir, so go to root of that
             to: './'
         }]

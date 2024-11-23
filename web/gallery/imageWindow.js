@@ -858,17 +858,24 @@ var init_esbrowser = __esm({
   }
 });
 
-// src_web/imageWindow.ts
-import { SessionStorageHelper } from "./common/storage.js";
+// src_web/gallery/imageWindow.ts
+import { SessionStorageHelper } from "../common/storage.js";
 var require_imageWindow = __commonJS({
-  "src_web/imageWindow.ts"() {
+  "src_web/gallery/imageWindow.ts"() {
     init_esbrowser();
     var channel = new BroadcastChannel2("jk-image-viewer");
     var CURRENT_IMAGES = SessionStorageHelper.getJSON("feed") ?? [];
     var IS_FEED_WINDOW = !!window.jkImageWindow;
     if (IS_FEED_WINDOW) {
-      const container = document.getElementById("jk-img-container");
+      const container = document.getElementById("jk-image-gallery");
       const addImageToGallery = (m) => {
+        const div = document.createElement("div");
+        div.classList.add("jm-img-wrapper");
+        const img = document.createElement("img");
+        img.src = m.href;
+        img.classList.add("jk-img");
+        div.appendChild(img);
+        container?.prepend(div);
       };
       channel.addEventListener("message", (m) => {
         switch (m.type) {
@@ -879,11 +886,14 @@ var require_imageWindow = __commonJS({
             addImageToGallery(m.data);
             break;
           case "request-all":
-            CURRENT_IMAGES = m.data;
+            CURRENT_IMAGES = m.data.images;
             CURRENT_IMAGES.forEach((x) => addImageToGallery(x));
+            for (const [key, value] of Object.entries(m.data.cssVars)) {
+              document.documentElement.style.setProperty(key, value);
+            }
         }
       });
-      channel.postMessage({ type: "request-all", data: [] });
+      channel.postMessage({ type: "request-all", data: { images: [], cssVars: {} } });
     } else {
       const setup = async () => {
         const addImageToFeed = (data) => {
@@ -891,10 +901,12 @@ var require_imageWindow = __commonJS({
           SessionStorageHelper.setJSONVal("feed", CURRENT_IMAGES);
           channel.postMessage({ type: "new-image", data });
         };
-        const { api } = await import("../../../scripts/api.js");
-        const { app } = await import("../../../scripts/app.js");
-        const { $el } = await import("../../../scripts/ui.js");
+        const { api } = await import("../../../../scripts/api.js");
+        const { app } = await import("../../../../scripts/app.js");
+        const { $el } = await import("../../../../scripts/ui.js");
         let feedWindow = null;
+        const { getElementCSSVariables } = await import("../common/utils.js");
+        const comfyCssVars = getElementCSSVariables();
         const toggleWindow = () => {
           const isOpen = feedWindow ? !feedWindow.closed : false;
           if (isOpen) {
@@ -902,7 +914,7 @@ var require_imageWindow = __commonJS({
             feedWindow = null;
           } else {
             feedWindow = window.open(
-              `/extensions/comfyui-jk-easy-nodes/jk-image-window.html`,
+              `/extensions/comfyui-jk-easy-nodes/gallery/jk-image-window.html`,
               `_blank`,
               `width=1280,height=720,location=no,toolbar=no,menubar=no`
             );
@@ -914,7 +926,7 @@ var require_imageWindow = __commonJS({
         channel.addEventListener("message", (m) => {
           switch (m.type) {
             case "request-all":
-              channel.postMessage({ type: "request-all", data: CURRENT_IMAGES });
+              channel.postMessage({ type: "request-all", data: { images: CURRENT_IMAGES, cssVars: comfyCssVars } });
               break;
             case "closed":
               console.log("feed window was closed");
@@ -978,8 +990,6 @@ var require_imageWindow = __commonJS({
                     addImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title });
                   }
                 });
-                for (const src of detail.output.images) {
-                }
               }
             });
           }
