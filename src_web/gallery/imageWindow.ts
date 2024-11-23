@@ -49,11 +49,9 @@ if (IS_FEED_WINDOW) {
             case 'request-all':
                 await init();
                 await Gallery.addImages(m.data.images);
-                // for (const [key, value] of Object.entries(m.data.cssVars)) {
-                //     document.documentElement.style.setProperty(key, value);
-                // }
-
-            // TODO, also reload lightbox or whatever once u make it
+            for (const [key, value] of Object.entries(m.data.cssVars)) {
+                document.documentElement.style.setProperty(key, value);
+            }
         }
     });
 
@@ -106,16 +104,13 @@ if (IS_FEED_WINDOW) {
                     if (feedWindow) {
                         // @ts-ignore
                         feedWindow.comfyAPI = window.comfyAPI;
-
-                        // document.querySelectorAll('script').forEach((htmlElement) => {
-                        //     const cloned = htmlElement.cloneNode(true);
-                        //     console.log(cloned);
-                        //     feedWindow!.document.head.appendChild(cloned);
-                        // });
                         document.querySelectorAll('link, style').forEach((htmlElement) => {
                             const cloned: HTMLLinkElement | HTMLStyleElement = htmlElement.cloneNode(true) as any;
                             if ((cloned as HTMLLinkElement).href) {
-                                (cloned as HTMLLinkElement).href = (cloned as HTMLLinkElement).href.replace(window.location.protocol + '//' + window.location.host, '');
+                                (cloned as HTMLLinkElement).href = (cloned as HTMLLinkElement).href.replace(
+                                    window.location.protocol + '//' + window.location.host,
+                                    ''
+                                );
                             }
                             feedWindow!.document.head.appendChild(cloned);
                         });
@@ -147,8 +142,14 @@ if (IS_FEED_WINDOW) {
                 window.dispatchEvent(new Event('resize'));
                 app.menu.settingsGroup.append(showMenuButton);
 
+                let startTime = new Date();
+                api.addEventListener('execution_start', () => {
+                    startTime = new Date();
+                });
                 // from pysss
                 api.addEventListener('executed', ({ detail }: any) => {
+                    const execTimeMs = new Date().getTime() - startTime.getTime();
+
                     const nodeId: number = parseInt(detail.node, 10);
                     const node = app.graph.getNodeById(nodeId);
                     const title: string = node.title;
@@ -163,7 +164,6 @@ if (IS_FEED_WINDOW) {
                             const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&subfolder=${encodeURIComponent(
                                 src.subfolder
                             )}&t=${+new Date()}`;
-
                             const deduplicateFeed = true;
                             if (deduplicateFeed) {
                                 // deduplicate by ignoring images with the same filename/type/subfolder
@@ -203,13 +203,22 @@ if (IS_FEED_WINDOW) {
                                                 type: src.type,
                                                 nodeId: nodeId,
                                                 nodeTitle: title,
-                                                fileName: src.filename
+                                                fileName: src.filename,
+                                                execTimeMs
                                             });
                                         }
                                     };
                                 }
                             } else {
-                                sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title, fileName: src.filename });
+                                sendImageToFeed({
+                                    href,
+                                    subfolder: src.subfolder,
+                                    type: src.type,
+                                    nodeId: nodeId,
+                                    nodeTitle: title,
+                                    fileName: src.filename,
+                                    execTimeMs
+                                });
                             }
                         });
                     }

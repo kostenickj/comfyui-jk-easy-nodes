@@ -885,6 +885,9 @@ var require_imageWindow = __commonJS({
           case "request-all":
             await init();
             await Gallery.addImages(m.data.images);
+            for (const [key, value] of Object.entries(m.data.cssVars)) {
+              document.documentElement.style.setProperty(key, value);
+            }
         }
       });
       channel.postMessage({ type: "request-all", data: { images: [], cssVars: {} } });
@@ -926,7 +929,10 @@ var require_imageWindow = __commonJS({
                 document.querySelectorAll("link, style").forEach((htmlElement) => {
                   const cloned = htmlElement.cloneNode(true);
                   if (cloned.href) {
-                    cloned.href = cloned.href.replace(window.location.protocol + "//" + window.location.host, "");
+                    cloned.href = cloned.href.replace(
+                      window.location.protocol + "//" + window.location.host,
+                      ""
+                    );
                   }
                   feedWindow.document.head.appendChild(cloned);
                 });
@@ -953,7 +959,12 @@ var require_imageWindow = __commonJS({
             showMenuButton.element.style.display = "block";
             window.dispatchEvent(new Event("resize"));
             app.menu.settingsGroup.append(showMenuButton);
+            let startTime = /* @__PURE__ */ new Date();
+            api.addEventListener("execution_start", () => {
+              startTime = /* @__PURE__ */ new Date();
+            });
             api.addEventListener("executed", ({ detail }) => {
+              const execTimeMs = (/* @__PURE__ */ new Date()).getTime() - startTime.getTime();
               const nodeId = parseInt(detail.node, 10);
               const node = app.graph.getNodeById(nodeId);
               const title = node.title;
@@ -994,13 +1005,22 @@ var require_imageWindow = __commonJS({
                             type: src.type,
                             nodeId,
                             nodeTitle: title,
-                            fileName: src.filename
+                            fileName: src.filename,
+                            execTimeMs
                           });
                         }
                       };
                     }
                   } else {
-                    sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title, fileName: src.filename });
+                    sendImageToFeed({
+                      href,
+                      subfolder: src.subfolder,
+                      type: src.type,
+                      nodeId,
+                      nodeTitle: title,
+                      fileName: src.filename,
+                      execTimeMs
+                    });
                   }
                 });
               }

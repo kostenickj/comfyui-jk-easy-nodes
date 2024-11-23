@@ -4,12 +4,24 @@ var JKImage = class {
     this.m = m;
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("jk-img-wrapper");
+    this.opacityHover = document.createElement("div");
+    this.opacityHover.innerHTML = `<sl-icon name="eye"></sl-icon>`;
+    this.opacityHover.classList.add("jk-img-hover");
+    this.wrapper.append(this.opacityHover);
     this.spinner = document.createElement("div");
     this.spinner.innerHTML = `<div class="jk-spinner-wrap"><sl-spinner style="font-size: 3rem; --track-width: 3px; --track-color: var(--border-color); --indicator-color: var(--p-progressspinner-color-2)"></sl-spinner></div>`;
     this.wrapper.append(this.spinner);
     this.title = document.createElement("div");
-    this.title.textContent = `${m.nodeTitle} - #${m.nodeId} ${m.fileName}`;
-    this.title.classList.add("jk-img-title");
+    this.title.textContent = `${m.nodeTitle} - (#${m.nodeId})`;
+    this.title.innerHTML = `
+            <div class="jk-img-info-title">
+                ${m.nodeTitle} - (#${m.nodeId})
+            </div>
+              <div class="jk-img-info-time">
+                ${(m.execTimeMs / 1e3).toFixed(2)}s
+            </div>
+        `;
+    this.title.classList.add("jk-img-info-wrapper");
     this.wrapper.append(this.title);
   }
   loadImage(url) {
@@ -38,14 +50,41 @@ var JKImageGallery = class {
   constructor(container) {
     this.container = container;
     this.images = [];
+    this.container.innerHTML = `
+            <sl-split-panel position="15" style="--max: 35%; --min:10%;">
+                <div
+                    id="jk-gallery-left-panel"
+                    slot="start"
+                >
+                </div>
+                <div
+                    slot="end"
+                    id="jk-gallery-right-panel"
+                >
+                    todo
+                </div>
+            </sl-split-panel>
+        `;
+  }
+  //TODO, add ability to toggle which ouputs to view images from based on node title/#
+  // add clear button
+  // implement right sight of gallery
+  // show on click, also show filename below it
+  get leftPanel() {
+    return document.getElementById("jk-gallery-left-panel");
+  }
+  get rightPanel() {
+    return document.getElementById("jk-gallery-right-panel");
   }
   async addImage(data) {
     const img = await new JKImage(data).init();
     this.images.unshift(img);
-    this.container.prepend(img.getEl());
+    this.leftPanel.prepend(img.getEl());
   }
   async addImages(imgs) {
-    await Promise.all(imgs.map((i) => this.addImage(i)));
+    for (const i of imgs) {
+      await this.addImage(i);
+    }
   }
 };
 export {

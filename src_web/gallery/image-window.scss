@@ -18,6 +18,8 @@ html {
     // todo, slider to set this var in header
     --max-image-width: 250px;
     --max-image-height: auto;
+    --jk-feed-bar-height: 42px;
+    --left-panel-gutter-size: 16px;
 }
 
 body {
@@ -30,23 +32,8 @@ body {
 }
 
 .jk-img-wrapper {
-    padding: 16px;
-    margin: .25rem;
-    position: relative;
-    min-height: 64px;
-    min-width: 64px;
-    display: grid;
-    align-items: start;
-    .jk-img {
-        padding: .25rem;
-        display: flex;
-        max-width: var(--max-image-width);
-        max-height: var(--max-image-height);
-    }
 
-    .jk-img-title{
-        
-    }
+    .jk-img-title {}
 
     .jk-spinner-wrap {
         position: relative;
@@ -71,18 +58,118 @@ body {
 
         }
     }
-
-
 }
 
 #jk-image-gallery {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    flex: 1 auto;
+    height: calc(100vh - var(--jk-feed-bar-height));
+    position: relative;
+
+    sl-split-panel {
+        width: 100%;
+        height: 100%;
+
+        &::part(divider) {
+            background-color: var(--fg-color) !important;
+        }
+
+        #jk-gallery-left-panel {
+            height: 100%;
+            display: flex;
+            overflow-y: auto !important;
+            flex-direction: column;
+            overflow: hidden;
+            scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
+            scrollbar-width: thin;
+            padding-bottom: 16px;
+
+            .jk-img-wrapper {
+                max-width: 100%;
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                margin-top: 16px;
+                padding-top: 0;
+                padding-bottom: 0;
+                margin-bottom: 16px;
+                padding-left: var(--left-panel-gutter-size);
+                padding-right: var(--left-panel-gutter-size);
+                align-items: center;
+                position: relative;
+
+                .jk-img-hover {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-left: var(--left-panel-gutter-size);
+                    margin-right: var(--left-panel-gutter-size);
+
+                    sl-icon{
+                        opacity: 0;
+                        font-size: 32px;
+                        transition: all 0.3s ease-in-out;
+                        scale: 1;
+                    }
+
+                    &:hover {
+                        background-color: rgba(1, 1, 1, .5);
+                        transition: all 0.3s ease-in-out;
+                        sl-icon {
+                            opacity: 1;
+                            transition: all 0.3s ease-in-out;
+                            color: var(--fg-color);
+                            scale: 1.25;
+                        }
+                    }
+                    cursor: pointer;                 
+                }
+
+
+                .jk-img-info-wrapper {
+                    position: absolute;
+                    bottom: 0;
+                    left: calc(var(--left-panel-gutter-size) + 4px);
+                    background-color: rgba(1, 1, 1, .5);
+                    padding: 4px;
+                    max-width: calc(100% - var(--left-panel-gutter-size) - 24px);
+                    overflow: hidden;
+                    word-break: break-all;
+                }
+
+                .jk-img {
+                    width: 100%;
+                    max-width: 100%;
+                    height: auto;
+                    flex-shrink: 1;
+                    cursor: pointer;
+
+                    &:hover {
+                        border-radius: 16px;
+                    }
+                }
+            }
+        }
+
+        #jk-gallery-right-panel {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+    }
 }
 
 #jk-feed-bar {
-    height: 42px;
+    height: var(--jk-feed-bar-height);
     background-color: var(--comfy-menu-bg);
     width: 100%;
 
@@ -90,7 +177,8 @@ body {
         display: flex;
         height: 100%;
         padding: 4px;
-        &:first-child{
+
+        &:first-child {
             //padding-left: 0;
         }
     }
