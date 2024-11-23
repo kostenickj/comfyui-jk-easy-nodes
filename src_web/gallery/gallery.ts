@@ -29,11 +29,12 @@ class JKImage {
         this.wrapper.classList.add('jk-img-wrapper');
 
         this.spinner = document.createElement('div');
-        this.spinner.innerHTML = `<div class="jk-spinner-wrap"><div class="jk-spinner"></div></div>`
+        this.spinner.innerHTML = `<div class="jk-spinner-wrap"><sl-spinner style="font-size: 3rem; --track-width: 3px; --track-color: var(--border-color); --indicator-color: var(--p-progressspinner-color-2)"></sl-spinner></div>`
         this.wrapper.append(this.spinner);
 
         this.title = document.createElement('div');
         this.title.textContent = `${m.nodeTitle} - #${m.nodeId} ${m.fileName}`;
+        this.title.classList.add('jk-img-title');
         this.wrapper.append(this.title);
     }
 
@@ -42,8 +43,7 @@ class JKImage {
         this.img.src = this.m.href;
         this.img.classList.add('jk-img');
         this.wrapper.appendChild(this.img);
-        this.spinner.style.opacity = '0';
-        this.wrapper.removeChild(this.spinner)
+       this.wrapper.removeChild(this.spinner)
         return this;
     }
 

@@ -1,5 +1,4 @@
 import { BroadcastChannel } from 'broadcast-channel';
-
 import { SessionStorageHelper } from '../common/storage.js';
 import { GalleryImageData, JKImageGallery } from './gallery.js';
 import { JKFeedBar } from './feedBar.js';
@@ -34,13 +33,13 @@ if (IS_FEED_WINDOW) {
     const topBar = document.getElementById('jk-feed-bar');
     const FeedBar = new JKFeedBar(topBar! as HTMLDivElement);
 
-    // dont do init till after we request-all, comfy api may not be available yet
+    // dont do init till after we request-all data from main window, comfy api may not be available yet
     const init = async () => {
         // @ts-ignore
         await FeedBar.init();
     };
 
-    channel.addEventListener('message', (m) => {
+    channel.addEventListener('message', async (m) => {
         switch (m.type) {
             case 'heartbeat':
                 break;
@@ -48,11 +47,11 @@ if (IS_FEED_WINDOW) {
                 Gallery.addImage(m.data);
                 break;
             case 'request-all':
-                init();
-                Gallery.addImages(m.data.images);
-                for (const [key, value] of Object.entries(m.data.cssVars)) {
-                    document.documentElement.style.setProperty(key, value);
-                }
+                await init();
+                await Gallery.addImages(m.data.images);
+                // for (const [key, value] of Object.entries(m.data.cssVars)) {
+                //     document.documentElement.style.setProperty(key, value);
+                // }
 
             // TODO, also reload lightbox or whatever once u make it
         }

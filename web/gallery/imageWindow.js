@@ -875,7 +875,7 @@ var require_imageWindow = __commonJS({
       const init = async () => {
         await FeedBar.init();
       };
-      channel.addEventListener("message", (m) => {
+      channel.addEventListener("message", async (m) => {
         switch (m.type) {
           case "heartbeat":
             break;
@@ -883,11 +883,8 @@ var require_imageWindow = __commonJS({
             Gallery.addImage(m.data);
             break;
           case "request-all":
-            init();
-            Gallery.addImages(m.data.images);
-            for (const [key, value] of Object.entries(m.data.cssVars)) {
-              document.documentElement.style.setProperty(key, value);
-            }
+            await init();
+            await Gallery.addImages(m.data.images);
         }
       });
       channel.postMessage({ type: "request-all", data: { images: [], cssVars: {} } });

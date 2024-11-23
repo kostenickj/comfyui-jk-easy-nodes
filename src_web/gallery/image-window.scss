@@ -17,6 +17,7 @@ html {
 
     // todo, slider to set this var in header
     --max-image-width: 250px;
+    --max-image-height: auto;
 }
 
 body {
@@ -29,15 +30,22 @@ body {
 }
 
 .jk-img-wrapper {
+    padding: 16px;
     margin: .25rem;
     position: relative;
     min-height: 64px;
     min-width: 64px;
-
+    display: grid;
+    align-items: start;
     .jk-img {
         padding: .25rem;
         display: flex;
         max-width: var(--max-image-width);
+        max-height: var(--max-image-height);
+    }
+
+    .jk-img-title{
+        
     }
 
     .jk-spinner-wrap {
@@ -70,13 +78,22 @@ body {
 #jk-image-gallery {
     display: flex;
     flex-direction: row;
-  flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
 #jk-feed-bar {
-    height: 64px;
+    height: 42px;
     background-color: var(--comfy-menu-bg);
     width: 100%;
+
+    .comfyui-button-group {
+        display: flex;
+        height: 100%;
+        padding: 4px;
+        &:first-child{
+            //padding-left: 0;
+        }
+    }
 }
 
 @keyframes spin {
