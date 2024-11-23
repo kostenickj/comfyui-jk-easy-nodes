@@ -2,6 +2,7 @@ import { BroadcastChannel } from 'broadcast-channel';
 
 import { SessionStorageHelper } from '../common/storage.js';
 import { GalleryImageData, JKImageGallery } from './gallery.js';
+import { JKFeedBar } from './feedBar.js';
 
 interface BaseImageViewMessage<T> {
     data: T;
@@ -30,6 +31,14 @@ const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
 if (IS_FEED_WINDOW) {
     const container = document.getElementById('jk-image-gallery');
     const Gallery = new JKImageGallery(container!);
+    const topBar = document.getElementById('jk-feed-bar');
+    const FeedBar = new JKFeedBar(topBar! as HTMLDivElement);
+
+    // dont do init till after we request-all, comfy api may not be available yet
+    const init = async () => {
+        // @ts-ignore
+        await FeedBar.init();
+    };
 
     channel.addEventListener('message', (m) => {
         switch (m.type) {
@@ -39,6 +48,7 @@ if (IS_FEED_WINDOW) {
                 Gallery.addImage(m.data);
                 break;
             case 'request-all':
+                init();
                 Gallery.addImages(m.data.images);
                 for (const [key, value] of Object.entries(m.data.cssVars)) {
                     document.documentElement.style.setProperty(key, value);
@@ -70,7 +80,6 @@ if (IS_FEED_WINDOW) {
         let feedWindow: Window | null = null;
 
         const { getElementCSSVariables } = await import('../common/utils.js');
-        const comfyCssVars = getElementCSSVariables();
 
         const toggleWindow = () => {
             const isOpen = feedWindow ? !feedWindow.closed : false;
@@ -84,6 +93,8 @@ if (IS_FEED_WINDOW) {
                     `_blank`,
                     `width=1280,height=720,location=no,toolbar=no,menubar=no`
                 )!;
+                // @ts-ignore
+                feedWindow.comfyAPI = window.comfyAPI;
             }
             window.addEventListener('beforeunload', (e) => {
                 feedWindow?.close();
@@ -93,7 +104,26 @@ if (IS_FEED_WINDOW) {
         channel.addEventListener('message', (m) => {
             switch (m.type) {
                 case 'request-all':
-                    channel.postMessage({ type: 'request-all', data: { images: CURRENT_IMAGES, cssVars: comfyCssVars } });
+                    if (feedWindow) {
+                        // @ts-ignore
+                        feedWindow.comfyAPI = window.comfyAPI;
+
+                        // document.querySelectorAll('script').forEach((htmlElement) => {
+                        //     const cloned = htmlElement.cloneNode(true);
+                        //     console.log(cloned);
+                        //     feedWindow!.document.head.appendChild(cloned);
+                        // });
+                        document.querySelectorAll('link, style').forEach((htmlElement) => {
+                            const cloned: HTMLLinkElement | HTMLStyleElement = htmlElement.cloneNode(true) as any;
+                            if ((cloned as HTMLLinkElement).href) {
+                                (cloned as HTMLLinkElement).href = (cloned as HTMLLinkElement).href.replace(window.location.protocol + '//' + window.location.host, '');
+                            }
+                            feedWindow!.document.head.appendChild(cloned);
+                        });
+                        const comfyCssVars = getElementCSSVariables();
+                        channel.postMessage({ type: 'request-all', data: { images: CURRENT_IMAGES, cssVars: comfyCssVars } });
+                    }
+
                     break;
                 case 'closed':
                     console.log('feed window was closed');
@@ -168,7 +198,14 @@ if (IS_FEED_WINDOW) {
                                         } else {
                                             // if we got to here, then the image is unique--so add to feed
                                             seenImages.set(hash, true);
-                                            sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId: nodeId, nodeTitle: title, fileName: src.filename });
+                                            sendImageToFeed({
+                                                href,
+                                                subfolder: src.subfolder,
+                                                type: src.type,
+                                                nodeId: nodeId,
+                                                nodeTitle: title,
+                                                fileName: src.filename
+                                            });
                                         }
                                     };
                                 }

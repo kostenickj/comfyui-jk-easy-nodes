@@ -1,3 +1,13 @@
+* {
+
+    &,
+    &::before,
+    &::after {
+        box-sizing: border-box;
+    }
+}
+
+
 html {
     display: flex;
     flex: 1 auto;
@@ -30,7 +40,7 @@ body {
         max-width: var(--max-image-width);
     }
 
-    .jk-spinner-wrap{
+    .jk-spinner-wrap {
         position: relative;
         background-color: transparent;
         display: flex;
@@ -41,6 +51,7 @@ body {
         left: 0;
         right: 0;
         bottom: 0;
+
         .jk-spinner {
             background-color: transparent;
             border: 4px solid var(--border-color);
@@ -49,7 +60,7 @@ body {
             width: 64px;
             height: 64px;
             animation: spin 2s linear infinite;
-   
+
         }
     }
 
@@ -59,6 +70,7 @@ body {
 #jk-image-gallery {
     display: flex;
     flex-direction: row;
+  flex-wrap: wrap;
 }
 
 #jk-feed-bar {

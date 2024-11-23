@@ -21,7 +21,7 @@ export function getUrl(path: string, baseUrl?: string) {
     }
 }
 
-export const getElementCSSVariables = (element = document.body) => {
+export const getElementCSSVariables = (element = document.documentElement) => {
     const rootCssVariables: string[] = Array.from(document.styleSheets)
         .flatMap((styleSheet: CSSStyleSheet) => Array.from(styleSheet.cssRules))
         .filter((cssRule: CSSRule): cssRule is CSSStyleRule => cssRule instanceof CSSStyleRule && cssRule.selectorText === ':root')

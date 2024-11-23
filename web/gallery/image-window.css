@@ -1,4 +1,9 @@
 /* src_web/gallery/image-window.scss */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 html {
   display: flex;
   flex: 1 auto;
@@ -50,6 +55,7 @@ body {
 #jk-image-gallery {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 #jk-feed-bar {
   height: 64px;

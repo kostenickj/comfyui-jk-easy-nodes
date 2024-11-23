@@ -861,6 +861,7 @@ var init_esbrowser = __esm({
 // src_web/gallery/imageWindow.ts
 import { SessionStorageHelper } from "../common/storage.js";
 import { JKImageGallery } from "./gallery.js";
+import { JKFeedBar } from "./feedBar.js";
 var require_imageWindow = __commonJS({
   "src_web/gallery/imageWindow.ts"() {
     init_esbrowser();
@@ -869,6 +870,11 @@ var require_imageWindow = __commonJS({
     if (IS_FEED_WINDOW) {
       const container = document.getElementById("jk-image-gallery");
       const Gallery = new JKImageGallery(container);
+      const topBar = document.getElementById("jk-feed-bar");
+      const FeedBar = new JKFeedBar(topBar);
+      const init = async () => {
+        await FeedBar.init();
+      };
       channel.addEventListener("message", (m) => {
         switch (m.type) {
           case "heartbeat":
@@ -877,6 +883,7 @@ var require_imageWindow = __commonJS({
             Gallery.addImage(m.data);
             break;
           case "request-all":
+            init();
             Gallery.addImages(m.data.images);
             for (const [key, value] of Object.entries(m.data.cssVars)) {
               document.documentElement.style.setProperty(key, value);
@@ -897,7 +904,6 @@ var require_imageWindow = __commonJS({
         const { $el } = await import("../../../../scripts/ui.js");
         let feedWindow = null;
         const { getElementCSSVariables } = await import("../common/utils.js");
-        const comfyCssVars = getElementCSSVariables();
         const toggleWindow = () => {
           const isOpen = feedWindow ? !feedWindow.closed : false;
           if (isOpen) {
@@ -909,6 +915,7 @@ var require_imageWindow = __commonJS({
               `_blank`,
               `width=1280,height=720,location=no,toolbar=no,menubar=no`
             );
+            feedWindow.comfyAPI = window.comfyAPI;
           }
           window.addEventListener("beforeunload", (e) => {
             feedWindow?.close();
@@ -917,7 +924,18 @@ var require_imageWindow = __commonJS({
         channel.addEventListener("message", (m) => {
           switch (m.type) {
             case "request-all":
-              channel.postMessage({ type: "request-all", data: { images: CURRENT_IMAGES, cssVars: comfyCssVars } });
+              if (feedWindow) {
+                feedWindow.comfyAPI = window.comfyAPI;
+                document.querySelectorAll("link, style").forEach((htmlElement) => {
+                  const cloned = htmlElement.cloneNode(true);
+                  if (cloned.href) {
+                    cloned.href = cloned.href.replace(window.location.protocol + "//" + window.location.host, "");
+                  }
+                  feedWindow.document.head.appendChild(cloned);
+                });
+                const comfyCssVars = getElementCSSVariables();
+                channel.postMessage({ type: "request-all", data: { images: CURRENT_IMAGES, cssVars: comfyCssVars } });
+              }
               break;
             case "closed":
               console.log("feed window was closed");
@@ -973,7 +991,14 @@ var require_imageWindow = __commonJS({
                         if (seenImages.has(hash)) {
                         } else {
                           seenImages.set(hash, true);
-                          sendImageToFeed({ href, subfolder: src.subfolder, type: src.type, nodeId, nodeTitle: title, fileName: src.filename });
+                          sendImageToFeed({
+                            href,
+                            subfolder: src.subfolder,
+                            type: src.type,
+                            nodeId,
+                            nodeTitle: title,
+                            fileName: src.filename
+                          });
                         }
                       };
                     }
