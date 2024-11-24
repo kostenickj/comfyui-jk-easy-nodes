@@ -22,14 +22,18 @@ var JKFeedBar = class {
   }
 };
 
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg
+var eye_fill_default = "../eye-fill-RBTRTZO3.svg";
+
 // src_web/gallery/gallery.ts
+console.log(eye_fill_default);
 var JKImage = class {
   constructor(m) {
     this.m = m;
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("jk-img-wrapper");
     this.opacityHover = document.createElement("div");
-    this.opacityHover.innerHTML = `<sl-icon name="eye"></sl-icon>`;
+    this.opacityHover.innerHTML = `<sl-icon src="${eye_fill_default}"></sl-icon>`;
     this.opacityHover.classList.add("jk-img-hover");
     this.wrapper.append(this.opacityHover);
     this.spinner = document.createElement("div");

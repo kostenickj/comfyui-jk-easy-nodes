@@ -18,7 +18,7 @@ const options = {
         '.woff2': 'dataurl',
         '.eot': 'dataurl',
         '.ttf': 'dataurl',
-        '.svg': 'dataurl',
+        '.svg': 'file',
         '.gif': 'dataurl'
     },
     plugins: [sassPlugin({}), copy({
@@ -30,7 +30,11 @@ const options = {
     }), {
         name: 'bundle node modules stuff only', setup: (build) => {
             build.onResolve({ filter: /\.js$/i }, args => {
-                return { external: args.resolveDir.includes('node_modules') ? false : true }
+                let markExternal = true;
+                if (args.path.includes('@shoelace-style') || args.resolveDir.includes('node_modules')) {
+                    markExternal = false;
+                }
+                return { external: markExternal }
             })
         }
     }]

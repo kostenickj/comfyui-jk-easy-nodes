@@ -1,3 +1,5 @@
+@import url('@shoelace-style/shoelace/dist/themes/light.css');
+
 * {
 
     &,
@@ -14,10 +16,6 @@ html {
     height: 100vh;
     width: 100vw;
     background-color: var(--bg-color);
-
-    // todo, slider to set this var in header
-    --max-image-width: 250px;
-    --max-image-height: auto;
     --jk-feed-bar-height: 42px;
     --left-panel-gutter-size: 16px;
 }

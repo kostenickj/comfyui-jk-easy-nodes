@@ -1,5 +1,10 @@
 import { JKFeedBar } from './feedBar';
 
+//@ts-ignore
+import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
+
+
+console.log(eye)
 export interface GalleryImageData {
     subfolder: string;
     type: string;
@@ -33,7 +38,7 @@ class JKImage {
         this.wrapper.classList.add('jk-img-wrapper');
 
         this.opacityHover = document.createElement('div');
-        this.opacityHover.innerHTML = `<sl-icon name="eye"></sl-icon>`;
+        this.opacityHover.innerHTML = `<sl-icon src="${eye}"></sl-icon>`;
         this.opacityHover.classList.add('jk-img-hover');
         this.wrapper.append(this.opacityHover);
 
