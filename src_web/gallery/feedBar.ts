@@ -1,25 +1,29 @@
-export class JKFeedBar {
+export const FeedBarEvents = {
+    'feed-clear': 'feed-clear'
+};
+
+export class JKFeedBar extends EventTarget {
     buttonGroup: HTMLDivElement;
     constructor(private el: HTMLDivElement) {
+        super();
         this.el.classList.add('comfyui-menu', 'flex', 'items-center');
         this.buttonGroup = document.createElement('div');
         this.el.append(this.buttonGroup);
-        this.buttonGroup.classList.add('comfyui-button-group')
+        this.buttonGroup.classList.add('comfyui-button-group');
     }
 
     async init() {
         //@ts-ignore
         const ComfyButton = (await import('../../../scripts/ui/components/button.js')).ComfyButton;
 
-        const test = new ComfyButton({
-            icon: 'image-multiple',
+        const clearFeedButton = new ComfyButton({
+            icon: 'nuke',
             action: () => {
-                console.log('gldkdkd');
+                this.dispatchEvent(new Event(FeedBarEvents['feed-clear']));
             },
-            tooltip: 'Toggle Image Window',
-            content: 'test button'
+            tooltip: 'Clear the feed',
+            content: 'Clear Feed'
         });
-        this.buttonGroup.append(test.element);
-        console.log(test);
+        this.buttonGroup.append(clearFeedButton.element);
     }
 }

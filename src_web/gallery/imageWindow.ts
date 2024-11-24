@@ -9,9 +9,10 @@ import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 import '@shoelace-style/shoelace/dist/components/badge/badge.js';
 import '@shoelace-style/shoelace/dist/components/details/details.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+import { FeedBarEvents } from './feedBar.js';
 interface BaseImageViewMessage<T> {
     data: T;
-    type: 'new-image' | 'heartbeat' | 'request-all' | 'closed';
+    type: 'new-image' | 'heartbeat' | 'request-all' | 'closed' | 'clear-feed';
 }
 
 interface HeartBeatMessage extends BaseImageViewMessage<undefined> {
@@ -19,6 +20,9 @@ interface HeartBeatMessage extends BaseImageViewMessage<undefined> {
 }
 interface ClosedMessage extends BaseImageViewMessage<undefined> {
     type: 'closed';
+}
+interface ClearFeedMessage extends BaseImageViewMessage<undefined> {
+    type: 'clear-feed';
 }
 interface NewImgMessage extends BaseImageViewMessage<GalleryImageData> {
     type: 'new-image';
@@ -28,7 +32,7 @@ interface RequestAllImages extends BaseImageViewMessage<{ images: GalleryImageDa
     type: 'request-all';
 }
 
-const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestAllImages | ClosedMessage>('jk-image-viewer');
+const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestAllImages | ClosedMessage | ClearFeedMessage>('jk-image-viewer');
 
 // set in the html file first script
 const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
@@ -40,6 +44,11 @@ if (IS_FEED_WINDOW) {
     const init = async () => {
         await Gallery.init();
     };
+
+    Gallery.addEventListener(FeedBarEvents['feed-clear'], (ev) => {
+        SessionStorageHelper.setJSONVal('feed', []);
+        channel.postMessage({ data: undefined, type: 'clear-feed' });
+    });
 
     channel.addEventListener('message', async (m) => {
         switch (m.type) {
@@ -124,6 +133,10 @@ if (IS_FEED_WINDOW) {
                 case 'closed':
                     console.log('feed window was closed');
                     feedWindow = null;
+                    break;
+                case 'clear-feed':
+                    SessionStorageHelper.setJSONVal('feed', []);
+                    CURRENT_IMAGES = [];
             }
         });
 
@@ -148,7 +161,7 @@ if (IS_FEED_WINDOW) {
                 api.addEventListener('execution_start', () => {
                     startTime = new Date();
                 });
-                // from pysss
+                // most of the below is from pysss custom scripts
                 api.addEventListener('executed', ({ detail }: any) => {
                     const execTimeMs = new Date().getTime() - startTime.getTime();
 
@@ -174,42 +187,15 @@ if (IS_FEED_WINDOW) {
                                     // NOOP: image is a duplicate
                                 } else {
                                     seenImages.set(fingerprint, true);
-                                    let img = $el('img', { src: href });
-
-                                    img.onload = () => {
-                                        // redraw the image onto a canvas to strip metadata (resize if performance mode)
-                                        let imgCanvas = document.createElement('canvas');
-                                        let imgScalar = 1;
-                                        imgCanvas.width = imgScalar * img.width;
-                                        imgCanvas.height = imgScalar * img.height;
-
-                                        let imgContext = imgCanvas.getContext('2d')!;
-                                        imgContext.drawImage(img, 0, 0, imgCanvas.width, imgCanvas.height);
-                                        const data = imgContext.getImageData(0, 0, imgCanvas.width, imgCanvas.height);
-
-                                        // calculate fast hash of the image data
-                                        let hash = 0;
-                                        for (const b of data.data) {
-                                            hash = (hash << 5) - hash + b;
-                                        }
-
-                                        // add image to feed if we've never seen the hash before
-                                        if (seenImages.has(hash)) {
-                                            // NOOP: image is a duplicate
-                                        } else {
-                                            // if we got to here, then the image is unique--so add to feed
-                                            seenImages.set(hash, true);
-                                            sendImageToFeed({
-                                                href,
-                                                subfolder: src.subfolder,
-                                                type: src.type,
-                                                nodeId: nodeId,
-                                                nodeTitle: title,
-                                                fileName: src.filename,
-                                                execTimeMs
-                                            });
-                                        }
-                                    };
+                                    sendImageToFeed({
+                                        href,
+                                        subfolder: src.subfolder,
+                                        type: src.type,
+                                        nodeId: nodeId,
+                                        nodeTitle: title,
+                                        fileName: src.filename,
+                                        execTimeMs
+                                    });
                                 }
                             } else {
                                 sendImageToFeed({

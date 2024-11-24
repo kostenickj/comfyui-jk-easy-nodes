@@ -1,4 +1,4 @@
-import { JKFeedBar } from './feedBar';
+import { FeedBarEvents, JKFeedBar } from './feedBar';
 import { findKeyValueRecursive } from '../common/utils';
 import '@alenaksu/json-viewer';
 // have to import this way cuz the exports/types seem to be exported wrong
@@ -193,6 +193,7 @@ class JKRightPanelImage {
             //@ts-ignore
             const ComfyButton = (await import('../../../scripts/ui/components/button.js')).ComfyButton;
 
+            // any mdi icons seem to work in icon field
             this.viewPrompInfoButton = new ComfyButton({
                 icon: 'information',
                 action: () => {
@@ -239,7 +240,7 @@ class JKRightPanelImage {
     }
 }
 
-export class JKImageGallery {
+export class JKImageGallery extends EventTarget {
     private initialized = false;
     private images: JKImage[] = [];
 
@@ -260,6 +261,7 @@ export class JKImageGallery {
         return document.getElementById('jk-gallery-right-panel') as HTMLDivElement;
     }
     constructor(private container: HTMLDivElement, private feedBarContainer: HTMLDivElement) {
+        super();
         this.container.innerHTML = `
             <sl-split-panel position="15" style="--max: 35%; --min:10%;">
                 <div
@@ -281,6 +283,7 @@ export class JKImageGallery {
         if (!this.initialized) {
             this.initialized = true;
             await this.FeedBar.init();
+            this.FeedBar.addEventListener(FeedBarEvents['feed-clear'], this.clearFeed);
         }
     }
 
@@ -318,4 +321,18 @@ export class JKImageGallery {
             this.selectImage(imgs[0]!);
         }
     }
+
+    public clearFeed = (ev: any) => {
+        if (confirm('are you sure you want to clear the feed?')) {
+            this.leftPanel.innerHTML = ``;
+            this.images = [];
+            this.rightPanel.innerHTML = ``;
+
+            this.selectedImage = undefined;
+            // node title and # => image
+
+            this.imageMap = new Map<string, GalleryImageData[]>();
+            this.dispatchEvent(new Event(FeedBarEvents['feed-clear']));
+        }
+    };
 }

@@ -8,8 +8,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
 
 // src_web/gallery/feedBar.ts
-var JKFeedBar = class {
+var FeedBarEvents = {
+  "feed-clear": "feed-clear"
+};
+var JKFeedBar = class extends EventTarget {
   constructor(el) {
+    super();
     this.el = el;
     this.el.classList.add("comfyui-menu", "flex", "items-center");
     this.buttonGroup = document.createElement("div");
@@ -18,16 +22,15 @@ var JKFeedBar = class {
   }
   async init() {
     const ComfyButton = (await import("../../../scripts/ui/components/button.js")).ComfyButton;
-    const test = new ComfyButton({
-      icon: "image-multiple",
+    const clearFeedButton = new ComfyButton({
+      icon: "nuke",
       action: () => {
-        console.log("gldkdkd");
+        this.dispatchEvent(new Event(FeedBarEvents["feed-clear"]));
       },
-      tooltip: "Toggle Image Window",
-      content: "test button"
+      tooltip: "Clear the feed",
+      content: "Clear Feed"
     });
-    this.buttonGroup.append(test.element);
-    console.log(test);
+    this.buttonGroup.append(clearFeedButton.element);
   }
 };
 
@@ -1378,8 +1381,9 @@ var JKRightPanelImage = class {
     return this;
   }
 };
-var JKImageGallery = class {
+var JKImageGallery = class extends EventTarget {
   constructor(container, feedBarContainer) {
+    super();
     this.container = container;
     this.feedBarContainer = feedBarContainer;
     this.initialized = false;
@@ -1388,6 +1392,16 @@ var JKImageGallery = class {
     this.imageMap = /* @__PURE__ */ new Map();
     this.handleImageClicked = (data) => {
       this.selectImage(data);
+    };
+    this.clearFeed = (ev) => {
+      if (confirm("are you sure you want to clear the feed?")) {
+        this.leftPanel.innerHTML = ``;
+        this.images = [];
+        this.rightPanel.innerHTML = ``;
+        this.selectedImage = void 0;
+        this.imageMap = /* @__PURE__ */ new Map();
+        this.dispatchEvent(new Event(FeedBarEvents["feed-clear"]));
+      }
     };
     this.container.innerHTML = `
             <sl-split-panel position="15" style="--max: 35%; --min:10%;">
@@ -1418,6 +1432,7 @@ var JKImageGallery = class {
     if (!this.initialized) {
       this.initialized = true;
       await this.FeedBar.init();
+      this.FeedBar.addEventListener(FeedBarEvents["feed-clear"], this.clearFeed);
     }
   }
   async selectImage(data) {

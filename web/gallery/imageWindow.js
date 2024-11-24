@@ -3548,6 +3548,7 @@ var init_icon = __esm({
 // src_web/gallery/imageWindow.ts
 import { SessionStorageHelper } from "../common/storage.js";
 import { JKImageGallery } from "./gallery.js";
+import { FeedBarEvents } from "./feedBar.js";
 var require_imageWindow = __commonJS({
   "src_web/gallery/imageWindow.ts"() {
     init_esbrowser();
@@ -3565,6 +3566,10 @@ var require_imageWindow = __commonJS({
       const init = async () => {
         await Gallery.init();
       };
+      Gallery.addEventListener(FeedBarEvents["feed-clear"], (ev) => {
+        SessionStorageHelper.setJSONVal("feed", []);
+        channel.postMessage({ data: void 0, type: "clear-feed" });
+      });
       channel.addEventListener("message", async (m2) => {
         switch (m2.type) {
           case "heartbeat":
@@ -3633,6 +3638,10 @@ var require_imageWindow = __commonJS({
             case "closed":
               console.log("feed window was closed");
               feedWindow = null;
+              break;
+            case "clear-feed":
+              SessionStorageHelper.setJSONVal("feed", []);
+              CURRENT_IMAGES = [];
           }
         });
         app.registerExtension({
@@ -3673,33 +3682,15 @@ var require_imageWindow = __commonJS({
                     if (seenImages.has(fingerprint)) {
                     } else {
                       seenImages.set(fingerprint, true);
-                      let img = $el("img", { src: href });
-                      img.onload = () => {
-                        let imgCanvas = document.createElement("canvas");
-                        let imgScalar = 1;
-                        imgCanvas.width = imgScalar * img.width;
-                        imgCanvas.height = imgScalar * img.height;
-                        let imgContext = imgCanvas.getContext("2d");
-                        imgContext.drawImage(img, 0, 0, imgCanvas.width, imgCanvas.height);
-                        const data = imgContext.getImageData(0, 0, imgCanvas.width, imgCanvas.height);
-                        let hash = 0;
-                        for (const b3 of data.data) {
-                          hash = (hash << 5) - hash + b3;
-                        }
-                        if (seenImages.has(hash)) {
-                        } else {
-                          seenImages.set(hash, true);
-                          sendImageToFeed({
-                            href,
-                            subfolder: src.subfolder,
-                            type: src.type,
-                            nodeId,
-                            nodeTitle: title,
-                            fileName: src.filename,
-                            execTimeMs
-                          });
-                        }
-                      };
+                      sendImageToFeed({
+                        href,
+                        subfolder: src.subfolder,
+                        type: src.type,
+                        nodeId,
+                        nodeTitle: title,
+                        fileName: src.filename,
+                        execTimeMs
+                      });
                     }
                   } else {
                     sendImageToFeed({

@@ -621,6 +621,7 @@ body {
 }
 #jk-feed-bar .comfyui-button-group {
   display: flex;
+  margin-left: auto;
   height: 100%;
   padding: 4px;
 }
