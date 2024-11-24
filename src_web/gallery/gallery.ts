@@ -1,7 +1,7 @@
 import { JKFeedBar } from './feedBar';
 import { findKeyValueRecursive } from '../common/utils';
 import '@alenaksu/json-viewer';
-// have to import this way cuz the exports seem to be defined wrong
+// have to import this way cuz the exports/types seem to be exported wrong
 import type { JsonViewer } from '../../node_modules/@alenaksu/json-viewer/dist/JsonViewer';
 //@ts-ignore
 import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
@@ -100,6 +100,8 @@ class JKRightPanelImage {
     viewPrompInfoButton?: { element: HTMLElement };
     dialogCloseBtn: HTMLButtonElement;
     promptSearch?: HTMLInputElement;
+    expandAllBtn?: HTMLButtonElement;
+    collapseAllBtn?: HTMLButtonElement;
 
     currentSearch?: Generator<any>;
 
@@ -125,6 +127,11 @@ class JKRightPanelImage {
         this.infoDialog.innerHTML = `
             <div class="info-dialog-header">
                 <input autofocus id="prompt-search" type="text" placeholder="search"></input>
+                <div class="comfyui-menu"> 
+                      <button class="comfyui-button" id="info-expand-all"> Expand All </button>
+                    <button class="comfyui-button" id="info-collapse-all"> Collapse All </button>
+                </div>
+          
             </div>
         `;
 
@@ -143,6 +150,18 @@ class JKRightPanelImage {
     private showInfoModal() {
         this.infoDialog.showModal();
         this.promptSearch = document.getElementById('prompt-search') as HTMLInputElement;
+        this.expandAllBtn = document.getElementById('info-expand-all') as HTMLButtonElement;
+        this.expandAllBtn.addEventListener('click', (ev) => {
+            this.promptViewer?.expandAll();
+            this.promptViewer?.resetFilter();
+            this.currentSearch = undefined;
+        });
+        this.collapseAllBtn = document.getElementById('info-collapse-all') as HTMLButtonElement;
+        this.collapseAllBtn?.addEventListener('click', (ev) => {
+            this.promptViewer?.collapseAll();
+            this.promptViewer?.resetFilter();
+            this.currentSearch = undefined;
+        });
         this.promptSearch.addEventListener('input', (ev) => {
             this.currentSearch = this.promptViewer?.search(((ev?.target as HTMLInputElement)?.value as string) ?? '');
         });
@@ -175,7 +194,7 @@ class JKRightPanelImage {
             const ComfyButton = (await import('../../../scripts/ui/components/button.js')).ComfyButton;
 
             this.viewPrompInfoButton = new ComfyButton({
-                icon: 'info',
+                icon: 'information',
                 action: () => {
                     this.showInfoModal();
                 },
@@ -186,6 +205,10 @@ class JKRightPanelImage {
             document.getElementById('right-panel-btn-group')?.appendChild(this.viewPrompInfoButton!.element);
         } catch (err) {
             console.error('failed to get metadata', err);
+            try {
+                this.title.removeChild(document.getElementById('right-panel-btn-group')!);
+                this.title.removeChild(document.getElementById('seed')!);
+            } catch (e) {}
         }
     }
 
@@ -227,9 +250,8 @@ export class JKImageGallery {
     FeedBar: JKFeedBar;
 
     //TODO, add ability to toggle which ouputs to view images from based on node title/#
-    // add clear button
-    // implement right sigght of gallery, on first load if no image there load the first image we get
-    // on click go full screen
+    // add clear button to empty it out
+    // add on image click go full screen
 
     private get leftPanel() {
         return document.getElementById('jk-gallery-left-panel') as HTMLDivElement;

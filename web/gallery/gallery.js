@@ -1280,6 +1280,11 @@ var JKRightPanelImage = class {
     this.infoDialog.innerHTML = `
             <div class="info-dialog-header">
                 <input autofocus id="prompt-search" type="text" placeholder="search"></input>
+                <div class="comfyui-menu"> 
+                      <button class="comfyui-button" id="info-expand-all"> Expand All </button>
+                    <button class="comfyui-button" id="info-collapse-all"> Collapse All </button>
+                </div>
+          
             </div>
         `;
     this.infoDialog.appendChild(this.dialogCloseBtn);
@@ -1295,6 +1300,18 @@ var JKRightPanelImage = class {
   showInfoModal() {
     this.infoDialog.showModal();
     this.promptSearch = document.getElementById("prompt-search");
+    this.expandAllBtn = document.getElementById("info-expand-all");
+    this.expandAllBtn.addEventListener("click", (ev) => {
+      this.promptViewer?.expandAll();
+      this.promptViewer?.resetFilter();
+      this.currentSearch = void 0;
+    });
+    this.collapseAllBtn = document.getElementById("info-collapse-all");
+    this.collapseAllBtn?.addEventListener("click", (ev) => {
+      this.promptViewer?.collapseAll();
+      this.promptViewer?.resetFilter();
+      this.currentSearch = void 0;
+    });
     this.promptSearch.addEventListener("input", (ev) => {
       this.currentSearch = this.promptViewer?.search(ev?.target?.value ?? "");
     });
@@ -1322,7 +1339,7 @@ var JKRightPanelImage = class {
       this.info.appendChild(this.promptViewer);
       const ComfyButton = (await import("../../../scripts/ui/components/button.js")).ComfyButton;
       this.viewPrompInfoButton = new ComfyButton({
-        icon: "info",
+        icon: "information",
         action: () => {
           this.showInfoModal();
         },
@@ -1333,6 +1350,11 @@ var JKRightPanelImage = class {
       document.getElementById("right-panel-btn-group")?.appendChild(this.viewPrompInfoButton.element);
     } catch (err) {
       console.error("failed to get metadata", err);
+      try {
+        this.title.removeChild(document.getElementById("right-panel-btn-group"));
+        this.title.removeChild(document.getElementById("seed"));
+      } catch (e8) {
+      }
     }
   }
   async init() {
@@ -1384,9 +1406,8 @@ var JKImageGallery = class {
     this.FeedBar = new JKFeedBar(this.feedBarContainer);
   }
   //TODO, add ability to toggle which ouputs to view images from based on node title/#
-  // add clear button
-  // implement right sigght of gallery, on first load if no image there load the first image we get
-  // on click go full screen
+  // add clear button to empty it out
+  // add on image click go full screen
   get leftPanel() {
     return document.getElementById("jk-gallery-left-panel");
   }

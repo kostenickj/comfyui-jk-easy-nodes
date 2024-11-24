@@ -257,15 +257,22 @@ body {
         right: 0;
         color: var(--fg-color);
         background-color: var(--comfy-menu-bg);
+        padding: 8px;
     }
 
     .info-dialog-header {
+        display: flex;
         input {
             font-size: 1em;
             padding: 8px;
             background-color: var(--content-bg);
             color: var(--fg-color);
             border: none;
+        }
+
+        .comfyui-menu {
+            display: flex;
+            margin-left: 16px;
         }
     }
 }

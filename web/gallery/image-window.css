@@ -643,6 +643,10 @@ body {
   right: 0;
   color: var(--fg-color);
   background-color: var(--comfy-menu-bg);
+  padding: 8px;
+}
+.jk-info-dialog .info-dialog-header {
+  display: flex;
 }
 .jk-info-dialog .info-dialog-header input {
   font-size: 1em;
@@ -650,4 +654,8 @@ body {
   background-color: var(--content-bg);
   color: var(--fg-color);
   border: none;
+}
+.jk-info-dialog .info-dialog-header .comfyui-menu {
+  display: flex;
+  margin-left: 16px;
 }
