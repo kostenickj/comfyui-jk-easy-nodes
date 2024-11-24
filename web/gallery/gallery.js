@@ -68,10 +68,31 @@ var JKFeedBar = class extends EventTarget {
   get checkedItems() {
     return this._checkedItems;
   }
+  createMenuItem(item, isChecked) {
+    const menuItem = document.createElement("sl-menu-item");
+    menuItem.type = "checkbox";
+    menuItem.value = item;
+    menuItem.innerText = item;
+    menuItem.checked = isChecked;
+    return menuItem;
+  }
+  addCheckboxOptionIfNeeded(item, isChecked) {
+    let needsInsert = false;
+    if (!this.checkedItems.has(item)) {
+      needsInsert = true;
+    }
+    this.checkedItems.set(item, isChecked);
+    if (needsInsert) {
+      const menuItem = this.createMenuItem(item, isChecked);
+      this.checkBoxMenuMenu.appendChild(menuItem);
+    }
+  }
   updateCheckboxOptions(items, checkAll) {
-    this.checkBoxMenuMenu.innerHTML = `${items.map((i6) => {
-      return `<sl-menu-item type="checkbox" ${!!(checkAll || this._checkedItems.get(i6)) ? "checked" : ""} value="${i6}">${i6}</sl-menu-item>`;
-    })}`;
+    this.checkBoxMenuMenu.innerHTML = "";
+    items.forEach((x2) => {
+      const menuItem = this.createMenuItem(x2, checkAll || this.checkedItems.get(x2) ? true : false);
+      this.checkBoxMenuMenu.appendChild(menuItem);
+    });
     if (checkAll) {
       this._checkedItems.clear();
       items.forEach((x2) => {
@@ -1513,13 +1534,17 @@ var JKImageGallery = class extends EventTarget {
   }
   async addImage(data, updateFeedBar) {
     const nodeTitle = formattedTitle(data);
-    if (!this.imageMap.has(nodeTitle)) this.imageMap.set(nodeTitle, []);
+    let isNewNode = false;
+    if (!this.imageMap.has(nodeTitle)) {
+      this.imageMap.set(nodeTitle, []);
+      isNewNode = true;
+    }
     this.imageMap.get(nodeTitle).unshift(data);
     const img = await new JKImage(data, true, false, this.handleImageClicked).init();
     this.images.unshift(img);
     this.leftPanel.prepend(img.getEl());
-    if (updateFeedBar) {
-      this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], false);
+    if (updateFeedBar && isNewNode) {
+      this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
     }
   }
   async addImages(imgs) {

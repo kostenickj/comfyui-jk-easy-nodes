@@ -309,16 +309,19 @@ export class JKImageGallery extends EventTarget {
     public async addImage(data: GalleryImageData, updateFeedBar: boolean) {
         const nodeTitle = formattedTitle(data);
 
-        if (!this.imageMap.has(nodeTitle)) this.imageMap.set(nodeTitle, []);
+        let isNewNode = false;
+        if (!this.imageMap.has(nodeTitle)) {
+            this.imageMap.set(nodeTitle, []);
+            isNewNode = true;
+        }
 
         this.imageMap.get(nodeTitle)!.unshift(data);
 
         const img = await new JKImage(data, true, false, this.handleImageClicked).init();
         this.images.unshift(img);
         this.leftPanel.prepend(img.getEl());
-
-        if (updateFeedBar) {
-            this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], false);
+        if (updateFeedBar && isNewNode) {
+            this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
         }
     }
 

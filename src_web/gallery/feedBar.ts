@@ -70,10 +70,35 @@ export class JKFeedBar extends EventTarget {
         });
     }
 
+    private createMenuItem(item: string, isChecked: boolean) {
+        const menuItem = document.createElement('sl-menu-item') as SLmenuItem;
+        menuItem.type = 'checkbox';
+        menuItem.value = item;
+        menuItem.innerText = item;
+        menuItem.checked = isChecked;
+        return menuItem;
+    }
+
+    public addCheckboxOptionIfNeeded(item: string, isChecked: boolean) {
+        let needsInsert = false;
+        if (!this.checkedItems.has(item)) {
+            needsInsert = true;
+        }
+
+        this.checkedItems.set(item, isChecked);
+        if (needsInsert) {
+            const menuItem = this.createMenuItem(item, isChecked); 
+            this.checkBoxMenuMenu.appendChild(menuItem);
+        }
+    }
+
     public updateCheckboxOptions(items: string[], checkAll: boolean) {
-        this.checkBoxMenuMenu.innerHTML = `${items.map((i) => {
-            return `<sl-menu-item type="checkbox" ${!!(checkAll || this._checkedItems.get(i)) ? 'checked' : ''} value="${i}">${i}</sl-menu-item>`
-        })}`;
+        this.checkBoxMenuMenu.innerHTML = '';
+        items.forEach((x) => {
+            const menuItem = this.createMenuItem(x, checkAll || this.checkedItems.get(x) ? true : false);
+            this.checkBoxMenuMenu.appendChild(menuItem);
+        });
+
         if (checkAll) {
             this._checkedItems.clear();
             items.forEach((x) => {
