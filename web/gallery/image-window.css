@@ -502,17 +502,7 @@ body {
 #jk-image-gallery sl-split-panel::part(divider) {
   background-color: var(--fg-color) !important;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel {
-  height: 100%;
-  display: flex;
-  overflow-y: auto !important;
-  flex-direction: column;
-  overflow: hidden;
-  scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
-  scrollbar-width: thin;
-  padding-bottom: 16px;
-}
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper {
+#jk-image-gallery sl-split-panel .jk-img-wrapper {
   max-width: 100%;
   height: auto;
   display: flex;
@@ -526,7 +516,7 @@ body {
   align-items: center;
   position: relative;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img-hover {
+#jk-image-gallery sl-split-panel .jk-img-wrapper .jk-img-hover {
   position: absolute;
   top: 0;
   left: 0;
@@ -535,51 +525,94 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: var(--left-panel-gutter-size);
-  margin-right: var(--left-panel-gutter-size);
   cursor: pointer;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img-hover sl-icon {
+#jk-image-gallery sl-split-panel .jk-img-wrapper .jk-img-hover sl-icon {
   opacity: 0;
   font-size: 32px;
   transition: all 0.3s ease-in-out;
   scale: 1;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img-hover:hover {
+#jk-image-gallery sl-split-panel .jk-img-wrapper .jk-img-hover:hover {
   background-color: rgba(1, 1, 1, 0.5);
   transition: all 0.3s ease-in-out;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img-hover:hover sl-icon {
+#jk-image-gallery sl-split-panel .jk-img-wrapper .jk-img-hover:hover sl-icon {
   opacity: 1;
   transition: all 0.3s ease-in-out;
   color: var(--fg-color);
   scale: 1.25;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img-info-wrapper {
+#jk-image-gallery sl-split-panel .jk-img-wrapper .jk-img-info-wrapper {
   position: absolute;
   bottom: 0;
   left: calc(var(--left-panel-gutter-size) + 4px);
   padding: 4px;
   max-width: calc(100% - var(--left-panel-gutter-size) - 24px);
   overflow: hidden;
+  pointer-events: none;
   word-break: break-all;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img {
+#jk-image-gallery sl-split-panel .jk-img-wrapper .jk-img {
   width: 100%;
   max-width: 100%;
   height: auto;
   flex-shrink: 1;
   cursor: pointer;
 }
-#jk-image-gallery sl-split-panel #jk-gallery-left-panel .jk-img-wrapper .jk-img:hover {
-  border-radius: 16px;
+#jk-image-gallery sl-split-panel #jk-gallery-left-panel {
+  height: 100%;
+  display: flex;
+  overflow-y: scroll !important;
+  flex-direction: column;
+  overflow: hidden;
+  scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
+  scrollbar-width: thin;
+  padding-bottom: 16px;
 }
 #jk-image-gallery sl-split-panel #jk-gallery-right-panel {
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow-y: auto;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-rightpanel-title {
+  margin-top: 16px;
+  max-width: 50%;
+  width: 50%;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-rightpanel-title div {
+  border: 1px solid var(--border-color);
+  padding: 4px;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-img-wrapper {
+  padding: 0;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-img-wrapper .jk-img {
+  width: auto;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-rightpanel-info {
+  color: var(--fg-color);
+  width: 100%;
+  display: flex;
+  padding: 16px;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-rightpanel-info sl-details {
+  width: 100%;
+}
+#jk-image-gallery sl-split-panel #jk-gallery-right-panel .jk-rightpanel-container .jk-rightpanel-info sl-details::part(base) {
+  width: 100%;
+  background-color: var(--comfy-menu-bg) !important;
 }
 #jk-feed-bar {
   height: var(--jk-feed-bar-height);

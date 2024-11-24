@@ -5,9 +5,10 @@ import { GalleryImageData, JKImageGallery } from './gallery.js';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 setBasePath('../../node_modules/@shoelace-style/shoelace/dist');
 import '@shoelace-style/shoelace/dist/components/split-panel/split-panel.js';
+import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 import '@shoelace-style/shoelace/dist/components/badge/badge.js';
+import '@shoelace-style/shoelace/dist/components/details/details.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
-
 interface BaseImageViewMessage<T> {
     data: T;
     type: 'new-image' | 'heartbeat' | 'request-all' | 'closed';

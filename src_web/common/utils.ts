@@ -1,26 +1,3 @@
-// @ts-ignore
-import { $el } from '../../../../scripts/ui.js';
-
-export function addStylesheet(url: string) {
-    if (url.endsWith('.js')) {
-        url = url.substr(0, url.length - 2) + 'css';
-    }
-    $el('link', {
-        parent: document.head,
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: url.startsWith('http') ? url : getUrl(url)
-    });
-}
-
-export function getUrl(path: string, baseUrl?: string) {
-    if (baseUrl) {
-        return new URL(path, baseUrl).toString();
-    } else {
-        return new URL('../' + path, import.meta.url).toString();
-    }
-}
-
 export const getElementCSSVariables = (element = document.documentElement) => {
     const rootCssVariables: string[] = Array.from(document.styleSheets)
         .flatMap((styleSheet: CSSStyleSheet) => Array.from(styleSheet.cssRules))
@@ -37,4 +14,33 @@ export const getElementCSSVariables = (element = document.documentElement) => {
         }
     }
     return cssVars;
+};
+
+export const findKeyValueRecursive = <K extends string>(obj: any, target: K): Record<K, any> | null => {
+    const recurse = (current: any): any => {
+        if (typeof current !== 'object' || current === null) {
+            return null;
+        }
+
+        if (Array.isArray(current)) {
+            for (const item of current) {
+                const result = recurse(item);
+                if (result) return result;
+            }
+            // Key not found in this array
+            return null;
+        }
+
+        for (const [key, value] of Object.entries(current)) {
+            if (key === target) {
+                return { [key]: value };
+            }
+            const result = recurse(value);
+            if (result) return result;
+        }
+
+        return null; // Key not found at this level
+    };
+
+    return recurse(obj);
 };

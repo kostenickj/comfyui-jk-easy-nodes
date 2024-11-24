@@ -889,11 +889,13 @@ var init_chunk_3Y6SB6QS = __esm({
 });
 
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.B3BW2AY6.js
-var __defProp2, __getOwnPropDesc, __getOwnPropSymbols, __hasOwnProp, __propIsEnum, __defNormalProp2, __spreadValues, __decorateClass, __accessCheck, __privateGet, __privateAdd, __privateSet;
+var __defProp2, __defProps, __getOwnPropDesc, __getOwnPropDescs, __getOwnPropSymbols, __hasOwnProp, __propIsEnum, __defNormalProp2, __spreadValues, __spreadProps, __decorateClass, __accessCheck, __privateGet, __privateAdd, __privateSet;
 var init_chunk_B3BW2AY6 = __esm({
   "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.B3BW2AY6.js"() {
     __defProp2 = Object.defineProperty;
+    __defProps = Object.defineProperties;
     __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+    __getOwnPropDescs = Object.getOwnPropertyDescriptors;
     __getOwnPropSymbols = Object.getOwnPropertySymbols;
     __hasOwnProp = Object.prototype.hasOwnProperty;
     __propIsEnum = Object.prototype.propertyIsEnumerable;
@@ -909,6 +911,7 @@ var init_chunk_B3BW2AY6 = __esm({
         }
       return a3;
     };
+    __spreadProps = (a3, b3) => __defProps(a3, __getOwnPropDescs(b3));
     __decorateClass = (decorators, target, key, kind) => {
       var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
       for (var i6 = decorators.length - 1, decorator; i6 >= 0; i6--)
@@ -2371,6 +2374,121 @@ var init_split_panel = __esm({
   }
 });
 
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.7DUCI5S4.js
+var spinner_styles_default;
+var init_chunk_7DUCI5S4 = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.7DUCI5S4.js"() {
+    init_lit();
+    spinner_styles_default = i`
+  :host {
+    --track-width: 2px;
+    --track-color: rgb(128 128 128 / 25%);
+    --indicator-color: var(--sl-color-primary-600);
+    --speed: 2s;
+
+    display: inline-flex;
+    width: 1em;
+    height: 1em;
+    flex: none;
+  }
+
+  .spinner {
+    flex: 1 1 auto;
+    height: 100%;
+    width: 100%;
+  }
+
+  .spinner__track,
+  .spinner__indicator {
+    fill: none;
+    stroke-width: var(--track-width);
+    r: calc(0.5em - var(--track-width) / 2);
+    cx: 0.5em;
+    cy: 0.5em;
+    transform-origin: 50% 50%;
+  }
+
+  .spinner__track {
+    stroke: var(--track-color);
+    transform-origin: 0% 0%;
+  }
+
+  .spinner__indicator {
+    stroke: var(--indicator-color);
+    stroke-linecap: round;
+    stroke-dasharray: 150% 75%;
+    animation: spin var(--speed) linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+      stroke-dasharray: 0.05em, 3em;
+    }
+
+    50% {
+      transform: rotate(450deg);
+      stroke-dasharray: 1.375em, 1.375em;
+    }
+
+    100% {
+      transform: rotate(1080deg);
+      stroke-dasharray: 0.05em, 3em;
+    }
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.TLKDQ5JG.js
+var SlSpinner;
+var init_chunk_TLKDQ5JG = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.TLKDQ5JG.js"() {
+    init_chunk_7DUCI5S4();
+    init_chunk_WLV3FVBR();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_lit();
+    SlSpinner = class extends ShoelaceElement {
+      constructor() {
+        super(...arguments);
+        this.localize = new LocalizeController2(this);
+      }
+      render() {
+        return x`
+      <svg part="base" class="spinner" role="progressbar" aria-label=${this.localize.term("loading")}>
+        <circle class="spinner__track"></circle>
+        <circle class="spinner__indicator"></circle>
+      </svg>
+    `;
+      }
+    };
+    SlSpinner.styles = [component_styles_default, spinner_styles_default];
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.EHUQAWJK.js
+var init_chunk_EHUQAWJK = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.EHUQAWJK.js"() {
+    init_chunk_TLKDQ5JG();
+    SlSpinner.define("sl-spinner");
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/spinner/spinner.js
+var init_spinner = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/spinner/spinner.js"() {
+    init_chunk_EHUQAWJK();
+    init_chunk_TLKDQ5JG();
+    init_chunk_7DUCI5S4();
+    init_chunk_WLV3FVBR();
+    init_chunk_MAS2SHYD();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.WQC6OWUE.js
 var badge_styles_default;
 var init_chunk_WQC6OWUE = __esm({
@@ -2600,6 +2718,191 @@ var init_badge = __esm({
     init_chunk_WQC6OWUE();
     init_chunk_TUVJKY7S();
     init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.J7PLVEQM.js
+var details_styles_default;
+var init_chunk_J7PLVEQM = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.J7PLVEQM.js"() {
+    init_lit();
+    details_styles_default = i`
+  :host {
+    display: block;
+  }
+
+  .details {
+    border: solid 1px var(--sl-color-neutral-200);
+    border-radius: var(--sl-border-radius-medium);
+    background-color: var(--sl-color-neutral-0);
+    overflow-anchor: none;
+  }
+
+  .details--disabled {
+    opacity: 0.5;
+  }
+
+  .details__header {
+    display: flex;
+    align-items: center;
+    border-radius: inherit;
+    padding: var(--sl-spacing-medium);
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+  }
+
+  .details__header::-webkit-details-marker {
+    display: none;
+  }
+
+  .details__header:focus {
+    outline: none;
+  }
+
+  .details__header:focus-visible {
+    outline: var(--sl-focus-ring);
+    outline-offset: calc(1px + var(--sl-focus-ring-offset));
+  }
+
+  .details--disabled .details__header {
+    cursor: not-allowed;
+  }
+
+  .details--disabled .details__header:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .details__summary {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .details__summary-icon {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    transition: var(--sl-transition-medium) rotate ease;
+  }
+
+  .details--open .details__summary-icon {
+    rotate: 90deg;
+  }
+
+  .details--open.details--rtl .details__summary-icon {
+    rotate: -90deg;
+  }
+
+  .details--open slot[name='expand-icon'],
+  .details:not(.details--open) slot[name='collapse-icon'] {
+    display: none;
+  }
+
+  .details__body {
+    overflow: hidden;
+  }
+
+  .details__content {
+    display: block;
+    padding: var(--sl-spacing-medium);
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.UW6SLYOK.js
+function ensureAnimation(animation) {
+  return animation != null ? animation : { keyframes: [], options: { duration: 0 } };
+}
+function getLogicalAnimation(animation, dir) {
+  if (dir.toLowerCase() === "rtl") {
+    return {
+      keyframes: animation.rtlKeyframes || animation.keyframes,
+      options: animation.options
+    };
+  }
+  return animation;
+}
+function setDefaultAnimation(animationName, animation) {
+  defaultAnimationRegistry.set(animationName, ensureAnimation(animation));
+}
+function getAnimation(el, animationName, options) {
+  const customAnimation = customAnimationRegistry.get(el);
+  if (customAnimation == null ? void 0 : customAnimation[animationName]) {
+    return getLogicalAnimation(customAnimation[animationName], options.dir);
+  }
+  const defaultAnimation = defaultAnimationRegistry.get(animationName);
+  if (defaultAnimation) {
+    return getLogicalAnimation(defaultAnimation, options.dir);
+  }
+  return {
+    keyframes: [],
+    options: { duration: 0 }
+  };
+}
+var defaultAnimationRegistry, customAnimationRegistry;
+var init_chunk_UW6SLYOK = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.UW6SLYOK.js"() {
+    init_chunk_B3BW2AY6();
+    defaultAnimationRegistry = /* @__PURE__ */ new Map();
+    customAnimationRegistry = /* @__PURE__ */ new WeakMap();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.B4BZKR24.js
+function waitForEvent(el, eventName) {
+  return new Promise((resolve) => {
+    function done(event) {
+      if (event.target === el) {
+        el.removeEventListener(eventName, done);
+        resolve();
+      }
+    }
+    el.addEventListener(eventName, done);
+  });
+}
+var init_chunk_B4BZKR24 = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.B4BZKR24.js"() {
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.3EPZX5HE.js
+function animateTo(el, keyframes, options) {
+  return new Promise((resolve) => {
+    if ((options == null ? void 0 : options.duration) === Infinity) {
+      throw new Error("Promise-based animations must be finite.");
+    }
+    const animation = el.animate(keyframes, __spreadProps(__spreadValues({}, options), {
+      duration: prefersReducedMotion() ? 0 : options.duration
+    }));
+    animation.addEventListener("cancel", resolve, { once: true });
+    animation.addEventListener("finish", resolve, { once: true });
+  });
+}
+function prefersReducedMotion() {
+  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+  return query.matches;
+}
+function stopAnimations(el) {
+  return Promise.all(
+    el.getAnimations().map((animation) => {
+      return new Promise((resolve) => {
+        animation.cancel();
+        requestAnimationFrame(resolve);
+      });
+    })
+  );
+}
+function shimKeyframesHeightAuto(keyframes, calculatedHeight) {
+  return keyframes.map((keyframe) => __spreadProps(__spreadValues({}, keyframe), {
+    height: keyframe.height === "auto" ? `${calculatedHeight}px` : keyframe.height
+  }));
+}
+var init_chunk_3EPZX5HE = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.3EPZX5HE.js"() {
     init_chunk_B3BW2AY6();
   }
 });
@@ -2976,6 +3279,247 @@ var init_chunk_E6QAPUBK = __esm({
   }
 });
 
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.K7Q3XHLX.js
+var SlDetails;
+var init_chunk_K7Q3XHLX = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.K7Q3XHLX.js"() {
+    init_chunk_J7PLVEQM();
+    init_chunk_UW6SLYOK();
+    init_chunk_B4BZKR24();
+    init_chunk_3EPZX5HE();
+    init_chunk_WLV3FVBR();
+    init_chunk_E6QAPUBK();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+    init_class_map2();
+    init_lit();
+    init_decorators();
+    SlDetails = class extends ShoelaceElement {
+      constructor() {
+        super(...arguments);
+        this.localize = new LocalizeController2(this);
+        this.open = false;
+        this.disabled = false;
+      }
+      firstUpdated() {
+        this.body.style.height = this.open ? "auto" : "0";
+        if (this.open) {
+          this.details.open = true;
+        }
+        this.detailsObserver = new MutationObserver((changes) => {
+          for (const change of changes) {
+            if (change.type === "attributes" && change.attributeName === "open") {
+              if (this.details.open) {
+                this.show();
+              } else {
+                this.hide();
+              }
+            }
+          }
+        });
+        this.detailsObserver.observe(this.details, { attributes: true });
+      }
+      disconnectedCallback() {
+        var _a;
+        super.disconnectedCallback();
+        (_a = this.detailsObserver) == null ? void 0 : _a.disconnect();
+      }
+      handleSummaryClick(event) {
+        event.preventDefault();
+        if (!this.disabled) {
+          if (this.open) {
+            this.hide();
+          } else {
+            this.show();
+          }
+          this.header.focus();
+        }
+      }
+      handleSummaryKeyDown(event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          if (this.open) {
+            this.hide();
+          } else {
+            this.show();
+          }
+        }
+        if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+          event.preventDefault();
+          this.hide();
+        }
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+          event.preventDefault();
+          this.show();
+        }
+      }
+      async handleOpenChange() {
+        if (this.open) {
+          this.details.open = true;
+          const slShow = this.emit("sl-show", { cancelable: true });
+          if (slShow.defaultPrevented) {
+            this.open = false;
+            this.details.open = false;
+            return;
+          }
+          await stopAnimations(this.body);
+          const { keyframes, options } = getAnimation(this, "details.show", { dir: this.localize.dir() });
+          await animateTo(this.body, shimKeyframesHeightAuto(keyframes, this.body.scrollHeight), options);
+          this.body.style.height = "auto";
+          this.emit("sl-after-show");
+        } else {
+          const slHide = this.emit("sl-hide", { cancelable: true });
+          if (slHide.defaultPrevented) {
+            this.details.open = true;
+            this.open = true;
+            return;
+          }
+          await stopAnimations(this.body);
+          const { keyframes, options } = getAnimation(this, "details.hide", { dir: this.localize.dir() });
+          await animateTo(this.body, shimKeyframesHeightAuto(keyframes, this.body.scrollHeight), options);
+          this.body.style.height = "auto";
+          this.details.open = false;
+          this.emit("sl-after-hide");
+        }
+      }
+      /** Shows the details. */
+      async show() {
+        if (this.open || this.disabled) {
+          return void 0;
+        }
+        this.open = true;
+        return waitForEvent(this, "sl-after-show");
+      }
+      /** Hides the details */
+      async hide() {
+        if (!this.open || this.disabled) {
+          return void 0;
+        }
+        this.open = false;
+        return waitForEvent(this, "sl-after-hide");
+      }
+      render() {
+        const isRtl = this.localize.dir() === "rtl";
+        return x`
+      <details
+        part="base"
+        class=${e7({
+          details: true,
+          "details--open": this.open,
+          "details--disabled": this.disabled,
+          "details--rtl": isRtl
+        })}
+      >
+        <summary
+          part="header"
+          id="header"
+          class="details__header"
+          role="button"
+          aria-expanded=${this.open ? "true" : "false"}
+          aria-controls="content"
+          aria-disabled=${this.disabled ? "true" : "false"}
+          tabindex=${this.disabled ? "-1" : "0"}
+          @click=${this.handleSummaryClick}
+          @keydown=${this.handleSummaryKeyDown}
+        >
+          <slot name="summary" part="summary" class="details__summary">${this.summary}</slot>
+
+          <span part="summary-icon" class="details__summary-icon">
+            <slot name="expand-icon">
+              <sl-icon library="system" name=${isRtl ? "chevron-left" : "chevron-right"}></sl-icon>
+            </slot>
+            <slot name="collapse-icon">
+              <sl-icon library="system" name=${isRtl ? "chevron-left" : "chevron-right"}></sl-icon>
+            </slot>
+          </span>
+        </summary>
+
+        <div class="details__body" role="region" aria-labelledby="header">
+          <slot part="content" id="content" class="details__content"></slot>
+        </div>
+      </details>
+    `;
+      }
+    };
+    SlDetails.styles = [component_styles_default, details_styles_default];
+    SlDetails.dependencies = {
+      "sl-icon": SlIcon
+    };
+    __decorateClass([
+      e5(".details")
+    ], SlDetails.prototype, "details", 2);
+    __decorateClass([
+      e5(".details__header")
+    ], SlDetails.prototype, "header", 2);
+    __decorateClass([
+      e5(".details__body")
+    ], SlDetails.prototype, "body", 2);
+    __decorateClass([
+      e5(".details__expand-icon-slot")
+    ], SlDetails.prototype, "expandIconSlot", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlDetails.prototype, "open", 2);
+    __decorateClass([
+      n4()
+    ], SlDetails.prototype, "summary", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlDetails.prototype, "disabled", 2);
+    __decorateClass([
+      watch("open", { waitUntilFirstUpdate: true })
+    ], SlDetails.prototype, "handleOpenChange", 1);
+    setDefaultAnimation("details.show", {
+      keyframes: [
+        { height: "0", opacity: "0" },
+        { height: "auto", opacity: "1" }
+      ],
+      options: { duration: 250, easing: "linear" }
+    });
+    setDefaultAnimation("details.hide", {
+      keyframes: [
+        { height: "auto", opacity: "1" },
+        { height: "0", opacity: "0" }
+      ],
+      options: { duration: 250, easing: "linear" }
+    });
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.LWS7GFRM.js
+var init_chunk_LWS7GFRM = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.LWS7GFRM.js"() {
+    init_chunk_K7Q3XHLX();
+    SlDetails.define("sl-details");
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/details/details.js
+var init_details = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/details/details.js"() {
+    init_chunk_LWS7GFRM();
+    init_chunk_K7Q3XHLX();
+    init_chunk_J7PLVEQM();
+    init_chunk_UW6SLYOK();
+    init_chunk_B4BZKR24();
+    init_chunk_3EPZX5HE();
+    init_chunk_WLV3FVBR();
+    init_chunk_MAS2SHYD();
+    init_chunk_E6QAPUBK();
+    init_chunk_ZL53POKZ();
+    init_chunk_P7ZG6EMR();
+    init_chunk_3TFKS637();
+    init_chunk_QLXRCYS4();
+    init_chunk_3Y6SB6QS();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.HBPNMM7A.js
 var init_chunk_HBPNMM7A = __esm({
   "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.HBPNMM7A.js"() {
@@ -3009,7 +3553,9 @@ var require_imageWindow = __commonJS({
     init_esbrowser();
     init_base_path();
     init_split_panel();
+    init_spinner();
     init_badge();
+    init_details();
     init_icon();
     setBasePath("../../node_modules/@shoelace-style/shoelace/dist");
     var channel = new BroadcastChannel2("jk-image-viewer");

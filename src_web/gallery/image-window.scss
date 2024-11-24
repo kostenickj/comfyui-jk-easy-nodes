@@ -74,85 +74,88 @@ body {
             background-color: var(--fg-color) !important;
         }
 
+        .jk-img-wrapper {
+            max-width: 100%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            margin-top: 16px;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-bottom: 16px;
+            padding-left: var(--left-panel-gutter-size);
+            padding-right: var(--left-panel-gutter-size);
+            align-items: center;
+            position: relative;
+
+            .jk-img-hover {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                sl-icon {
+                    opacity: 0;
+                    font-size: 32px;
+                    transition: all 0.3s ease-in-out;
+                    scale: 1;
+                }
+
+                &:hover {
+                    background-color: rgba(1, 1, 1, .5);
+                    transition: all 0.3s ease-in-out;
+
+                    sl-icon {
+                        opacity: 1;
+                        transition: all 0.3s ease-in-out;
+                        color: var(--fg-color);
+                        scale: 1.25;
+                    }
+                }
+
+                cursor: pointer;
+            }
+
+
+            .jk-img-info-wrapper {
+                position: absolute;
+                bottom: 0;
+                left: calc(var(--left-panel-gutter-size) + 4px);
+                padding: 4px;
+                max-width: calc(100% - var(--left-panel-gutter-size) - 24px);
+                overflow: hidden;
+                pointer-events: none;
+                word-break: break-all;
+            }
+
+            .jk-img {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+                flex-shrink: 1;
+                cursor: pointer;
+
+                &:hover {
+                    //border-radius: 16px;
+                }
+            }
+        }
+
         #jk-gallery-left-panel {
             height: 100%;
             display: flex;
-            overflow-y: auto !important;
+            overflow-y: scroll !important;
             flex-direction: column;
             overflow: hidden;
             scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
             scrollbar-width: thin;
             padding-bottom: 16px;
 
-            .jk-img-wrapper {
-                max-width: 100%;
-                height: auto;
-                display: flex;
-                flex-direction: column;
-                margin-top: 16px;
-                padding-top: 0;
-                padding-bottom: 0;
-                margin-bottom: 16px;
-                padding-left: var(--left-panel-gutter-size);
-                padding-right: var(--left-panel-gutter-size);
-                align-items: center;
-                position: relative;
 
-                .jk-img-hover {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    bottom: 0;
-                    right: 0;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin-left: var(--left-panel-gutter-size);
-                    margin-right: var(--left-panel-gutter-size);
-
-                    sl-icon{
-                        opacity: 0;
-                        font-size: 32px;
-                        transition: all 0.3s ease-in-out;
-                        scale: 1;
-                    }
-
-                    &:hover {
-                        background-color: rgba(1, 1, 1, .5);
-                        transition: all 0.3s ease-in-out;
-                        sl-icon {
-                            opacity: 1;
-                            transition: all 0.3s ease-in-out;
-                            color: var(--fg-color);
-                            scale: 1.25;
-                        }
-                    }
-                    cursor: pointer;                 
-                }
-
-
-                .jk-img-info-wrapper {
-                    position: absolute;
-                    bottom: 0;
-                    left: calc(var(--left-panel-gutter-size) + 4px);
-                    padding: 4px;
-                    max-width: calc(100% - var(--left-panel-gutter-size) - 24px);
-                    overflow: hidden;
-                    word-break: break-all;
-                }
-
-                .jk-img {
-                    width: 100%;
-                    max-width: 100%;
-                    height: auto;
-                    flex-shrink: 1;
-                    cursor: pointer;
-
-                    &:hover {
-                        border-radius: 16px;
-                    }
-                }
-            }
         }
 
         #jk-gallery-right-panel {
@@ -160,7 +163,50 @@ body {
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-y: auto;
+
+            .jk-rightpanel-container {
+                display: flex;
+                height: 100%;
+                width: 100%;
+                flex-direction: column;
+                //overflow: hidden;
+                align-items: center;
+
+                .jk-rightpanel-title {
+                    margin-top: 16px;
+                    max-width: 50%;
+                    width: 50%;
+                    padding-left: 16px;
+                    padding-right: 16px;
+                    div{
+                        border: 1px solid var(--border-color);
+                        padding: 4px;
+                    }
+                }
+
+                .jk-img-wrapper {
+                    padding: 0;
+                    .jk-img{
+                        width: auto;
+                    }
+                }
+
+                .jk-rightpanel-info {
+                    color: var(--fg-color);
+                    width: 100%;
+                    display: flex;
+                    padding: 16px;
+                    sl-details{
+                        width: 100%;
+                    }
+       
+                    sl-details::part(base){
+                        width: 100%;
+                        background-color: var(--comfy-menu-bg) !important;
+                    }
+                }
+            }
         }
     }
 }
