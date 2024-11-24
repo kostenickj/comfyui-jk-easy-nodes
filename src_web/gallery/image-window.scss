@@ -76,6 +76,7 @@ body {
 
         .jk-img-wrapper {
             max-width: 100%;
+            max-height: 100%;
             height: auto;
             display: flex;
             flex-direction: column;
@@ -136,6 +137,7 @@ body {
                 width: 100%;
                 max-width: 100%;
                 height: auto;
+                max-height: 100%;
                 flex-shrink: 1;
                 cursor: pointer;
 
@@ -197,14 +199,6 @@ body {
                     width: 100%;
                     display: flex;
                     padding: 16px;
-                    sl-details{
-                        width: 100%;
-                    }
-       
-                    sl-details::part(base){
-                        width: 100%;
-                        background-color: var(--comfy-menu-bg) !important;
-                    }
                 }
             }
         }

@@ -1,12 +1,13 @@
 import { JKFeedBar } from './feedBar';
 import { findKeyValueRecursive } from '../common/utils';
-
+import '@alenaksu/json-viewer';
+// have to import this way cuz the exports seem to be defined wrong
+import type { JsonViewer } from '../../node_modules/@alenaksu/json-viewer/dist/JsonViewer';
 //@ts-ignore
 import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
 //@ts-ignore
 import plus from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/plus-square.svg';
 
-console.log(eye);
 export interface GalleryImageData {
     subfolder: string;
     type: string;
@@ -93,10 +94,12 @@ class JKRightPanelImage {
     info: HTMLDivElement;
 
     promptMetadata?: Record<string, any>;
+    promptViewer?: JsonViewer;
     title: HTMLDivElement;
-    
+
     seed?: number | null;
-    
+    infoWrapper: HTMLDetailsElement;
+
     constructor(private m: GalleryImageData) {
         this.container = document.createElement('div');
         this.container.classList.add('jk-rightpanel-container');
@@ -104,8 +107,17 @@ class JKRightPanelImage {
         this.title = document.createElement('div');
         this.title.classList.add('jk-rightpanel-title');
 
+        this.infoWrapper = document.createElement('details');
+        this.infoWrapper.classList.add('jk-rightpanel-info');
+
+        // TODO, change this to a button that opens prompt info a modal instead, make it searchable like the demo
+        // https://github.com/alenaksu/json-viewer#demo
+        // make a patch for his search function tho so it also searches keys, shouldnt be hard
+        this.infoWrapper.innerHTML = `
+              <summary>Show Prompt Info</summary>
+        `
         this.info = document.createElement('div');
-        this.info.classList.add('jk-rightpanel-info');
+        this.infoWrapper.appendChild(this.info);
     }
 
     public getEl() {
@@ -119,20 +131,15 @@ class JKRightPanelImage {
             const metadata = await window.comfyAPI.pnginfo.getPngMetadata(blob);
             this.promptMetadata = JSON.parse(metadata?.prompt);
             const seed = findKeyValueRecursive(this.promptMetadata, 'seed');
-            if(typeof seed?.seed === 'number')
-            {
+            if (typeof seed?.seed === 'number') {
                 this.seed = seed.seed;
                 const seedDisplay = document.createElement('div');
                 seedDisplay.innerText = `Seed: ${this.seed}`;
                 this.title.appendChild(seedDisplay);
             }
-            this.info.innerHTML = `
-            <sl-details summary="View Prompt Data">
-                    <sl-icon src=${plus} slot="expand-icon"></sl-icon>
-                     <sl-icon name="${plus}" slot="collapse-icon"></sl-icon>
-                <pre>${JSON.stringify(this.promptMetadata, undefined, 4)}</pre>
-            </sl-details>
-        `;
+            this.promptViewer = document.createElement('json-viewer') as unknown as JsonViewer;
+            this.promptViewer.data = { prompt: this.promptMetadata! };
+            this.info.appendChild(this.promptViewer as any);
         } catch (err) {
             console.error('failed to get metadata', err);
         }
@@ -152,8 +159,8 @@ class JKRightPanelImage {
         this.img = await new JKImage(this.m, false, true).init();
         this.container.appendChild(this.img.getEl());
 
-        this.container.appendChild(this.info);
-       
+        this.container.appendChild(this.infoWrapper);
+
         // dont await, it takes a bit
         this.tryLoadMetaData();
 

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@alenaksu/json-viewer':
+        specifier: ^2.1.2
+        version: 2.1.2
       '@shoelace-style/shoelace':
         specifier: ^2.18.0
         version: 2.18.0(@types/react@18.3.12)
@@ -29,6 +32,9 @@ importers:
         version: 3.3.1(esbuild@0.24.0)(sass-embedded@1.81.0)
 
 packages:
+
+  '@alenaksu/json-viewer@2.1.2':
+    resolution: {integrity: sha512-hyR5EUc0GZMTjlSULJZlMzEYB896ICbCf1+5YLQRSAczGRWy42UWac5PcXM4spuyTkrEHHlOZBTVEq34f9+JVQ==}
 
   '@babel/runtime@7.23.4':
     resolution: {integrity: sha512-2Yv65nlWnWlSpe3fXEyX5i7fx5kIKo4Qbcj+hMO0odwaneFjfXw5fdum+4yL20O0QiaHpia0cYQ9xpNMqrBwHg==}
@@ -739,6 +745,10 @@ packages:
     resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
 
 snapshots:
+
+  '@alenaksu/json-viewer@2.1.2':
+    dependencies:
+      lit: 3.2.1
 
   '@babel/runtime@7.23.4':
     dependencies:

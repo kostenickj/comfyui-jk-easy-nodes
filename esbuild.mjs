@@ -31,7 +31,7 @@ const options = {
         name: 'bundle node modules stuff only', setup: (build) => {
             build.onResolve({ filter: /\.js$/i }, args => {
                 let markExternal = true;
-                if (args.path.includes('@shoelace-style') || args.resolveDir.includes('node_modules')) {
+                if (args.path.includes('@shoelace-style') || args.path.includes('@alenaksu') || args.resolveDir.includes('node_modules')) {
                     markExternal = false;
                 }
                 return { external: markExternal }
