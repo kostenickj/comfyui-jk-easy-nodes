@@ -1,0 +1,26 @@
+diff --git a/dist/chunk-6HJCMUMX.js b/dist/chunk-6HJCMUMX.js
+index d6c580f7c2fb2999721c96c9221226ec1c4aa375..bd4379fe2eddbb5a0e65d60dc2e0c356104dbc76 100644
+--- a/dist/chunk-6HJCMUMX.js
++++ b/dist/chunk-6HJCMUMX.js
+@@ -396,7 +396,7 @@ var JsonViewer = class extends LitElement {
+   }
+   *search(criteria) {
+     for (const [node, path] of deepTraverse(this.data)) {
+-      if (isPrimitive(node) && String(node).match(criteria)) {
++      if (isPrimitive(node) && (String(node).toLowerCase().includes(criteria.toLowerCase())) || String(path).toLowerCase().includes(criteria.toLowerCase())) {
+         this.expand(path);
+         this.updateComplete.then(() => {
+           const node2 = this.shadowRoot.querySelector(`[data-path="${path}"]`);
+diff --git a/dist/json-viewer.bundle.js b/dist/json-viewer.bundle.js
+index ccb6811167fd527e91cf511c61052ec71192ca81..1d255a00cde260d9d84dc3d981da7c154a6dc80d 100644
+--- a/dist/json-viewer.bundle.js
++++ b/dist/json-viewer.bundle.js
+@@ -1035,7 +1035,7 @@
+     }
+     *search(criteria) {
+       for (const [node, path] of deepTraverse(this.data)) {
+-        if (isPrimitive(node) && String(node).match(criteria)) {
++        if (isPrimitive(node) && (String(node).toLowerCase().includes(criteria.toLowerCase())) || String(path).toLowerCase().includes(criteria.toLowerCase())) {
+           this.expand(path);
+           this.updateComplete.then(() => {
+             const node2 = this.shadowRoot.querySelector(`[data-path="${path}"]`);

@@ -21,5 +21,10 @@
     "dependencies": {
         "@alenaksu/json-viewer": "^2.1.2",
         "@shoelace-style/shoelace": "^2.18.0"
+    },
+    "pnpm": {
+        "patchedDependencies": {
+            "@alenaksu/json-viewer@2.1.2": "patches/@alenaksu__json-viewer@2.1.2.patch"
+        }
     }
 }

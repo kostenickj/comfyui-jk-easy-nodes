@@ -5,8 +5,6 @@ import '@alenaksu/json-viewer';
 import type { JsonViewer } from '../../node_modules/@alenaksu/json-viewer/dist/JsonViewer';
 //@ts-ignore
 import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
-//@ts-ignore
-import plus from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/plus-square.svg';
 
 export interface GalleryImageData {
     subfolder: string;
@@ -17,7 +15,6 @@ export interface GalleryImageData {
     fileName: string;
     execTimeMs: number;
 }
-
 class JKImage {
     img!: HTMLImageElement;
     wrapper: HTMLDivElement;
@@ -121,19 +118,17 @@ class JKRightPanelImage {
         this.dialogCloseBtn.classList.add('jk-dialog-close-btn');
         this.dialogCloseBtn.onclick = () => {
             if (this.infoDialog) {
+                this.promptSearch!.value = '';
                 this.infoDialog.close();
             }
         };
         this.infoDialog.innerHTML = `
             <div class="info-dialog-header">
-                <input id="prompt-search" type="text" placeholder="search"></input>
+                <input autofocus id="prompt-search" type="text" placeholder="search"></input>
             </div>
         `;
 
         this.infoDialog.appendChild(this.dialogCloseBtn);
-
-        // make a patch for his search function tho so it also searches keys and also make it case insensitive, shouldnt be hard
-
         this.buttonGroup = document.createElement('div');
         this.buttonGroup.classList.add('comfyui-button-group');
         this.info = document.createElement('div');
@@ -151,9 +146,12 @@ class JKRightPanelImage {
         this.promptSearch.addEventListener('input', (ev) => {
             this.currentSearch = this.promptViewer?.search(((ev?.target as HTMLInputElement)?.value as string) ?? '');
         });
-        this.promptSearch.addEventListener('keyup', (e) => {
+        this.promptSearch.addEventListener('keyup', async (e) => {
             if (this.currentSearch && (e.keyCode === 13 || e.key.toLowerCase() === 'enter')) {
-                this.currentSearch.next();
+                await this.currentSearch.next();
+                setTimeout(() => {
+                    this.promptSearch?.focus();
+                }, 1);
             }
         });
     }

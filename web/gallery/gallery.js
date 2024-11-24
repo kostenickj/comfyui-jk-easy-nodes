@@ -704,7 +704,7 @@ function n5(n6, r8, t4) {
   return n6 ? r8(n6) : t4?.(n6);
 }
 
-// node_modules/.pnpm/@alenaksu+json-viewer@2.1.2/node_modules/@alenaksu/json-viewer/dist/chunk-6HJCMUMX.js
+// node_modules/.pnpm/@alenaksu+json-viewer@2.1.2_patch_hash=h6d5ny7gzeg2cflvjmbgs5cxte/node_modules/@alenaksu/json-viewer/dist/chunk-6HJCMUMX.js
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
@@ -1040,7 +1040,7 @@ var JsonViewer = (_a = class extends r4 {
   }
   *search(criteria) {
     for (const [node, path] of deepTraverse(this.data)) {
-      if (isPrimitive(node) && String(node).match(criteria)) {
+      if (isPrimitive(node) && String(node).toLowerCase().includes(criteria.toLowerCase()) || String(path).toLowerCase().includes(criteria.toLowerCase())) {
         this.expand(path);
         this.updateComplete.then(() => {
           const node2 = this.shadowRoot.querySelector(`[data-path="${path}"]`);
@@ -1193,7 +1193,7 @@ __decorateClass([
   r7('[role="treeitem"]')
 ], JsonViewer.prototype, "nodeElements", 2);
 
-// node_modules/.pnpm/@alenaksu+json-viewer@2.1.2/node_modules/@alenaksu/json-viewer/dist/json-viewer.js
+// node_modules/.pnpm/@alenaksu+json-viewer@2.1.2_patch_hash=h6d5ny7gzeg2cflvjmbgs5cxte/node_modules/@alenaksu/json-viewer/dist/json-viewer.js
 customElements.define("json-viewer", JsonViewer);
 
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg
@@ -1273,12 +1273,13 @@ var JKRightPanelImage = class {
     this.dialogCloseBtn.classList.add("jk-dialog-close-btn");
     this.dialogCloseBtn.onclick = () => {
       if (this.infoDialog) {
+        this.promptSearch.value = "";
         this.infoDialog.close();
       }
     };
     this.infoDialog.innerHTML = `
             <div class="info-dialog-header">
-                <input id="prompt-search" type="text" placeholder="search"></input>
+                <input autofocus id="prompt-search" type="text" placeholder="search"></input>
             </div>
         `;
     this.infoDialog.appendChild(this.dialogCloseBtn);
@@ -1297,9 +1298,12 @@ var JKRightPanelImage = class {
     this.promptSearch.addEventListener("input", (ev) => {
       this.currentSearch = this.promptViewer?.search(ev?.target?.value ?? "");
     });
-    this.promptSearch.addEventListener("keyup", (e8) => {
+    this.promptSearch.addEventListener("keyup", async (e8) => {
       if (this.currentSearch && (e8.keyCode === 13 || e8.key.toLowerCase() === "enter")) {
-        this.currentSearch.next();
+        await this.currentSearch.next();
+        setTimeout(() => {
+          this.promptSearch?.focus();
+        }, 1);
       }
     });
   }
