@@ -618,12 +618,16 @@ body {
   height: var(--jk-feed-bar-height);
   background-color: var(--comfy-menu-bg);
   width: 100%;
+  justify-content: center;
+  align-items: center;
 }
 #jk-feed-bar .comfyui-button-group {
   display: flex;
-  margin-left: auto;
   height: 100%;
   padding: 4px;
+  position: absolute;
+  right: 0;
+  height: 44px;
 }
 @keyframes spin {
   0% {

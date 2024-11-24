@@ -9,16 +9,75 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
 
 // src_web/gallery/feedBar.ts
 var FeedBarEvents = {
-  "feed-clear": "feed-clear"
+  "feed-clear": "feed-clear",
+  "check-change": "check-change"
 };
 var JKFeedBar = class extends EventTarget {
   constructor(el) {
     super();
     this.el = el;
+    this._checkedItems = /* @__PURE__ */ new Map();
     this.el.classList.add("comfyui-menu", "flex", "items-center");
     this.buttonGroup = document.createElement("div");
     this.el.append(this.buttonGroup);
     this.buttonGroup.classList.add("comfyui-button-group");
+    this.checkboxMenuWrapper = document.createElement("div");
+    this.checkboxMenuWrapper.classList.add("jk-checkbox-wrapper");
+    this.checkboxMenuWrapper.innerHTML = `
+            <sl-dropdown id="jk-checkbox-menu-dropdown" stay-open-on-select="true">
+            <sl-button class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Outputs</sl-button>
+            <sl-menu id="jk-checkbox-menu-menu">           
+            </sl-menu>
+            </sl-dropdown>
+            <style>
+                sl-button.checkbox-menu-trigger::part(base) { 
+                    font-size:16px;
+                    background-color: var(--comfy-menu-bg);
+                    min-width: 250px;
+                    text-align:left;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+                    sl-button.checkbox-menu-trigger::part(caret) { 
+                        margin-left: auto;
+                    }
+                    sl-menu{
+                        background-color: var(--comfy-menu-bg);
+                        min-width: 250px;
+                        color:  var(--fg-color);
+                        sl-menu-item::part(base){
+                            color:  var(--fg-color);
+                            background-color: var(--comfy-menu-bg);
+                        }
+                        sl-menu-item::part(base):hover{
+                            background-color: var(--primary-hover-bg);
+                        }
+                    }
+            </style>
+        `;
+    this.el.prepend(this.checkboxMenuWrapper);
+    this.checkboxMenuDropdown = document.getElementById("jk-checkbox-menu-dropdown");
+    this.checkBoxMenuMenu = document.getElementById("jk-checkbox-menu-menu");
+    this.checkBoxMenuMenu.addEventListener("sl-select", (ev) => {
+      const item = ev?.detail?.item;
+      this._checkedItems.set(item.value, item.checked);
+      this.dispatchEvent(new Event(FeedBarEvents["check-change"]));
+    });
+  }
+  get checkedItems() {
+    return this._checkedItems;
+  }
+  updateCheckboxOptions(items, checkAll) {
+    this.checkBoxMenuMenu.innerHTML = `${items.map((i6) => {
+      return `<sl-menu-item type="checkbox" ${!!(checkAll || this._checkedItems.get(i6)) ? "checked" : ""} value="${i6}">${i6}</sl-menu-item>`;
+    })}`;
+    if (checkAll) {
+      this._checkedItems.clear();
+      items.forEach((x2) => {
+        this._checkedItems.set(x2, true);
+      });
+    }
   }
   async init() {
     const ComfyButton = (await import("../../../scripts/ui/components/button.js")).ComfyButton;
@@ -1203,6 +1262,9 @@ customElements.define("json-viewer", JsonViewer);
 var eye_fill_default = "../eye-fill-RBTRTZO3.svg";
 
 // src_web/gallery/gallery.ts
+var formattedTitle = (m2) => {
+  return `${m2.nodeTitle} - (#${m2.nodeId})`;
+};
 var JKImage = class {
   constructor(m2, showInfo, showOpacityOverlay, clickedCallback) {
     this.m = m2;
@@ -1236,6 +1298,9 @@ var JKImage = class {
       this.info.classList.add("jk-img-info-wrapper");
       this.wrapper.append(this.info);
     }
+  }
+  get data() {
+    return this.m;
   }
   loadImage(url) {
     return new Promise((resolve, reject) => {
@@ -1403,6 +1468,12 @@ var JKImageGallery = class extends EventTarget {
         this.dispatchEvent(new Event(FeedBarEvents["feed-clear"]));
       }
     };
+    this.updateImageVisibility = () => {
+      this.images.forEach((i6) => {
+        const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i6.data));
+        i6.getEl().style.display = isChecked ? "flex" : "none";
+      });
+    };
     this.container.innerHTML = `
             <sl-split-panel position="15" style="--max: 35%; --min:10%;">
                 <div
@@ -1433,28 +1504,33 @@ var JKImageGallery = class extends EventTarget {
       this.initialized = true;
       await this.FeedBar.init();
       this.FeedBar.addEventListener(FeedBarEvents["feed-clear"], this.clearFeed);
+      this.FeedBar.addEventListener(FeedBarEvents["check-change"], this.updateImageVisibility);
     }
   }
   async selectImage(data) {
     this.selectedImage = await new JKRightPanelImage(data).init();
     this.rightPanel.replaceChildren(this.selectedImage.getEl());
   }
-  async addImage(data) {
-    const nodeTitle = `${data.nodeTitle} - (#${data.nodeId})`;
+  async addImage(data, updateFeedBar) {
+    const nodeTitle = formattedTitle(data);
     if (!this.imageMap.has(nodeTitle)) this.imageMap.set(nodeTitle, []);
     this.imageMap.get(nodeTitle).unshift(data);
     const img = await new JKImage(data, true, false, this.handleImageClicked).init();
     this.images.unshift(img);
     this.leftPanel.prepend(img.getEl());
+    if (updateFeedBar) {
+      this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], false);
+    }
   }
   async addImages(imgs) {
     if (!imgs) return;
     for (const i6 of imgs) {
-      await this.addImage(i6);
+      await this.addImage(i6, false);
     }
     if (!this.selectedImage && imgs.length) {
       this.selectImage(imgs[0]);
     }
+    this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], true);
   }
 };
 export {

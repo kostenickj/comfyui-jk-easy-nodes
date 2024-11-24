@@ -21,8 +21,8 @@ function sleep(time, resolveWith) {
     }, time);
   });
 }
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+function randomInt(min2, max2) {
+  return Math.floor(Math.random() * (max2 - min2 + 1) + min2);
 }
 function randomToken() {
   return Math.random().toString(36).substring(2);
@@ -255,8 +255,8 @@ function getMessagesHigherThan(db, lastCursorId) {
       getAllRequest.onerror = function(err) {
         return rej(err);
       };
-      getAllRequest.onsuccess = function(e9) {
-        res(e9.target.result);
+      getAllRequest.onsuccess = function(e10) {
+        res(e10.target.result);
       };
     });
   }
@@ -264,7 +264,7 @@ function getMessagesHigherThan(db, lastCursorId) {
     try {
       keyRangeValue = IDBKeyRange.bound(lastCursorId + 1, Infinity);
       return objectStore.openCursor(keyRangeValue);
-    } catch (e9) {
+    } catch (e10) {
       return objectStore.openCursor();
     }
   }
@@ -460,7 +460,7 @@ function getLocalStorage() {
   try {
     localStorage = window.localStorage;
     localStorage = window["ie8-eventlistener/storage"] || window.localStorage;
-  } catch (e9) {
+  } catch (e10) {
   }
   return localStorage;
 }
@@ -538,7 +538,7 @@ function canBeUsed3() {
     var key = "__broadcastchannel_check";
     ls.setItem(key, "works");
     ls.removeItem(key);
-  } catch (e9) {
+  } catch (e10) {
     return false;
   }
   return true;
@@ -699,8 +699,8 @@ function _prepareChannel(channel) {
   var maybePromise = channel.method.create(channel.name, channel.options);
   if (isPromise(maybePromise)) {
     channel._prepP = maybePromise;
-    maybePromise.then(function(s3) {
-      channel._state = s3;
+    maybePromise.then(function(s4) {
+      channel._state = s4;
     });
   } else {
     channel._state = maybePromise;
@@ -716,8 +716,8 @@ function _addListenerObject(channel, type5, obj) {
   _startListening(channel);
 }
 function _removeListenerObject(channel, type5, obj) {
-  channel._addEL[type5] = channel._addEL[type5].filter(function(o6) {
-    return o6 !== obj;
+  channel._addEL[type5] = channel._addEL[type5].filter(function(o10) {
+    return o10 !== obj;
   });
   _stopListening(channel);
 }
@@ -869,8 +869,8 @@ function getBasePath(subpath = "") {
     if (configScript) {
       setBasePath(configScript.getAttribute("data-shoelace"));
     } else {
-      const fallbackScript = scripts.find((s3) => {
-        return /shoelace(\.min)?\.js($|\?)/.test(s3.src) || /shoelace-autoloader(\.min)?\.js($|\?)/.test(s3.src);
+      const fallbackScript = scripts.find((s4) => {
+        return /shoelace(\.min)?\.js($|\?)/.test(s4.src) || /shoelace-autoloader(\.min)?\.js($|\?)/.test(s4.src);
       });
       let path = "";
       if (fallbackScript) {
@@ -900,22 +900,22 @@ var init_chunk_B3BW2AY6 = __esm({
     __hasOwnProp = Object.prototype.hasOwnProperty;
     __propIsEnum = Object.prototype.propertyIsEnumerable;
     __defNormalProp2 = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-    __spreadValues = (a3, b3) => {
+    __spreadValues = (a4, b3) => {
       for (var prop in b3 || (b3 = {}))
         if (__hasOwnProp.call(b3, prop))
-          __defNormalProp2(a3, prop, b3[prop]);
+          __defNormalProp2(a4, prop, b3[prop]);
       if (__getOwnPropSymbols)
         for (var prop of __getOwnPropSymbols(b3)) {
           if (__propIsEnum.call(b3, prop))
-            __defNormalProp2(a3, prop, b3[prop]);
+            __defNormalProp2(a4, prop, b3[prop]);
         }
-      return a3;
+      return a4;
     };
-    __spreadProps = (a3, b3) => __defProps(a3, __getOwnPropDescs(b3));
+    __spreadProps = (a4, b3) => __defProps(a4, __getOwnPropDescs(b3));
     __decorateClass = (decorators, target, key, kind) => {
       var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
-      for (var i6 = decorators.length - 1, decorator; i6 >= 0; i6--)
-        if (decorator = decorators[i6])
+      for (var i7 = decorators.length - 1, decorator; i7 >= 0; i7--)
+        if (decorator = decorators[i7])
           result = (kind ? decorator(target, key, result) : decorator(result)) || result;
       if (kind && result)
         __defProp2(target, key, result);
@@ -959,44 +959,44 @@ var init_css_tag = __esm({
     s = Symbol();
     o = /* @__PURE__ */ new WeakMap();
     n = class {
-      constructor(t5, e9, o6) {
-        if (this._$cssResult$ = true, o6 !== s) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
-        this.cssText = t5, this.t = e9;
+      constructor(t6, e10, o10) {
+        if (this._$cssResult$ = true, o10 !== s) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+        this.cssText = t6, this.t = e10;
       }
       get styleSheet() {
-        let t5 = this.o;
-        const s3 = this.t;
-        if (e && void 0 === t5) {
-          const e9 = void 0 !== s3 && 1 === s3.length;
-          e9 && (t5 = o.get(s3)), void 0 === t5 && ((this.o = t5 = new CSSStyleSheet()).replaceSync(this.cssText), e9 && o.set(s3, t5));
+        let t6 = this.o;
+        const s4 = this.t;
+        if (e && void 0 === t6) {
+          const e10 = void 0 !== s4 && 1 === s4.length;
+          e10 && (t6 = o.get(s4)), void 0 === t6 && ((this.o = t6 = new CSSStyleSheet()).replaceSync(this.cssText), e10 && o.set(s4, t6));
         }
-        return t5;
+        return t6;
       }
       toString() {
         return this.cssText;
       }
     };
-    r = (t5) => new n("string" == typeof t5 ? t5 : t5 + "", void 0, s);
-    i = (t5, ...e9) => {
-      const o6 = 1 === t5.length ? t5[0] : e9.reduce((e10, s3, o7) => e10 + ((t6) => {
-        if (true === t6._$cssResult$) return t6.cssText;
-        if ("number" == typeof t6) return t6;
-        throw Error("Value passed to 'css' function must be a 'css' function result: " + t6 + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
-      })(s3) + t5[o7 + 1], t5[0]);
-      return new n(o6, t5, s);
+    r = (t6) => new n("string" == typeof t6 ? t6 : t6 + "", void 0, s);
+    i = (t6, ...e10) => {
+      const o10 = 1 === t6.length ? t6[0] : e10.reduce((e11, s4, o11) => e11 + ((t7) => {
+        if (true === t7._$cssResult$) return t7.cssText;
+        if ("number" == typeof t7) return t7;
+        throw Error("Value passed to 'css' function must be a 'css' function result: " + t7 + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
+      })(s4) + t6[o11 + 1], t6[0]);
+      return new n(o10, t6, s);
     };
-    S = (s3, o6) => {
-      if (e) s3.adoptedStyleSheets = o6.map((t5) => t5 instanceof CSSStyleSheet ? t5 : t5.styleSheet);
-      else for (const e9 of o6) {
-        const o7 = document.createElement("style"), n5 = t.litNonce;
-        void 0 !== n5 && o7.setAttribute("nonce", n5), o7.textContent = e9.cssText, s3.appendChild(o7);
+    S = (s4, o10) => {
+      if (e) s4.adoptedStyleSheets = o10.map((t6) => t6 instanceof CSSStyleSheet ? t6 : t6.styleSheet);
+      else for (const e10 of o10) {
+        const o11 = document.createElement("style"), n8 = t.litNonce;
+        void 0 !== n8 && o11.setAttribute("nonce", n8), o11.textContent = e10.cssText, s4.appendChild(o11);
       }
     };
-    c = e ? (t5) => t5 : (t5) => t5 instanceof CSSStyleSheet ? ((t6) => {
-      let e9 = "";
-      for (const s3 of t6.cssRules) e9 += s3.cssText;
-      return r(e9);
-    })(t5) : t5;
+    c = e ? (t6) => t6 : (t6) => t6 instanceof CSSStyleSheet ? ((t7) => {
+      let e10 = "";
+      for (const s4 of t7.cssRules) e10 += s4.cssText;
+      return r(e10);
+    })(t6) : t6;
   }
 });
 
@@ -1011,168 +1011,168 @@ var init_reactive_element = __esm({
     c2 = a.trustedTypes;
     l = c2 ? c2.emptyScript : "";
     p = a.reactiveElementPolyfillSupport;
-    d = (t5, s3) => t5;
-    u = { toAttribute(t5, s3) {
-      switch (s3) {
+    d = (t6, s4) => t6;
+    u = { toAttribute(t6, s4) {
+      switch (s4) {
         case Boolean:
-          t5 = t5 ? l : null;
+          t6 = t6 ? l : null;
           break;
         case Object:
         case Array:
-          t5 = null == t5 ? t5 : JSON.stringify(t5);
+          t6 = null == t6 ? t6 : JSON.stringify(t6);
       }
-      return t5;
-    }, fromAttribute(t5, s3) {
-      let i6 = t5;
-      switch (s3) {
+      return t6;
+    }, fromAttribute(t6, s4) {
+      let i7 = t6;
+      switch (s4) {
         case Boolean:
-          i6 = null !== t5;
+          i7 = null !== t6;
           break;
         case Number:
-          i6 = null === t5 ? null : Number(t5);
+          i7 = null === t6 ? null : Number(t6);
           break;
         case Object:
         case Array:
           try {
-            i6 = JSON.parse(t5);
-          } catch (t6) {
-            i6 = null;
+            i7 = JSON.parse(t6);
+          } catch (t7) {
+            i7 = null;
           }
       }
-      return i6;
+      return i7;
     } };
-    f = (t5, s3) => !i2(t5, s3);
+    f = (t6, s4) => !i2(t6, s4);
     y = { attribute: true, type: String, converter: u, reflect: false, hasChanged: f };
     Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), a.litPropertyMetadata ?? (a.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
     b = class extends HTMLElement {
-      static addInitializer(t5) {
-        this._$Ei(), (this.l ?? (this.l = [])).push(t5);
+      static addInitializer(t6) {
+        this._$Ei(), (this.l ?? (this.l = [])).push(t6);
       }
       static get observedAttributes() {
         return this.finalize(), this._$Eh && [...this._$Eh.keys()];
       }
-      static createProperty(t5, s3 = y) {
-        if (s3.state && (s3.attribute = false), this._$Ei(), this.elementProperties.set(t5, s3), !s3.noAccessor) {
-          const i6 = Symbol(), r7 = this.getPropertyDescriptor(t5, i6, s3);
-          void 0 !== r7 && e2(this.prototype, t5, r7);
+      static createProperty(t6, s4 = y) {
+        if (s4.state && (s4.attribute = false), this._$Ei(), this.elementProperties.set(t6, s4), !s4.noAccessor) {
+          const i7 = Symbol(), r9 = this.getPropertyDescriptor(t6, i7, s4);
+          void 0 !== r9 && e2(this.prototype, t6, r9);
         }
       }
-      static getPropertyDescriptor(t5, s3, i6) {
-        const { get: e9, set: h3 } = r2(this.prototype, t5) ?? { get() {
-          return this[s3];
-        }, set(t6) {
-          this[s3] = t6;
+      static getPropertyDescriptor(t6, s4, i7) {
+        const { get: e10, set: h5 } = r2(this.prototype, t6) ?? { get() {
+          return this[s4];
+        }, set(t7) {
+          this[s4] = t7;
         } };
         return { get() {
-          return e9?.call(this);
-        }, set(s4) {
-          const r7 = e9?.call(this);
-          h3.call(this, s4), this.requestUpdate(t5, r7, i6);
+          return e10?.call(this);
+        }, set(s5) {
+          const r9 = e10?.call(this);
+          h5.call(this, s5), this.requestUpdate(t6, r9, i7);
         }, configurable: true, enumerable: true };
       }
-      static getPropertyOptions(t5) {
-        return this.elementProperties.get(t5) ?? y;
+      static getPropertyOptions(t6) {
+        return this.elementProperties.get(t6) ?? y;
       }
       static _$Ei() {
         if (this.hasOwnProperty(d("elementProperties"))) return;
-        const t5 = n2(this);
-        t5.finalize(), void 0 !== t5.l && (this.l = [...t5.l]), this.elementProperties = new Map(t5.elementProperties);
+        const t6 = n2(this);
+        t6.finalize(), void 0 !== t6.l && (this.l = [...t6.l]), this.elementProperties = new Map(t6.elementProperties);
       }
       static finalize() {
         if (this.hasOwnProperty(d("finalized"))) return;
         if (this.finalized = true, this._$Ei(), this.hasOwnProperty(d("properties"))) {
-          const t6 = this.properties, s3 = [...h(t6), ...o2(t6)];
-          for (const i6 of s3) this.createProperty(i6, t6[i6]);
+          const t7 = this.properties, s4 = [...h(t7), ...o2(t7)];
+          for (const i7 of s4) this.createProperty(i7, t7[i7]);
         }
-        const t5 = this[Symbol.metadata];
-        if (null !== t5) {
-          const s3 = litPropertyMetadata.get(t5);
-          if (void 0 !== s3) for (const [t6, i6] of s3) this.elementProperties.set(t6, i6);
+        const t6 = this[Symbol.metadata];
+        if (null !== t6) {
+          const s4 = litPropertyMetadata.get(t6);
+          if (void 0 !== s4) for (const [t7, i7] of s4) this.elementProperties.set(t7, i7);
         }
         this._$Eh = /* @__PURE__ */ new Map();
-        for (const [t6, s3] of this.elementProperties) {
-          const i6 = this._$Eu(t6, s3);
-          void 0 !== i6 && this._$Eh.set(i6, t6);
+        for (const [t7, s4] of this.elementProperties) {
+          const i7 = this._$Eu(t7, s4);
+          void 0 !== i7 && this._$Eh.set(i7, t7);
         }
         this.elementStyles = this.finalizeStyles(this.styles);
       }
-      static finalizeStyles(s3) {
-        const i6 = [];
-        if (Array.isArray(s3)) {
-          const e9 = new Set(s3.flat(1 / 0).reverse());
-          for (const s4 of e9) i6.unshift(c(s4));
-        } else void 0 !== s3 && i6.push(c(s3));
-        return i6;
+      static finalizeStyles(s4) {
+        const i7 = [];
+        if (Array.isArray(s4)) {
+          const e10 = new Set(s4.flat(1 / 0).reverse());
+          for (const s5 of e10) i7.unshift(c(s5));
+        } else void 0 !== s4 && i7.push(c(s4));
+        return i7;
       }
-      static _$Eu(t5, s3) {
-        const i6 = s3.attribute;
-        return false === i6 ? void 0 : "string" == typeof i6 ? i6 : "string" == typeof t5 ? t5.toLowerCase() : void 0;
+      static _$Eu(t6, s4) {
+        const i7 = s4.attribute;
+        return false === i7 ? void 0 : "string" == typeof i7 ? i7 : "string" == typeof t6 ? t6.toLowerCase() : void 0;
       }
       constructor() {
         super(), this._$Ep = void 0, this.isUpdatePending = false, this.hasUpdated = false, this._$Em = null, this._$Ev();
       }
       _$Ev() {
-        this._$ES = new Promise((t5) => this.enableUpdating = t5), this._$AL = /* @__PURE__ */ new Map(), this._$E_(), this.requestUpdate(), this.constructor.l?.forEach((t5) => t5(this));
+        this._$ES = new Promise((t6) => this.enableUpdating = t6), this._$AL = /* @__PURE__ */ new Map(), this._$E_(), this.requestUpdate(), this.constructor.l?.forEach((t6) => t6(this));
       }
-      addController(t5) {
-        (this._$EO ?? (this._$EO = /* @__PURE__ */ new Set())).add(t5), void 0 !== this.renderRoot && this.isConnected && t5.hostConnected?.();
+      addController(t6) {
+        (this._$EO ?? (this._$EO = /* @__PURE__ */ new Set())).add(t6), void 0 !== this.renderRoot && this.isConnected && t6.hostConnected?.();
       }
-      removeController(t5) {
-        this._$EO?.delete(t5);
+      removeController(t6) {
+        this._$EO?.delete(t6);
       }
       _$E_() {
-        const t5 = /* @__PURE__ */ new Map(), s3 = this.constructor.elementProperties;
-        for (const i6 of s3.keys()) this.hasOwnProperty(i6) && (t5.set(i6, this[i6]), delete this[i6]);
-        t5.size > 0 && (this._$Ep = t5);
+        const t6 = /* @__PURE__ */ new Map(), s4 = this.constructor.elementProperties;
+        for (const i7 of s4.keys()) this.hasOwnProperty(i7) && (t6.set(i7, this[i7]), delete this[i7]);
+        t6.size > 0 && (this._$Ep = t6);
       }
       createRenderRoot() {
-        const t5 = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-        return S(t5, this.constructor.elementStyles), t5;
+        const t6 = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
+        return S(t6, this.constructor.elementStyles), t6;
       }
       connectedCallback() {
-        this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this.enableUpdating(true), this._$EO?.forEach((t5) => t5.hostConnected?.());
+        this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this.enableUpdating(true), this._$EO?.forEach((t6) => t6.hostConnected?.());
       }
-      enableUpdating(t5) {
+      enableUpdating(t6) {
       }
       disconnectedCallback() {
-        this._$EO?.forEach((t5) => t5.hostDisconnected?.());
+        this._$EO?.forEach((t6) => t6.hostDisconnected?.());
       }
-      attributeChangedCallback(t5, s3, i6) {
-        this._$AK(t5, i6);
+      attributeChangedCallback(t6, s4, i7) {
+        this._$AK(t6, i7);
       }
-      _$EC(t5, s3) {
-        const i6 = this.constructor.elementProperties.get(t5), e9 = this.constructor._$Eu(t5, i6);
-        if (void 0 !== e9 && true === i6.reflect) {
-          const r7 = (void 0 !== i6.converter?.toAttribute ? i6.converter : u).toAttribute(s3, i6.type);
-          this._$Em = t5, null == r7 ? this.removeAttribute(e9) : this.setAttribute(e9, r7), this._$Em = null;
+      _$EC(t6, s4) {
+        const i7 = this.constructor.elementProperties.get(t6), e10 = this.constructor._$Eu(t6, i7);
+        if (void 0 !== e10 && true === i7.reflect) {
+          const r9 = (void 0 !== i7.converter?.toAttribute ? i7.converter : u).toAttribute(s4, i7.type);
+          this._$Em = t6, null == r9 ? this.removeAttribute(e10) : this.setAttribute(e10, r9), this._$Em = null;
         }
       }
-      _$AK(t5, s3) {
-        const i6 = this.constructor, e9 = i6._$Eh.get(t5);
-        if (void 0 !== e9 && this._$Em !== e9) {
-          const t6 = i6.getPropertyOptions(e9), r7 = "function" == typeof t6.converter ? { fromAttribute: t6.converter } : void 0 !== t6.converter?.fromAttribute ? t6.converter : u;
-          this._$Em = e9, this[e9] = r7.fromAttribute(s3, t6.type), this._$Em = null;
+      _$AK(t6, s4) {
+        const i7 = this.constructor, e10 = i7._$Eh.get(t6);
+        if (void 0 !== e10 && this._$Em !== e10) {
+          const t7 = i7.getPropertyOptions(e10), r9 = "function" == typeof t7.converter ? { fromAttribute: t7.converter } : void 0 !== t7.converter?.fromAttribute ? t7.converter : u;
+          this._$Em = e10, this[e10] = r9.fromAttribute(s4, t7.type), this._$Em = null;
         }
       }
-      requestUpdate(t5, s3, i6) {
-        if (void 0 !== t5) {
-          if (i6 ?? (i6 = this.constructor.getPropertyOptions(t5)), !(i6.hasChanged ?? f)(this[t5], s3)) return;
-          this.P(t5, s3, i6);
+      requestUpdate(t6, s4, i7) {
+        if (void 0 !== t6) {
+          if (i7 ?? (i7 = this.constructor.getPropertyOptions(t6)), !(i7.hasChanged ?? f)(this[t6], s4)) return;
+          this.P(t6, s4, i7);
         }
         false === this.isUpdatePending && (this._$ES = this._$ET());
       }
-      P(t5, s3, i6) {
-        this._$AL.has(t5) || this._$AL.set(t5, s3), true === i6.reflect && this._$Em !== t5 && (this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Set())).add(t5);
+      P(t6, s4, i7) {
+        this._$AL.has(t6) || this._$AL.set(t6, s4), true === i7.reflect && this._$Em !== t6 && (this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Set())).add(t6);
       }
       async _$ET() {
         this.isUpdatePending = true;
         try {
           await this._$ES;
-        } catch (t6) {
-          Promise.reject(t6);
+        } catch (t7) {
+          Promise.reject(t7);
         }
-        const t5 = this.scheduleUpdate();
-        return null != t5 && await t5, !this.isUpdatePending;
+        const t6 = this.scheduleUpdate();
+        return null != t6 && await t6, !this.isUpdatePending;
       }
       scheduleUpdate() {
         return this.performUpdate();
@@ -1181,25 +1181,25 @@ var init_reactive_element = __esm({
         if (!this.isUpdatePending) return;
         if (!this.hasUpdated) {
           if (this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this._$Ep) {
-            for (const [t7, s4] of this._$Ep) this[t7] = s4;
+            for (const [t8, s5] of this._$Ep) this[t8] = s5;
             this._$Ep = void 0;
           }
-          const t6 = this.constructor.elementProperties;
-          if (t6.size > 0) for (const [s4, i6] of t6) true !== i6.wrapped || this._$AL.has(s4) || void 0 === this[s4] || this.P(s4, this[s4], i6);
+          const t7 = this.constructor.elementProperties;
+          if (t7.size > 0) for (const [s5, i7] of t7) true !== i7.wrapped || this._$AL.has(s5) || void 0 === this[s5] || this.P(s5, this[s5], i7);
         }
-        let t5 = false;
-        const s3 = this._$AL;
+        let t6 = false;
+        const s4 = this._$AL;
         try {
-          t5 = this.shouldUpdate(s3), t5 ? (this.willUpdate(s3), this._$EO?.forEach((t6) => t6.hostUpdate?.()), this.update(s3)) : this._$EU();
-        } catch (s4) {
-          throw t5 = false, this._$EU(), s4;
+          t6 = this.shouldUpdate(s4), t6 ? (this.willUpdate(s4), this._$EO?.forEach((t7) => t7.hostUpdate?.()), this.update(s4)) : this._$EU();
+        } catch (s5) {
+          throw t6 = false, this._$EU(), s5;
         }
-        t5 && this._$AE(s3);
+        t6 && this._$AE(s4);
       }
-      willUpdate(t5) {
+      willUpdate(t6) {
       }
-      _$AE(t5) {
-        this._$EO?.forEach((t6) => t6.hostUpdated?.()), this.hasUpdated || (this.hasUpdated = true, this.firstUpdated(t5)), this.updated(t5);
+      _$AE(t6) {
+        this._$EO?.forEach((t7) => t7.hostUpdated?.()), this.hasUpdated || (this.hasUpdated = true, this.firstUpdated(t6)), this.updated(t6);
       }
       _$EU() {
         this._$AL = /* @__PURE__ */ new Map(), this.isUpdatePending = false;
@@ -1210,15 +1210,15 @@ var init_reactive_element = __esm({
       getUpdateComplete() {
         return this._$ES;
       }
-      shouldUpdate(t5) {
+      shouldUpdate(t6) {
         return true;
       }
-      update(t5) {
-        this._$Ej && (this._$Ej = this._$Ej.forEach((t6) => this._$EC(t6, this[t6]))), this._$EU();
+      update(t6) {
+        this._$Ej && (this._$Ej = this._$Ej.forEach((t7) => this._$EC(t7, this[t7]))), this._$EU();
       }
-      updated(t5) {
+      updated(t6) {
       }
-      firstUpdated(t5) {
+      firstUpdated(t6) {
       }
     };
     b.elementStyles = [], b.shadowRootOptions = { mode: "open" }, b[d("elementProperties")] = /* @__PURE__ */ new Map(), b[d("finalized")] = /* @__PURE__ */ new Map(), p?.({ ReactiveElement: b }), (a.reactiveElementVersions ?? (a.reactiveElementVersions = [])).push("2.0.4");
@@ -1226,31 +1226,31 @@ var init_reactive_element = __esm({
 });
 
 // node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/lit-html.js
-function P(t5, i6) {
-  if (!a2(t5) || !t5.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return void 0 !== s2 ? s2.createHTML(i6) : i6;
+function P(t6, i7) {
+  if (!a2(t6) || !t6.hasOwnProperty("raw")) throw Error("invalid template strings array");
+  return void 0 !== s2 ? s2.createHTML(i7) : i7;
 }
-function S2(t5, i6, s3 = t5, e9) {
-  if (i6 === T) return i6;
-  let h3 = void 0 !== e9 ? s3._$Co?.[e9] : s3._$Cl;
-  const o6 = c3(i6) ? void 0 : i6._$litDirective$;
-  return h3?.constructor !== o6 && (h3?._$AO?.(false), void 0 === o6 ? h3 = void 0 : (h3 = new o6(t5), h3._$AT(t5, s3, e9)), void 0 !== e9 ? (s3._$Co ?? (s3._$Co = []))[e9] = h3 : s3._$Cl = h3), void 0 !== h3 && (i6 = S2(t5, h3._$AS(t5, i6.values), h3, e9)), i6;
+function S2(t6, i7, s4 = t6, e10) {
+  if (i7 === T) return i7;
+  let h5 = void 0 !== e10 ? s4._$Co?.[e10] : s4._$Cl;
+  const o10 = c3(i7) ? void 0 : i7._$litDirective$;
+  return h5?.constructor !== o10 && (h5?._$AO?.(false), void 0 === o10 ? h5 = void 0 : (h5 = new o10(t6), h5._$AT(t6, s4, e10)), void 0 !== e10 ? (s4._$Co ?? (s4._$Co = []))[e10] = h5 : s4._$Cl = h5), void 0 !== h5 && (i7 = S2(t6, h5._$AS(t6, i7.values), h5, e10)), i7;
 }
 var t2, i3, s2, e3, h2, o3, n3, r3, l2, c3, a2, u2, d2, f2, v, _, m, p2, g, $, y2, x, b2, w, T, E, A, C, V, N, M, R, k, H, I, L, z, Z, j, B;
 var init_lit_html = __esm({
   "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/lit-html.js"() {
     t2 = globalThis;
     i3 = t2.trustedTypes;
-    s2 = i3 ? i3.createPolicy("lit-html", { createHTML: (t5) => t5 }) : void 0;
+    s2 = i3 ? i3.createPolicy("lit-html", { createHTML: (t6) => t6 }) : void 0;
     e3 = "$lit$";
     h2 = `lit$${Math.random().toFixed(9).slice(2)}$`;
     o3 = "?" + h2;
     n3 = `<${o3}>`;
     r3 = document;
     l2 = () => r3.createComment("");
-    c3 = (t5) => null === t5 || "object" != typeof t5 && "function" != typeof t5;
+    c3 = (t6) => null === t6 || "object" != typeof t6 && "function" != typeof t6;
     a2 = Array.isArray;
-    u2 = (t5) => a2(t5) || "function" == typeof t5?.[Symbol.iterator];
+    u2 = (t6) => a2(t6) || "function" == typeof t6?.[Symbol.iterator];
     d2 = "[ 	\n\f\r]";
     f2 = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g;
     v = /-->/g;
@@ -1260,7 +1260,7 @@ var init_lit_html = __esm({
     p2 = /'/g;
     g = /"/g;
     $ = /^(?:script|style|textarea|title)$/i;
-    y2 = (t5) => (i6, ...s3) => ({ _$litType$: t5, strings: i6, values: s3 });
+    y2 = (t6) => (i7, ...s4) => ({ _$litType$: t6, strings: i7, values: s4 });
     x = y2(1);
     b2 = y2(2);
     w = y2(3);
@@ -1268,58 +1268,58 @@ var init_lit_html = __esm({
     E = Symbol.for("lit-nothing");
     A = /* @__PURE__ */ new WeakMap();
     C = r3.createTreeWalker(r3, 129);
-    V = (t5, i6) => {
-      const s3 = t5.length - 1, o6 = [];
-      let r7, l3 = 2 === i6 ? "<svg>" : 3 === i6 ? "<math>" : "", c4 = f2;
-      for (let i7 = 0; i7 < s3; i7++) {
-        const s4 = t5[i7];
-        let a3, u3, d3 = -1, y3 = 0;
-        for (; y3 < s4.length && (c4.lastIndex = y3, u3 = c4.exec(s4), null !== u3); ) y3 = c4.lastIndex, c4 === f2 ? "!--" === u3[1] ? c4 = v : void 0 !== u3[1] ? c4 = _ : void 0 !== u3[2] ? ($.test(u3[2]) && (r7 = RegExp("</" + u3[2], "g")), c4 = m) : void 0 !== u3[3] && (c4 = m) : c4 === m ? ">" === u3[0] ? (c4 = r7 ?? f2, d3 = -1) : void 0 === u3[1] ? d3 = -2 : (d3 = c4.lastIndex - u3[2].length, a3 = u3[1], c4 = void 0 === u3[3] ? m : '"' === u3[3] ? g : p2) : c4 === g || c4 === p2 ? c4 = m : c4 === v || c4 === _ ? c4 = f2 : (c4 = m, r7 = void 0);
-        const x2 = c4 === m && t5[i7 + 1].startsWith("/>") ? " " : "";
-        l3 += c4 === f2 ? s4 + n3 : d3 >= 0 ? (o6.push(a3), s4.slice(0, d3) + e3 + s4.slice(d3) + h2 + x2) : s4 + h2 + (-2 === d3 ? i7 : x2);
+    V = (t6, i7) => {
+      const s4 = t6.length - 1, o10 = [];
+      let r9, l4 = 2 === i7 ? "<svg>" : 3 === i7 ? "<math>" : "", c6 = f2;
+      for (let i8 = 0; i8 < s4; i8++) {
+        const s5 = t6[i8];
+        let a4, u4, d3 = -1, y3 = 0;
+        for (; y3 < s5.length && (c6.lastIndex = y3, u4 = c6.exec(s5), null !== u4); ) y3 = c6.lastIndex, c6 === f2 ? "!--" === u4[1] ? c6 = v : void 0 !== u4[1] ? c6 = _ : void 0 !== u4[2] ? ($.test(u4[2]) && (r9 = RegExp("</" + u4[2], "g")), c6 = m) : void 0 !== u4[3] && (c6 = m) : c6 === m ? ">" === u4[0] ? (c6 = r9 ?? f2, d3 = -1) : void 0 === u4[1] ? d3 = -2 : (d3 = c6.lastIndex - u4[2].length, a4 = u4[1], c6 = void 0 === u4[3] ? m : '"' === u4[3] ? g : p2) : c6 === g || c6 === p2 ? c6 = m : c6 === v || c6 === _ ? c6 = f2 : (c6 = m, r9 = void 0);
+        const x2 = c6 === m && t6[i8 + 1].startsWith("/>") ? " " : "";
+        l4 += c6 === f2 ? s5 + n3 : d3 >= 0 ? (o10.push(a4), s5.slice(0, d3) + e3 + s5.slice(d3) + h2 + x2) : s5 + h2 + (-2 === d3 ? i8 : x2);
       }
-      return [P(t5, l3 + (t5[s3] || "<?>") + (2 === i6 ? "</svg>" : 3 === i6 ? "</math>" : "")), o6];
+      return [P(t6, l4 + (t6[s4] || "<?>") + (2 === i7 ? "</svg>" : 3 === i7 ? "</math>" : "")), o10];
     };
     N = class _N {
-      constructor({ strings: t5, _$litType$: s3 }, n5) {
-        let r7;
+      constructor({ strings: t6, _$litType$: s4 }, n8) {
+        let r9;
         this.parts = [];
-        let c4 = 0, a3 = 0;
-        const u3 = t5.length - 1, d3 = this.parts, [f3, v2] = V(t5, s3);
-        if (this.el = _N.createElement(f3, n5), C.currentNode = this.el.content, 2 === s3 || 3 === s3) {
-          const t6 = this.el.content.firstChild;
-          t6.replaceWith(...t6.childNodes);
+        let c6 = 0, a4 = 0;
+        const u4 = t6.length - 1, d3 = this.parts, [f5, v2] = V(t6, s4);
+        if (this.el = _N.createElement(f5, n8), C.currentNode = this.el.content, 2 === s4 || 3 === s4) {
+          const t7 = this.el.content.firstChild;
+          t7.replaceWith(...t7.childNodes);
         }
-        for (; null !== (r7 = C.nextNode()) && d3.length < u3; ) {
-          if (1 === r7.nodeType) {
-            if (r7.hasAttributes()) for (const t6 of r7.getAttributeNames()) if (t6.endsWith(e3)) {
-              const i6 = v2[a3++], s4 = r7.getAttribute(t6).split(h2), e9 = /([.?@])?(.*)/.exec(i6);
-              d3.push({ type: 1, index: c4, name: e9[2], strings: s4, ctor: "." === e9[1] ? H : "?" === e9[1] ? I : "@" === e9[1] ? L : k }), r7.removeAttribute(t6);
-            } else t6.startsWith(h2) && (d3.push({ type: 6, index: c4 }), r7.removeAttribute(t6));
-            if ($.test(r7.tagName)) {
-              const t6 = r7.textContent.split(h2), s4 = t6.length - 1;
-              if (s4 > 0) {
-                r7.textContent = i3 ? i3.emptyScript : "";
-                for (let i6 = 0; i6 < s4; i6++) r7.append(t6[i6], l2()), C.nextNode(), d3.push({ type: 2, index: ++c4 });
-                r7.append(t6[s4], l2());
+        for (; null !== (r9 = C.nextNode()) && d3.length < u4; ) {
+          if (1 === r9.nodeType) {
+            if (r9.hasAttributes()) for (const t7 of r9.getAttributeNames()) if (t7.endsWith(e3)) {
+              const i7 = v2[a4++], s5 = r9.getAttribute(t7).split(h2), e10 = /([.?@])?(.*)/.exec(i7);
+              d3.push({ type: 1, index: c6, name: e10[2], strings: s5, ctor: "." === e10[1] ? H : "?" === e10[1] ? I : "@" === e10[1] ? L : k }), r9.removeAttribute(t7);
+            } else t7.startsWith(h2) && (d3.push({ type: 6, index: c6 }), r9.removeAttribute(t7));
+            if ($.test(r9.tagName)) {
+              const t7 = r9.textContent.split(h2), s5 = t7.length - 1;
+              if (s5 > 0) {
+                r9.textContent = i3 ? i3.emptyScript : "";
+                for (let i7 = 0; i7 < s5; i7++) r9.append(t7[i7], l2()), C.nextNode(), d3.push({ type: 2, index: ++c6 });
+                r9.append(t7[s5], l2());
               }
             }
-          } else if (8 === r7.nodeType) if (r7.data === o3) d3.push({ type: 2, index: c4 });
+          } else if (8 === r9.nodeType) if (r9.data === o3) d3.push({ type: 2, index: c6 });
           else {
-            let t6 = -1;
-            for (; -1 !== (t6 = r7.data.indexOf(h2, t6 + 1)); ) d3.push({ type: 7, index: c4 }), t6 += h2.length - 1;
+            let t7 = -1;
+            for (; -1 !== (t7 = r9.data.indexOf(h2, t7 + 1)); ) d3.push({ type: 7, index: c6 }), t7 += h2.length - 1;
           }
-          c4++;
+          c6++;
         }
       }
-      static createElement(t5, i6) {
-        const s3 = r3.createElement("template");
-        return s3.innerHTML = t5, s3;
+      static createElement(t6, i7) {
+        const s4 = r3.createElement("template");
+        return s4.innerHTML = t6, s4;
       }
     };
     M = class {
-      constructor(t5, i6) {
-        this._$AV = [], this._$AN = void 0, this._$AD = t5, this._$AM = i6;
+      constructor(t6, i7) {
+        this._$AV = [], this._$AN = void 0, this._$AD = t6, this._$AM = i7;
       }
       get parentNode() {
         return this._$AM.parentNode;
@@ -1327,35 +1327,35 @@ var init_lit_html = __esm({
       get _$AU() {
         return this._$AM._$AU;
       }
-      u(t5) {
-        const { el: { content: i6 }, parts: s3 } = this._$AD, e9 = (t5?.creationScope ?? r3).importNode(i6, true);
-        C.currentNode = e9;
-        let h3 = C.nextNode(), o6 = 0, n5 = 0, l3 = s3[0];
-        for (; void 0 !== l3; ) {
-          if (o6 === l3.index) {
-            let i7;
-            2 === l3.type ? i7 = new R(h3, h3.nextSibling, this, t5) : 1 === l3.type ? i7 = new l3.ctor(h3, l3.name, l3.strings, this, t5) : 6 === l3.type && (i7 = new z(h3, this, t5)), this._$AV.push(i7), l3 = s3[++n5];
+      u(t6) {
+        const { el: { content: i7 }, parts: s4 } = this._$AD, e10 = (t6?.creationScope ?? r3).importNode(i7, true);
+        C.currentNode = e10;
+        let h5 = C.nextNode(), o10 = 0, n8 = 0, l4 = s4[0];
+        for (; void 0 !== l4; ) {
+          if (o10 === l4.index) {
+            let i8;
+            2 === l4.type ? i8 = new R(h5, h5.nextSibling, this, t6) : 1 === l4.type ? i8 = new l4.ctor(h5, l4.name, l4.strings, this, t6) : 6 === l4.type && (i8 = new z(h5, this, t6)), this._$AV.push(i8), l4 = s4[++n8];
           }
-          o6 !== l3?.index && (h3 = C.nextNode(), o6++);
+          o10 !== l4?.index && (h5 = C.nextNode(), o10++);
         }
-        return C.currentNode = r3, e9;
+        return C.currentNode = r3, e10;
       }
-      p(t5) {
-        let i6 = 0;
-        for (const s3 of this._$AV) void 0 !== s3 && (void 0 !== s3.strings ? (s3._$AI(t5, s3, i6), i6 += s3.strings.length - 2) : s3._$AI(t5[i6])), i6++;
+      p(t6) {
+        let i7 = 0;
+        for (const s4 of this._$AV) void 0 !== s4 && (void 0 !== s4.strings ? (s4._$AI(t6, s4, i7), i7 += s4.strings.length - 2) : s4._$AI(t6[i7])), i7++;
       }
     };
     R = class _R {
       get _$AU() {
         return this._$AM?._$AU ?? this._$Cv;
       }
-      constructor(t5, i6, s3, e9) {
-        this.type = 2, this._$AH = E, this._$AN = void 0, this._$AA = t5, this._$AB = i6, this._$AM = s3, this.options = e9, this._$Cv = e9?.isConnected ?? true;
+      constructor(t6, i7, s4, e10) {
+        this.type = 2, this._$AH = E, this._$AN = void 0, this._$AA = t6, this._$AB = i7, this._$AM = s4, this.options = e10, this._$Cv = e10?.isConnected ?? true;
       }
       get parentNode() {
-        let t5 = this._$AA.parentNode;
-        const i6 = this._$AM;
-        return void 0 !== i6 && 11 === t5?.nodeType && (t5 = i6.parentNode), t5;
+        let t6 = this._$AA.parentNode;
+        const i7 = this._$AM;
+        return void 0 !== i7 && 11 === t6?.nodeType && (t6 = i7.parentNode), t6;
       }
       get startNode() {
         return this._$AA;
@@ -1363,45 +1363,45 @@ var init_lit_html = __esm({
       get endNode() {
         return this._$AB;
       }
-      _$AI(t5, i6 = this) {
-        t5 = S2(this, t5, i6), c3(t5) ? t5 === E || null == t5 || "" === t5 ? (this._$AH !== E && this._$AR(), this._$AH = E) : t5 !== this._$AH && t5 !== T && this._(t5) : void 0 !== t5._$litType$ ? this.$(t5) : void 0 !== t5.nodeType ? this.T(t5) : u2(t5) ? this.k(t5) : this._(t5);
+      _$AI(t6, i7 = this) {
+        t6 = S2(this, t6, i7), c3(t6) ? t6 === E || null == t6 || "" === t6 ? (this._$AH !== E && this._$AR(), this._$AH = E) : t6 !== this._$AH && t6 !== T && this._(t6) : void 0 !== t6._$litType$ ? this.$(t6) : void 0 !== t6.nodeType ? this.T(t6) : u2(t6) ? this.k(t6) : this._(t6);
       }
-      O(t5) {
-        return this._$AA.parentNode.insertBefore(t5, this._$AB);
+      O(t6) {
+        return this._$AA.parentNode.insertBefore(t6, this._$AB);
       }
-      T(t5) {
-        this._$AH !== t5 && (this._$AR(), this._$AH = this.O(t5));
+      T(t6) {
+        this._$AH !== t6 && (this._$AR(), this._$AH = this.O(t6));
       }
-      _(t5) {
-        this._$AH !== E && c3(this._$AH) ? this._$AA.nextSibling.data = t5 : this.T(r3.createTextNode(t5)), this._$AH = t5;
+      _(t6) {
+        this._$AH !== E && c3(this._$AH) ? this._$AA.nextSibling.data = t6 : this.T(r3.createTextNode(t6)), this._$AH = t6;
       }
-      $(t5) {
-        const { values: i6, _$litType$: s3 } = t5, e9 = "number" == typeof s3 ? this._$AC(t5) : (void 0 === s3.el && (s3.el = N.createElement(P(s3.h, s3.h[0]), this.options)), s3);
-        if (this._$AH?._$AD === e9) this._$AH.p(i6);
+      $(t6) {
+        const { values: i7, _$litType$: s4 } = t6, e10 = "number" == typeof s4 ? this._$AC(t6) : (void 0 === s4.el && (s4.el = N.createElement(P(s4.h, s4.h[0]), this.options)), s4);
+        if (this._$AH?._$AD === e10) this._$AH.p(i7);
         else {
-          const t6 = new M(e9, this), s4 = t6.u(this.options);
-          t6.p(i6), this.T(s4), this._$AH = t6;
+          const t7 = new M(e10, this), s5 = t7.u(this.options);
+          t7.p(i7), this.T(s5), this._$AH = t7;
         }
       }
-      _$AC(t5) {
-        let i6 = A.get(t5.strings);
-        return void 0 === i6 && A.set(t5.strings, i6 = new N(t5)), i6;
+      _$AC(t6) {
+        let i7 = A.get(t6.strings);
+        return void 0 === i7 && A.set(t6.strings, i7 = new N(t6)), i7;
       }
-      k(t5) {
+      k(t6) {
         a2(this._$AH) || (this._$AH = [], this._$AR());
-        const i6 = this._$AH;
-        let s3, e9 = 0;
-        for (const h3 of t5) e9 === i6.length ? i6.push(s3 = new _R(this.O(l2()), this.O(l2()), this, this.options)) : s3 = i6[e9], s3._$AI(h3), e9++;
-        e9 < i6.length && (this._$AR(s3 && s3._$AB.nextSibling, e9), i6.length = e9);
+        const i7 = this._$AH;
+        let s4, e10 = 0;
+        for (const h5 of t6) e10 === i7.length ? i7.push(s4 = new _R(this.O(l2()), this.O(l2()), this, this.options)) : s4 = i7[e10], s4._$AI(h5), e10++;
+        e10 < i7.length && (this._$AR(s4 && s4._$AB.nextSibling, e10), i7.length = e10);
       }
-      _$AR(t5 = this._$AA.nextSibling, i6) {
-        for (this._$AP?.(false, true, i6); t5 && t5 !== this._$AB; ) {
-          const i7 = t5.nextSibling;
-          t5.remove(), t5 = i7;
+      _$AR(t6 = this._$AA.nextSibling, i7) {
+        for (this._$AP?.(false, true, i7); t6 && t6 !== this._$AB; ) {
+          const i8 = t6.nextSibling;
+          t6.remove(), t6 = i8;
         }
       }
-      setConnected(t5) {
-        void 0 === this._$AM && (this._$Cv = t5, this._$AP?.(t5));
+      setConnected(t6) {
+        void 0 === this._$AM && (this._$Cv = t6, this._$AP?.(t6));
       }
     };
     k = class {
@@ -1411,75 +1411,75 @@ var init_lit_html = __esm({
       get _$AU() {
         return this._$AM._$AU;
       }
-      constructor(t5, i6, s3, e9, h3) {
-        this.type = 1, this._$AH = E, this._$AN = void 0, this.element = t5, this.name = i6, this._$AM = e9, this.options = h3, s3.length > 2 || "" !== s3[0] || "" !== s3[1] ? (this._$AH = Array(s3.length - 1).fill(new String()), this.strings = s3) : this._$AH = E;
+      constructor(t6, i7, s4, e10, h5) {
+        this.type = 1, this._$AH = E, this._$AN = void 0, this.element = t6, this.name = i7, this._$AM = e10, this.options = h5, s4.length > 2 || "" !== s4[0] || "" !== s4[1] ? (this._$AH = Array(s4.length - 1).fill(new String()), this.strings = s4) : this._$AH = E;
       }
-      _$AI(t5, i6 = this, s3, e9) {
-        const h3 = this.strings;
-        let o6 = false;
-        if (void 0 === h3) t5 = S2(this, t5, i6, 0), o6 = !c3(t5) || t5 !== this._$AH && t5 !== T, o6 && (this._$AH = t5);
+      _$AI(t6, i7 = this, s4, e10) {
+        const h5 = this.strings;
+        let o10 = false;
+        if (void 0 === h5) t6 = S2(this, t6, i7, 0), o10 = !c3(t6) || t6 !== this._$AH && t6 !== T, o10 && (this._$AH = t6);
         else {
-          const e10 = t5;
-          let n5, r7;
-          for (t5 = h3[0], n5 = 0; n5 < h3.length - 1; n5++) r7 = S2(this, e10[s3 + n5], i6, n5), r7 === T && (r7 = this._$AH[n5]), o6 || (o6 = !c3(r7) || r7 !== this._$AH[n5]), r7 === E ? t5 = E : t5 !== E && (t5 += (r7 ?? "") + h3[n5 + 1]), this._$AH[n5] = r7;
+          const e11 = t6;
+          let n8, r9;
+          for (t6 = h5[0], n8 = 0; n8 < h5.length - 1; n8++) r9 = S2(this, e11[s4 + n8], i7, n8), r9 === T && (r9 = this._$AH[n8]), o10 || (o10 = !c3(r9) || r9 !== this._$AH[n8]), r9 === E ? t6 = E : t6 !== E && (t6 += (r9 ?? "") + h5[n8 + 1]), this._$AH[n8] = r9;
         }
-        o6 && !e9 && this.j(t5);
+        o10 && !e10 && this.j(t6);
       }
-      j(t5) {
-        t5 === E ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t5 ?? "");
+      j(t6) {
+        t6 === E ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t6 ?? "");
       }
     };
     H = class extends k {
       constructor() {
         super(...arguments), this.type = 3;
       }
-      j(t5) {
-        this.element[this.name] = t5 === E ? void 0 : t5;
+      j(t6) {
+        this.element[this.name] = t6 === E ? void 0 : t6;
       }
     };
     I = class extends k {
       constructor() {
         super(...arguments), this.type = 4;
       }
-      j(t5) {
-        this.element.toggleAttribute(this.name, !!t5 && t5 !== E);
+      j(t6) {
+        this.element.toggleAttribute(this.name, !!t6 && t6 !== E);
       }
     };
     L = class extends k {
-      constructor(t5, i6, s3, e9, h3) {
-        super(t5, i6, s3, e9, h3), this.type = 5;
+      constructor(t6, i7, s4, e10, h5) {
+        super(t6, i7, s4, e10, h5), this.type = 5;
       }
-      _$AI(t5, i6 = this) {
-        if ((t5 = S2(this, t5, i6, 0) ?? E) === T) return;
-        const s3 = this._$AH, e9 = t5 === E && s3 !== E || t5.capture !== s3.capture || t5.once !== s3.once || t5.passive !== s3.passive, h3 = t5 !== E && (s3 === E || e9);
-        e9 && this.element.removeEventListener(this.name, this, s3), h3 && this.element.addEventListener(this.name, this, t5), this._$AH = t5;
+      _$AI(t6, i7 = this) {
+        if ((t6 = S2(this, t6, i7, 0) ?? E) === T) return;
+        const s4 = this._$AH, e10 = t6 === E && s4 !== E || t6.capture !== s4.capture || t6.once !== s4.once || t6.passive !== s4.passive, h5 = t6 !== E && (s4 === E || e10);
+        e10 && this.element.removeEventListener(this.name, this, s4), h5 && this.element.addEventListener(this.name, this, t6), this._$AH = t6;
       }
-      handleEvent(t5) {
-        "function" == typeof this._$AH ? this._$AH.call(this.options?.host ?? this.element, t5) : this._$AH.handleEvent(t5);
+      handleEvent(t6) {
+        "function" == typeof this._$AH ? this._$AH.call(this.options?.host ?? this.element, t6) : this._$AH.handleEvent(t6);
       }
     };
     z = class {
-      constructor(t5, i6, s3) {
-        this.element = t5, this.type = 6, this._$AN = void 0, this._$AM = i6, this.options = s3;
+      constructor(t6, i7, s4) {
+        this.element = t6, this.type = 6, this._$AN = void 0, this._$AM = i7, this.options = s4;
       }
       get _$AU() {
         return this._$AM._$AU;
       }
-      _$AI(t5) {
-        S2(this, t5);
+      _$AI(t6) {
+        S2(this, t6);
       }
     };
     Z = { M: e3, P: h2, A: o3, C: 1, L: V, R: M, D: u2, V: S2, I: R, H: k, N: I, U: L, B: H, F: z };
     j = t2.litHtmlPolyfillSupport;
     j?.(N, R), (t2.litHtmlVersions ?? (t2.litHtmlVersions = [])).push("3.2.1");
-    B = (t5, i6, s3) => {
-      const e9 = s3?.renderBefore ?? i6;
-      let h3 = e9._$litPart$;
-      if (void 0 === h3) {
-        const t6 = s3?.renderBefore ?? null;
-        e9._$litPart$ = h3 = new R(i6.insertBefore(l2(), t6), t6, void 0, s3 ?? {});
+    B = (t6, i7, s4) => {
+      const e10 = s4?.renderBefore ?? i7;
+      let h5 = e10._$litPart$;
+      if (void 0 === h5) {
+        const t7 = s4?.renderBefore ?? null;
+        e10._$litPart$ = h5 = new R(i7.insertBefore(l2(), t7), t7, void 0, s4 ?? {});
       }
-      return h3._$AI(t5), h3;
+      return h5._$AI(t6), h5;
     };
   }
 });
@@ -1498,12 +1498,12 @@ var init_lit_element = __esm({
       }
       createRenderRoot() {
         var _a;
-        const t5 = super.createRenderRoot();
-        return (_a = this.renderOptions).renderBefore ?? (_a.renderBefore = t5.firstChild), t5;
+        const t6 = super.createRenderRoot();
+        return (_a = this.renderOptions).renderBefore ?? (_a.renderBefore = t6.firstChild), t6;
       }
-      update(t5) {
-        const s3 = this.render();
-        this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t5), this._$Do = B(s3, this.renderRoot, this.renderOptions);
+      update(t6) {
+        const s4 = this.render();
+        this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t6), this._$Do = B(s4, this.renderRoot, this.renderOptions);
       }
       connectedCallback() {
         super.connectedCallback(), this._$Do?.setConnected(true);
@@ -1654,13 +1654,13 @@ var init_chunk_ESELY2US = __esm({
 });
 
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.HF7GESMZ.js
-function clamp(value, min, max) {
-  const noNegativeZero = (n5) => Object.is(n5, -0) ? 0 : n5;
-  if (value < min) {
-    return noNegativeZero(min);
+function clamp(value, min2, max2) {
+  const noNegativeZero = (n8) => Object.is(n8, -0) ? 0 : n8;
+  if (value < min2) {
+    return noNegativeZero(min2);
   }
-  if (value > max) {
-    return noNegativeZero(max);
+  if (value > max2) {
+    return noNegativeZero(max2);
   }
   return noNegativeZero(value);
 }
@@ -1671,15 +1671,15 @@ var init_chunk_HF7GESMZ = __esm({
 
 // node_modules/.pnpm/@shoelace-style+localize@3.2.1/node_modules/@shoelace-style/localize/dist/index.js
 function registerTranslation(...translation2) {
-  translation2.map((t5) => {
-    const code = t5.$code.toLowerCase();
+  translation2.map((t6) => {
+    const code = t6.$code.toLowerCase();
     if (translations.has(code)) {
-      translations.set(code, Object.assign(Object.assign({}, translations.get(code)), t5));
+      translations.set(code, Object.assign(Object.assign({}, translations.get(code)), t6));
     } else {
-      translations.set(code, t5);
+      translations.set(code, t6);
     }
     if (!fallback) {
-      fallback = t5;
+      fallback = t6;
     }
   });
   update();
@@ -1897,44 +1897,44 @@ var init_custom_element = __esm({
 });
 
 // node_modules/.pnpm/@lit+reactive-element@2.0.4/node_modules/@lit/reactive-element/decorators/property.js
-function n4(t5) {
-  return (e9, o6) => "object" == typeof o6 ? r5(t5, e9, o6) : ((t6, e10, o7) => {
-    const r7 = e10.hasOwnProperty(o7);
-    return e10.constructor.createProperty(o7, r7 ? { ...t6, wrapped: true } : t6), r7 ? Object.getOwnPropertyDescriptor(e10, o7) : void 0;
-  })(t5, e9, o6);
+function n4(t6) {
+  return (e10, o10) => "object" == typeof o10 ? r5(t6, e10, o10) : ((t7, e11, o11) => {
+    const r9 = e11.hasOwnProperty(o11);
+    return e11.constructor.createProperty(o11, r9 ? { ...t7, wrapped: true } : t7), r9 ? Object.getOwnPropertyDescriptor(e11, o11) : void 0;
+  })(t6, e10, o10);
 }
 var o4, r5;
 var init_property = __esm({
   "node_modules/.pnpm/@lit+reactive-element@2.0.4/node_modules/@lit/reactive-element/decorators/property.js"() {
     init_reactive_element();
     o4 = { attribute: true, type: String, converter: u, reflect: false, hasChanged: f };
-    r5 = (t5 = o4, e9, r7) => {
-      const { kind: n5, metadata: i6 } = r7;
-      let s3 = globalThis.litPropertyMetadata.get(i6);
-      if (void 0 === s3 && globalThis.litPropertyMetadata.set(i6, s3 = /* @__PURE__ */ new Map()), s3.set(r7.name, t5), "accessor" === n5) {
-        const { name: o6 } = r7;
-        return { set(r8) {
-          const n6 = e9.get.call(this);
-          e9.set.call(this, r8), this.requestUpdate(o6, n6, t5);
-        }, init(e10) {
-          return void 0 !== e10 && this.P(o6, void 0, t5), e10;
+    r5 = (t6 = o4, e10, r9) => {
+      const { kind: n8, metadata: i7 } = r9;
+      let s4 = globalThis.litPropertyMetadata.get(i7);
+      if (void 0 === s4 && globalThis.litPropertyMetadata.set(i7, s4 = /* @__PURE__ */ new Map()), s4.set(r9.name, t6), "accessor" === n8) {
+        const { name: o10 } = r9;
+        return { set(r10) {
+          const n9 = e10.get.call(this);
+          e10.set.call(this, r10), this.requestUpdate(o10, n9, t6);
+        }, init(e11) {
+          return void 0 !== e11 && this.P(o10, void 0, t6), e11;
         } };
       }
-      if ("setter" === n5) {
-        const { name: o6 } = r7;
-        return function(r8) {
-          const n6 = this[o6];
-          e9.call(this, r8), this.requestUpdate(o6, n6, t5);
+      if ("setter" === n8) {
+        const { name: o10 } = r9;
+        return function(r10) {
+          const n9 = this[o10];
+          e10.call(this, r10), this.requestUpdate(o10, n9, t6);
         };
       }
-      throw Error("Unsupported decorator location: " + n5);
+      throw Error("Unsupported decorator location: " + n8);
     };
   }
 });
 
 // node_modules/.pnpm/@lit+reactive-element@2.0.4/node_modules/@lit/reactive-element/decorators/state.js
-function r6(r7) {
-  return n4({ ...r7, state: true, attribute: false });
+function r6(r9) {
+  return n4({ ...r9, state: true, attribute: false });
 }
 var init_state = __esm({
   "node_modules/.pnpm/@lit+reactive-element@2.0.4/node_modules/@lit/reactive-element/decorators/state.js"() {
@@ -1952,30 +1952,30 @@ var init_event_options = __esm({
 var e4;
 var init_base = __esm({
   "node_modules/.pnpm/@lit+reactive-element@2.0.4/node_modules/@lit/reactive-element/decorators/base.js"() {
-    e4 = (e9, t5, c4) => (c4.configurable = true, c4.enumerable = true, Reflect.decorate && "object" != typeof t5 && Object.defineProperty(e9, t5, c4), c4);
+    e4 = (e10, t6, c6) => (c6.configurable = true, c6.enumerable = true, Reflect.decorate && "object" != typeof t6 && Object.defineProperty(e10, t6, c6), c6);
   }
 });
 
 // node_modules/.pnpm/@lit+reactive-element@2.0.4/node_modules/@lit/reactive-element/decorators/query.js
-function e5(e9, r7) {
-  return (n5, s3, i6) => {
-    const o6 = (t5) => t5.renderRoot?.querySelector(e9) ?? null;
-    if (r7) {
-      const { get: e10, set: r8 } = "object" == typeof s3 ? n5 : i6 ?? (() => {
-        const t5 = Symbol();
+function e5(e10, r9) {
+  return (n8, s4, i7) => {
+    const o10 = (t6) => t6.renderRoot?.querySelector(e10) ?? null;
+    if (r9) {
+      const { get: e11, set: r10 } = "object" == typeof s4 ? n8 : i7 ?? (() => {
+        const t6 = Symbol();
         return { get() {
-          return this[t5];
-        }, set(e11) {
-          this[t5] = e11;
+          return this[t6];
+        }, set(e12) {
+          this[t6] = e12;
         } };
       })();
-      return e4(n5, s3, { get() {
-        let t5 = e10.call(this);
-        return void 0 === t5 && (t5 = o6(this), (null !== t5 || this.hasUpdated) && r8.call(this, t5)), t5;
+      return e4(n8, s4, { get() {
+        let t6 = e11.call(this);
+        return void 0 === t6 && (t6 = o10(this), (null !== t6 || this.hasUpdated) && r10.call(this, t6)), t6;
       } });
     }
-    return e4(n5, s3, { get() {
-      return o6(this);
+    return e4(n8, s4, { get() {
+      return o10(this);
     } });
   };
 }
@@ -2120,7 +2120,7 @@ var o5;
 var init_if_defined = __esm({
   "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/directives/if-defined.js"() {
     init_lit_html();
-    o5 = (o6) => o6 ?? E;
+    o5 = (o10) => o10 ?? E;
   }
 });
 
@@ -2592,21 +2592,21 @@ var t3, e6, i5;
 var init_directive = __esm({
   "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/directive.js"() {
     t3 = { ATTRIBUTE: 1, CHILD: 2, PROPERTY: 3, BOOLEAN_ATTRIBUTE: 4, EVENT: 5, ELEMENT: 6 };
-    e6 = (t5) => (...e9) => ({ _$litDirective$: t5, values: e9 });
+    e6 = (t6) => (...e10) => ({ _$litDirective$: t6, values: e10 });
     i5 = class {
-      constructor(t5) {
+      constructor(t6) {
       }
       get _$AU() {
         return this._$AM._$AU;
       }
-      _$AT(t5, e9, i6) {
-        this._$Ct = t5, this._$AM = e9, this._$Ci = i6;
+      _$AT(t6, e10, i7) {
+        this._$Ct = t6, this._$AM = e10, this._$Ci = i7;
       }
-      _$AS(t5, e9) {
-        return this.update(t5, e9);
+      _$AS(t6, e10) {
+        return this.update(t6, e10);
       }
-      update(t5, e9) {
-        return this.render(...e9);
+      update(t6, e10) {
+        return this.render(...e10);
       }
     };
   }
@@ -2619,23 +2619,23 @@ var init_class_map = __esm({
     init_lit_html();
     init_directive();
     e7 = e6(class extends i5 {
-      constructor(t5) {
-        if (super(t5), t5.type !== t3.ATTRIBUTE || "class" !== t5.name || t5.strings?.length > 2) throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.");
+      constructor(t6) {
+        if (super(t6), t6.type !== t3.ATTRIBUTE || "class" !== t6.name || t6.strings?.length > 2) throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.");
       }
-      render(t5) {
-        return " " + Object.keys(t5).filter((s3) => t5[s3]).join(" ") + " ";
+      render(t6) {
+        return " " + Object.keys(t6).filter((s4) => t6[s4]).join(" ") + " ";
       }
-      update(s3, [i6]) {
+      update(s4, [i7]) {
         if (void 0 === this.st) {
-          this.st = /* @__PURE__ */ new Set(), void 0 !== s3.strings && (this.nt = new Set(s3.strings.join(" ").split(/\s/).filter((t5) => "" !== t5)));
-          for (const t5 in i6) i6[t5] && !this.nt?.has(t5) && this.st.add(t5);
-          return this.render(i6);
+          this.st = /* @__PURE__ */ new Set(), void 0 !== s4.strings && (this.nt = new Set(s4.strings.join(" ").split(/\s/).filter((t6) => "" !== t6)));
+          for (const t6 in i7) i7[t6] && !this.nt?.has(t6) && this.st.add(t6);
+          return this.render(i7);
         }
-        const r7 = s3.element.classList;
-        for (const t5 of this.st) t5 in i6 || (r7.remove(t5), this.st.delete(t5));
-        for (const t5 in i6) {
-          const s4 = !!i6[t5];
-          s4 === this.st.has(t5) || this.nt?.has(t5) || (s4 ? (r7.add(t5), this.st.add(t5)) : (r7.remove(t5), this.st.delete(t5)));
+        const r9 = s4.element.classList;
+        for (const t6 of this.st) t6 in i7 || (r9.remove(t6), this.st.delete(t6));
+        for (const t6 in i7) {
+          const s5 = !!i7[t6];
+          s5 === this.st.has(t6) || this.nt?.has(t6) || (s5 ? (r9.add(t6), this.st.add(t6)) : (r9.remove(t6), this.st.delete(t6)));
         }
         return T;
       }
@@ -3092,12 +3092,13 @@ var init_chunk_QLXRCYS4 = __esm({
 });
 
 // node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/directive-helpers.js
-var t4, e8;
+var t4, e8, f3;
 var init_directive_helpers = __esm({
   "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/directive-helpers.js"() {
     init_lit_html();
     ({ I: t4 } = Z);
-    e8 = (o6, t5) => void 0 === t5 ? void 0 !== o6?._$litType$ : o6?._$litType$ === t5;
+    e8 = (o10, t6) => void 0 === t6 ? void 0 !== o10?._$litType$ : o10?._$litType$ === t6;
+    f3 = (o10) => void 0 === o10.strings;
   }
 });
 
@@ -3146,7 +3147,7 @@ var init_chunk_E6QAPUBK = __esm({
           fileData = await fetch(url, { mode: "cors" });
           if (!fileData.ok)
             return fileData.status === 410 ? CACHEABLE_ERROR : RETRYABLE_ERROR;
-        } catch (e9) {
+        } catch (e10) {
           return RETRYABLE_ERROR;
         }
         try {
@@ -3163,7 +3164,7 @@ var init_chunk_E6QAPUBK = __esm({
             return CACHEABLE_ERROR;
           svgEl.part.add("svg");
           return document.adoptNode(svgEl);
-        } catch (e9) {
+        } catch (e10) {
           return CACHEABLE_ERROR;
         }
       }
@@ -3520,6 +3521,4735 @@ var init_details = __esm({
   }
 });
 
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.LXP7GVU3.js
+var dropdown_styles_default;
+var init_chunk_LXP7GVU3 = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.LXP7GVU3.js"() {
+    init_lit();
+    dropdown_styles_default = i`
+  :host {
+    display: inline-block;
+  }
+
+  .dropdown::part(popup) {
+    z-index: var(--sl-z-index-dropdown);
+  }
+
+  .dropdown[data-current-placement^='top']::part(popup) {
+    transform-origin: bottom;
+  }
+
+  .dropdown[data-current-placement^='bottom']::part(popup) {
+    transform-origin: top;
+  }
+
+  .dropdown[data-current-placement^='left']::part(popup) {
+    transform-origin: right;
+  }
+
+  .dropdown[data-current-placement^='right']::part(popup) {
+    transform-origin: left;
+  }
+
+  .dropdown__trigger {
+    display: block;
+  }
+
+  .dropdown__panel {
+    font-family: var(--sl-font-sans);
+    font-size: var(--sl-font-size-medium);
+    font-weight: var(--sl-font-weight-normal);
+    box-shadow: var(--sl-shadow-large);
+    border-radius: var(--sl-border-radius-medium);
+    pointer-events: none;
+  }
+
+  .dropdown--open .dropdown__panel {
+    display: block;
+    pointer-events: all;
+  }
+
+  /* When users slot a menu, make sure it conforms to the popup's auto-size */
+  ::slotted(sl-menu) {
+    max-width: var(--auto-size-available-width) !important;
+    max-height: var(--auto-size-available-height) !important;
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.LXDTFLWU.js
+function getCachedComputedStyle(el) {
+  let computedStyle = computedStyleMap.get(el);
+  if (!computedStyle) {
+    computedStyle = window.getComputedStyle(el, null);
+    computedStyleMap.set(el, computedStyle);
+  }
+  return computedStyle;
+}
+function isVisible(el) {
+  if (typeof el.checkVisibility === "function") {
+    return el.checkVisibility({ checkOpacity: false, checkVisibilityCSS: true });
+  }
+  const computedStyle = getCachedComputedStyle(el);
+  return computedStyle.visibility !== "hidden" && computedStyle.display !== "none";
+}
+function isOverflowingAndTabbable(el) {
+  const computedStyle = getCachedComputedStyle(el);
+  const { overflowY, overflowX } = computedStyle;
+  if (overflowY === "scroll" || overflowX === "scroll") {
+    return true;
+  }
+  if (overflowY !== "auto" || overflowX !== "auto") {
+    return false;
+  }
+  const isOverflowingY = el.scrollHeight > el.clientHeight;
+  if (isOverflowingY && overflowY === "auto") {
+    return true;
+  }
+  const isOverflowingX = el.scrollWidth > el.clientWidth;
+  if (isOverflowingX && overflowX === "auto") {
+    return true;
+  }
+  return false;
+}
+function isTabbable(el) {
+  const tag = el.tagName.toLowerCase();
+  const tabindex = Number(el.getAttribute("tabindex"));
+  const hasTabindex = el.hasAttribute("tabindex");
+  if (hasTabindex && (isNaN(tabindex) || tabindex <= -1)) {
+    return false;
+  }
+  if (el.hasAttribute("disabled")) {
+    return false;
+  }
+  if (el.closest("[inert]")) {
+    return false;
+  }
+  if (tag === "input" && el.getAttribute("type") === "radio" && !el.hasAttribute("checked")) {
+    return false;
+  }
+  if (!isVisible(el)) {
+    return false;
+  }
+  if ((tag === "audio" || tag === "video") && el.hasAttribute("controls")) {
+    return true;
+  }
+  if (el.hasAttribute("tabindex")) {
+    return true;
+  }
+  if (el.hasAttribute("contenteditable") && el.getAttribute("contenteditable") !== "false") {
+    return true;
+  }
+  const isNativelyTabbable = [
+    "button",
+    "input",
+    "select",
+    "textarea",
+    "a",
+    "audio",
+    "video",
+    "summary",
+    "iframe"
+  ].includes(tag);
+  if (isNativelyTabbable) {
+    return true;
+  }
+  return isOverflowingAndTabbable(el);
+}
+function getTabbableBoundary(root) {
+  var _a, _b;
+  const tabbableElements = getTabbableElements(root);
+  const start = (_a = tabbableElements[0]) != null ? _a : null;
+  const end = (_b = tabbableElements[tabbableElements.length - 1]) != null ? _b : null;
+  return { start, end };
+}
+function getSlottedChildrenOutsideRootElement(slotElement, root) {
+  var _a;
+  return ((_a = slotElement.getRootNode({ composed: true })) == null ? void 0 : _a.host) !== root;
+}
+function getTabbableElements(root) {
+  const walkedEls = /* @__PURE__ */ new WeakMap();
+  const tabbableElements = [];
+  function walk(el) {
+    if (el instanceof Element) {
+      if (el.hasAttribute("inert") || el.closest("[inert]")) {
+        return;
+      }
+      if (walkedEls.has(el)) {
+        return;
+      }
+      walkedEls.set(el, true);
+      if (!tabbableElements.includes(el) && isTabbable(el)) {
+        tabbableElements.push(el);
+      }
+      if (el instanceof HTMLSlotElement && getSlottedChildrenOutsideRootElement(el, root)) {
+        el.assignedElements({ flatten: true }).forEach((assignedEl) => {
+          walk(assignedEl);
+        });
+      }
+      if (el.shadowRoot !== null && el.shadowRoot.mode === "open") {
+        walk(el.shadowRoot);
+      }
+    }
+    for (const e10 of el.children) {
+      walk(e10);
+    }
+  }
+  walk(root);
+  return tabbableElements.sort((a4, b3) => {
+    const aTabindex = Number(a4.getAttribute("tabindex")) || 0;
+    const bTabindex = Number(b3.getAttribute("tabindex")) || 0;
+    return bTabindex - aTabindex;
+  });
+}
+var computedStyleMap;
+var init_chunk_LXDTFLWU = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.LXDTFLWU.js"() {
+    computedStyleMap = /* @__PURE__ */ new WeakMap();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.3KSWVBQ5.js
+var popup_styles_default;
+var init_chunk_3KSWVBQ5 = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.3KSWVBQ5.js"() {
+    init_lit();
+    popup_styles_default = i`
+  :host {
+    --arrow-color: var(--sl-color-neutral-1000);
+    --arrow-size: 6px;
+
+    /*
+     * These properties are computed to account for the arrow's dimensions after being rotated 45º. The constant
+     * 0.7071 is derived from sin(45), which is the diagonal size of the arrow's container after rotating.
+     */
+    --arrow-size-diagonal: calc(var(--arrow-size) * 0.7071);
+    --arrow-padding-offset: calc(var(--arrow-size-diagonal) - var(--arrow-size));
+
+    display: contents;
+  }
+
+  .popup {
+    position: absolute;
+    isolation: isolate;
+    max-width: var(--auto-size-available-width, none);
+    max-height: var(--auto-size-available-height, none);
+  }
+
+  .popup--fixed {
+    position: fixed;
+  }
+
+  .popup:not(.popup--active) {
+    display: none;
+  }
+
+  .popup__arrow {
+    position: absolute;
+    width: calc(var(--arrow-size-diagonal) * 2);
+    height: calc(var(--arrow-size-diagonal) * 2);
+    rotate: 45deg;
+    background: var(--arrow-color);
+    z-index: -1;
+  }
+
+  /* Hover bridge */
+  .popup-hover-bridge:not(.popup-hover-bridge--visible) {
+    display: none;
+  }
+
+  .popup-hover-bridge {
+    position: fixed;
+    z-index: calc(var(--sl-z-index-dropdown) - 1);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    clip-path: polygon(
+      var(--hover-bridge-top-left-x, 0) var(--hover-bridge-top-left-y, 0),
+      var(--hover-bridge-top-right-x, 0) var(--hover-bridge-top-right-y, 0),
+      var(--hover-bridge-bottom-right-x, 0) var(--hover-bridge-bottom-right-y, 0),
+      var(--hover-bridge-bottom-left-x, 0) var(--hover-bridge-bottom-left-y, 0)
+    );
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/@floating-ui+utils@0.2.8/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+function clamp2(start, value, end) {
+  return max(start, min(value, end));
+}
+function evaluate(value, param) {
+  return typeof value === "function" ? value(param) : value;
+}
+function getSide(placement) {
+  return placement.split("-")[0];
+}
+function getAlignment(placement) {
+  return placement.split("-")[1];
+}
+function getOppositeAxis(axis) {
+  return axis === "x" ? "y" : "x";
+}
+function getAxisLength(axis) {
+  return axis === "y" ? "height" : "width";
+}
+function getSideAxis(placement) {
+  return ["top", "bottom"].includes(getSide(placement)) ? "y" : "x";
+}
+function getAlignmentAxis(placement) {
+  return getOppositeAxis(getSideAxis(placement));
+}
+function getAlignmentSides(placement, rects, rtl) {
+  if (rtl === void 0) {
+    rtl = false;
+  }
+  const alignment = getAlignment(placement);
+  const alignmentAxis = getAlignmentAxis(placement);
+  const length = getAxisLength(alignmentAxis);
+  let mainAlignmentSide = alignmentAxis === "x" ? alignment === (rtl ? "end" : "start") ? "right" : "left" : alignment === "start" ? "bottom" : "top";
+  if (rects.reference[length] > rects.floating[length]) {
+    mainAlignmentSide = getOppositePlacement(mainAlignmentSide);
+  }
+  return [mainAlignmentSide, getOppositePlacement(mainAlignmentSide)];
+}
+function getExpandedPlacements(placement) {
+  const oppositePlacement = getOppositePlacement(placement);
+  return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
+}
+function getOppositeAlignmentPlacement(placement) {
+  return placement.replace(/start|end/g, (alignment) => oppositeAlignmentMap[alignment]);
+}
+function getSideList(side, isStart, rtl) {
+  const lr = ["left", "right"];
+  const rl = ["right", "left"];
+  const tb = ["top", "bottom"];
+  const bt = ["bottom", "top"];
+  switch (side) {
+    case "top":
+    case "bottom":
+      if (rtl) return isStart ? rl : lr;
+      return isStart ? lr : rl;
+    case "left":
+    case "right":
+      return isStart ? tb : bt;
+    default:
+      return [];
+  }
+}
+function getOppositeAxisPlacements(placement, flipAlignment, direction, rtl) {
+  const alignment = getAlignment(placement);
+  let list = getSideList(getSide(placement), direction === "start", rtl);
+  if (alignment) {
+    list = list.map((side) => side + "-" + alignment);
+    if (flipAlignment) {
+      list = list.concat(list.map(getOppositeAlignmentPlacement));
+    }
+  }
+  return list;
+}
+function getOppositePlacement(placement) {
+  return placement.replace(/left|right|bottom|top/g, (side) => oppositeSideMap[side]);
+}
+function expandPaddingObject(padding) {
+  return {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    ...padding
+  };
+}
+function getPaddingObject(padding) {
+  return typeof padding !== "number" ? expandPaddingObject(padding) : {
+    top: padding,
+    right: padding,
+    bottom: padding,
+    left: padding
+  };
+}
+function rectToClientRect(rect) {
+  const {
+    x: x2,
+    y: y3,
+    width,
+    height
+  } = rect;
+  return {
+    width,
+    height,
+    top: y3,
+    left: x2,
+    right: x2 + width,
+    bottom: y3 + height,
+    x: x2,
+    y: y3
+  };
+}
+var min, max, round, floor, createCoords, oppositeSideMap, oppositeAlignmentMap;
+var init_floating_ui_utils = __esm({
+  "node_modules/.pnpm/@floating-ui+utils@0.2.8/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs"() {
+    min = Math.min;
+    max = Math.max;
+    round = Math.round;
+    floor = Math.floor;
+    createCoords = (v2) => ({
+      x: v2,
+      y: v2
+    });
+    oppositeSideMap = {
+      left: "right",
+      right: "left",
+      bottom: "top",
+      top: "bottom"
+    };
+    oppositeAlignmentMap = {
+      start: "end",
+      end: "start"
+    };
+  }
+});
+
+// node_modules/.pnpm/@floating-ui+core@1.6.8/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+function computeCoordsFromPlacement(_ref, placement, rtl) {
+  let {
+    reference,
+    floating
+  } = _ref;
+  const sideAxis = getSideAxis(placement);
+  const alignmentAxis = getAlignmentAxis(placement);
+  const alignLength = getAxisLength(alignmentAxis);
+  const side = getSide(placement);
+  const isVertical = sideAxis === "y";
+  const commonX = reference.x + reference.width / 2 - floating.width / 2;
+  const commonY = reference.y + reference.height / 2 - floating.height / 2;
+  const commonAlign = reference[alignLength] / 2 - floating[alignLength] / 2;
+  let coords;
+  switch (side) {
+    case "top":
+      coords = {
+        x: commonX,
+        y: reference.y - floating.height
+      };
+      break;
+    case "bottom":
+      coords = {
+        x: commonX,
+        y: reference.y + reference.height
+      };
+      break;
+    case "right":
+      coords = {
+        x: reference.x + reference.width,
+        y: commonY
+      };
+      break;
+    case "left":
+      coords = {
+        x: reference.x - floating.width,
+        y: commonY
+      };
+      break;
+    default:
+      coords = {
+        x: reference.x,
+        y: reference.y
+      };
+  }
+  switch (getAlignment(placement)) {
+    case "start":
+      coords[alignmentAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
+      break;
+    case "end":
+      coords[alignmentAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
+      break;
+  }
+  return coords;
+}
+async function detectOverflow(state, options) {
+  var _await$platform$isEle;
+  if (options === void 0) {
+    options = {};
+  }
+  const {
+    x: x2,
+    y: y3,
+    platform: platform2,
+    rects,
+    elements,
+    strategy
+  } = state;
+  const {
+    boundary = "clippingAncestors",
+    rootBoundary = "viewport",
+    elementContext = "floating",
+    altBoundary = false,
+    padding = 0
+  } = evaluate(options, state);
+  const paddingObject = getPaddingObject(padding);
+  const altContext = elementContext === "floating" ? "reference" : "floating";
+  const element = elements[altBoundary ? altContext : elementContext];
+  const clippingClientRect = rectToClientRect(await platform2.getClippingRect({
+    element: ((_await$platform$isEle = await (platform2.isElement == null ? void 0 : platform2.isElement(element))) != null ? _await$platform$isEle : true) ? element : element.contextElement || await (platform2.getDocumentElement == null ? void 0 : platform2.getDocumentElement(elements.floating)),
+    boundary,
+    rootBoundary,
+    strategy
+  }));
+  const rect = elementContext === "floating" ? {
+    x: x2,
+    y: y3,
+    width: rects.floating.width,
+    height: rects.floating.height
+  } : rects.reference;
+  const offsetParent = await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(elements.floating));
+  const offsetScale = await (platform2.isElement == null ? void 0 : platform2.isElement(offsetParent)) ? await (platform2.getScale == null ? void 0 : platform2.getScale(offsetParent)) || {
+    x: 1,
+    y: 1
+  } : {
+    x: 1,
+    y: 1
+  };
+  const elementClientRect = rectToClientRect(platform2.convertOffsetParentRelativeRectToViewportRelativeRect ? await platform2.convertOffsetParentRelativeRectToViewportRelativeRect({
+    elements,
+    rect,
+    offsetParent,
+    strategy
+  }) : rect);
+  return {
+    top: (clippingClientRect.top - elementClientRect.top + paddingObject.top) / offsetScale.y,
+    bottom: (elementClientRect.bottom - clippingClientRect.bottom + paddingObject.bottom) / offsetScale.y,
+    left: (clippingClientRect.left - elementClientRect.left + paddingObject.left) / offsetScale.x,
+    right: (elementClientRect.right - clippingClientRect.right + paddingObject.right) / offsetScale.x
+  };
+}
+async function convertValueToCoords(state, options) {
+  const {
+    placement,
+    platform: platform2,
+    elements
+  } = state;
+  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
+  const side = getSide(placement);
+  const alignment = getAlignment(placement);
+  const isVertical = getSideAxis(placement) === "y";
+  const mainAxisMulti = ["left", "top"].includes(side) ? -1 : 1;
+  const crossAxisMulti = rtl && isVertical ? -1 : 1;
+  const rawValue = evaluate(options, state);
+  let {
+    mainAxis,
+    crossAxis,
+    alignmentAxis
+  } = typeof rawValue === "number" ? {
+    mainAxis: rawValue,
+    crossAxis: 0,
+    alignmentAxis: null
+  } : {
+    mainAxis: rawValue.mainAxis || 0,
+    crossAxis: rawValue.crossAxis || 0,
+    alignmentAxis: rawValue.alignmentAxis
+  };
+  if (alignment && typeof alignmentAxis === "number") {
+    crossAxis = alignment === "end" ? alignmentAxis * -1 : alignmentAxis;
+  }
+  return isVertical ? {
+    x: crossAxis * crossAxisMulti,
+    y: mainAxis * mainAxisMulti
+  } : {
+    x: mainAxis * mainAxisMulti,
+    y: crossAxis * crossAxisMulti
+  };
+}
+var computePosition, arrow, flip, offset, shift, size;
+var init_floating_ui_core = __esm({
+  "node_modules/.pnpm/@floating-ui+core@1.6.8/node_modules/@floating-ui/core/dist/floating-ui.core.mjs"() {
+    init_floating_ui_utils();
+    init_floating_ui_utils();
+    computePosition = async (reference, floating, config) => {
+      const {
+        placement = "bottom",
+        strategy = "absolute",
+        middleware = [],
+        platform: platform2
+      } = config;
+      const validMiddleware = middleware.filter(Boolean);
+      const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(floating));
+      let rects = await platform2.getElementRects({
+        reference,
+        floating,
+        strategy
+      });
+      let {
+        x: x2,
+        y: y3
+      } = computeCoordsFromPlacement(rects, placement, rtl);
+      let statefulPlacement = placement;
+      let middlewareData = {};
+      let resetCount = 0;
+      for (let i7 = 0; i7 < validMiddleware.length; i7++) {
+        const {
+          name,
+          fn
+        } = validMiddleware[i7];
+        const {
+          x: nextX,
+          y: nextY,
+          data,
+          reset
+        } = await fn({
+          x: x2,
+          y: y3,
+          initialPlacement: placement,
+          placement: statefulPlacement,
+          strategy,
+          middlewareData,
+          rects,
+          platform: platform2,
+          elements: {
+            reference,
+            floating
+          }
+        });
+        x2 = nextX != null ? nextX : x2;
+        y3 = nextY != null ? nextY : y3;
+        middlewareData = {
+          ...middlewareData,
+          [name]: {
+            ...middlewareData[name],
+            ...data
+          }
+        };
+        if (reset && resetCount <= 50) {
+          resetCount++;
+          if (typeof reset === "object") {
+            if (reset.placement) {
+              statefulPlacement = reset.placement;
+            }
+            if (reset.rects) {
+              rects = reset.rects === true ? await platform2.getElementRects({
+                reference,
+                floating,
+                strategy
+              }) : reset.rects;
+            }
+            ({
+              x: x2,
+              y: y3
+            } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
+          }
+          i7 = -1;
+        }
+      }
+      return {
+        x: x2,
+        y: y3,
+        placement: statefulPlacement,
+        strategy,
+        middlewareData
+      };
+    };
+    arrow = (options) => ({
+      name: "arrow",
+      options,
+      async fn(state) {
+        const {
+          x: x2,
+          y: y3,
+          placement,
+          rects,
+          platform: platform2,
+          elements,
+          middlewareData
+        } = state;
+        const {
+          element,
+          padding = 0
+        } = evaluate(options, state) || {};
+        if (element == null) {
+          return {};
+        }
+        const paddingObject = getPaddingObject(padding);
+        const coords = {
+          x: x2,
+          y: y3
+        };
+        const axis = getAlignmentAxis(placement);
+        const length = getAxisLength(axis);
+        const arrowDimensions = await platform2.getDimensions(element);
+        const isYAxis = axis === "y";
+        const minProp = isYAxis ? "top" : "left";
+        const maxProp = isYAxis ? "bottom" : "right";
+        const clientProp = isYAxis ? "clientHeight" : "clientWidth";
+        const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
+        const startDiff = coords[axis] - rects.reference[axis];
+        const arrowOffsetParent = await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(element));
+        let clientSize = arrowOffsetParent ? arrowOffsetParent[clientProp] : 0;
+        if (!clientSize || !await (platform2.isElement == null ? void 0 : platform2.isElement(arrowOffsetParent))) {
+          clientSize = elements.floating[clientProp] || rects.floating[length];
+        }
+        const centerToReference = endDiff / 2 - startDiff / 2;
+        const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
+        const minPadding = min(paddingObject[minProp], largestPossiblePadding);
+        const maxPadding = min(paddingObject[maxProp], largestPossiblePadding);
+        const min$1 = minPadding;
+        const max2 = clientSize - arrowDimensions[length] - maxPadding;
+        const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
+        const offset3 = clamp2(min$1, center, max2);
+        const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
+        const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max2 : 0;
+        return {
+          [axis]: coords[axis] + alignmentOffset,
+          data: {
+            [axis]: offset3,
+            centerOffset: center - offset3 - alignmentOffset,
+            ...shouldAddOffset && {
+              alignmentOffset
+            }
+          },
+          reset: shouldAddOffset
+        };
+      }
+    });
+    flip = function(options) {
+      if (options === void 0) {
+        options = {};
+      }
+      return {
+        name: "flip",
+        options,
+        async fn(state) {
+          var _middlewareData$arrow, _middlewareData$flip;
+          const {
+            placement,
+            middlewareData,
+            rects,
+            initialPlacement,
+            platform: platform2,
+            elements
+          } = state;
+          const {
+            mainAxis: checkMainAxis = true,
+            crossAxis: checkCrossAxis = true,
+            fallbackPlacements: specifiedFallbackPlacements,
+            fallbackStrategy = "bestFit",
+            fallbackAxisSideDirection = "none",
+            flipAlignment = true,
+            ...detectOverflowOptions
+          } = evaluate(options, state);
+          if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+            return {};
+          }
+          const side = getSide(placement);
+          const initialSideAxis = getSideAxis(initialPlacement);
+          const isBasePlacement = getSide(initialPlacement) === initialPlacement;
+          const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
+          const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
+          const hasFallbackAxisSideDirection = fallbackAxisSideDirection !== "none";
+          if (!specifiedFallbackPlacements && hasFallbackAxisSideDirection) {
+            fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
+          }
+          const placements2 = [initialPlacement, ...fallbackPlacements];
+          const overflow = await detectOverflow(state, detectOverflowOptions);
+          const overflows = [];
+          let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
+          if (checkMainAxis) {
+            overflows.push(overflow[side]);
+          }
+          if (checkCrossAxis) {
+            const sides2 = getAlignmentSides(placement, rects, rtl);
+            overflows.push(overflow[sides2[0]], overflow[sides2[1]]);
+          }
+          overflowsData = [...overflowsData, {
+            placement,
+            overflows
+          }];
+          if (!overflows.every((side2) => side2 <= 0)) {
+            var _middlewareData$flip2, _overflowsData$filter;
+            const nextIndex = (((_middlewareData$flip2 = middlewareData.flip) == null ? void 0 : _middlewareData$flip2.index) || 0) + 1;
+            const nextPlacement = placements2[nextIndex];
+            if (nextPlacement) {
+              return {
+                data: {
+                  index: nextIndex,
+                  overflows: overflowsData
+                },
+                reset: {
+                  placement: nextPlacement
+                }
+              };
+            }
+            let resetPlacement = (_overflowsData$filter = overflowsData.filter((d3) => d3.overflows[0] <= 0).sort((a4, b3) => a4.overflows[1] - b3.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
+            if (!resetPlacement) {
+              switch (fallbackStrategy) {
+                case "bestFit": {
+                  var _overflowsData$filter2;
+                  const placement2 = (_overflowsData$filter2 = overflowsData.filter((d3) => {
+                    if (hasFallbackAxisSideDirection) {
+                      const currentSideAxis = getSideAxis(d3.placement);
+                      return currentSideAxis === initialSideAxis || // Create a bias to the `y` side axis due to horizontal
+                      // reading directions favoring greater width.
+                      currentSideAxis === "y";
+                    }
+                    return true;
+                  }).map((d3) => [d3.placement, d3.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a4, b3) => a4[1] - b3[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
+                  if (placement2) {
+                    resetPlacement = placement2;
+                  }
+                  break;
+                }
+                case "initialPlacement":
+                  resetPlacement = initialPlacement;
+                  break;
+              }
+            }
+            if (placement !== resetPlacement) {
+              return {
+                reset: {
+                  placement: resetPlacement
+                }
+              };
+            }
+          }
+          return {};
+        }
+      };
+    };
+    offset = function(options) {
+      if (options === void 0) {
+        options = 0;
+      }
+      return {
+        name: "offset",
+        options,
+        async fn(state) {
+          var _middlewareData$offse, _middlewareData$arrow;
+          const {
+            x: x2,
+            y: y3,
+            placement,
+            middlewareData
+          } = state;
+          const diffCoords = await convertValueToCoords(state, options);
+          if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+            return {};
+          }
+          return {
+            x: x2 + diffCoords.x,
+            y: y3 + diffCoords.y,
+            data: {
+              ...diffCoords,
+              placement
+            }
+          };
+        }
+      };
+    };
+    shift = function(options) {
+      if (options === void 0) {
+        options = {};
+      }
+      return {
+        name: "shift",
+        options,
+        async fn(state) {
+          const {
+            x: x2,
+            y: y3,
+            placement
+          } = state;
+          const {
+            mainAxis: checkMainAxis = true,
+            crossAxis: checkCrossAxis = false,
+            limiter = {
+              fn: (_ref) => {
+                let {
+                  x: x3,
+                  y: y4
+                } = _ref;
+                return {
+                  x: x3,
+                  y: y4
+                };
+              }
+            },
+            ...detectOverflowOptions
+          } = evaluate(options, state);
+          const coords = {
+            x: x2,
+            y: y3
+          };
+          const overflow = await detectOverflow(state, detectOverflowOptions);
+          const crossAxis = getSideAxis(getSide(placement));
+          const mainAxis = getOppositeAxis(crossAxis);
+          let mainAxisCoord = coords[mainAxis];
+          let crossAxisCoord = coords[crossAxis];
+          if (checkMainAxis) {
+            const minSide = mainAxis === "y" ? "top" : "left";
+            const maxSide = mainAxis === "y" ? "bottom" : "right";
+            const min2 = mainAxisCoord + overflow[minSide];
+            const max2 = mainAxisCoord - overflow[maxSide];
+            mainAxisCoord = clamp2(min2, mainAxisCoord, max2);
+          }
+          if (checkCrossAxis) {
+            const minSide = crossAxis === "y" ? "top" : "left";
+            const maxSide = crossAxis === "y" ? "bottom" : "right";
+            const min2 = crossAxisCoord + overflow[minSide];
+            const max2 = crossAxisCoord - overflow[maxSide];
+            crossAxisCoord = clamp2(min2, crossAxisCoord, max2);
+          }
+          const limitedCoords = limiter.fn({
+            ...state,
+            [mainAxis]: mainAxisCoord,
+            [crossAxis]: crossAxisCoord
+          });
+          return {
+            ...limitedCoords,
+            data: {
+              x: limitedCoords.x - x2,
+              y: limitedCoords.y - y3,
+              enabled: {
+                [mainAxis]: checkMainAxis,
+                [crossAxis]: checkCrossAxis
+              }
+            }
+          };
+        }
+      };
+    };
+    size = function(options) {
+      if (options === void 0) {
+        options = {};
+      }
+      return {
+        name: "size",
+        options,
+        async fn(state) {
+          var _state$middlewareData, _state$middlewareData2;
+          const {
+            placement,
+            rects,
+            platform: platform2,
+            elements
+          } = state;
+          const {
+            apply = () => {
+            },
+            ...detectOverflowOptions
+          } = evaluate(options, state);
+          const overflow = await detectOverflow(state, detectOverflowOptions);
+          const side = getSide(placement);
+          const alignment = getAlignment(placement);
+          const isYAxis = getSideAxis(placement) === "y";
+          const {
+            width,
+            height
+          } = rects.floating;
+          let heightSide;
+          let widthSide;
+          if (side === "top" || side === "bottom") {
+            heightSide = side;
+            widthSide = alignment === (await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)) ? "start" : "end") ? "left" : "right";
+          } else {
+            widthSide = side;
+            heightSide = alignment === "end" ? "top" : "bottom";
+          }
+          const maximumClippingHeight = height - overflow.top - overflow.bottom;
+          const maximumClippingWidth = width - overflow.left - overflow.right;
+          const overflowAvailableHeight = min(height - overflow[heightSide], maximumClippingHeight);
+          const overflowAvailableWidth = min(width - overflow[widthSide], maximumClippingWidth);
+          const noShift = !state.middlewareData.shift;
+          let availableHeight = overflowAvailableHeight;
+          let availableWidth = overflowAvailableWidth;
+          if ((_state$middlewareData = state.middlewareData.shift) != null && _state$middlewareData.enabled.x) {
+            availableWidth = maximumClippingWidth;
+          }
+          if ((_state$middlewareData2 = state.middlewareData.shift) != null && _state$middlewareData2.enabled.y) {
+            availableHeight = maximumClippingHeight;
+          }
+          if (noShift && !alignment) {
+            const xMin = max(overflow.left, 0);
+            const xMax = max(overflow.right, 0);
+            const yMin = max(overflow.top, 0);
+            const yMax = max(overflow.bottom, 0);
+            if (isYAxis) {
+              availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max(overflow.left, overflow.right));
+            } else {
+              availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max(overflow.top, overflow.bottom));
+            }
+          }
+          await apply({
+            ...state,
+            availableWidth,
+            availableHeight
+          });
+          const nextDimensions = await platform2.getDimensions(elements.floating);
+          if (width !== nextDimensions.width || height !== nextDimensions.height) {
+            return {
+              reset: {
+                rects: true
+              }
+            };
+          }
+          return {};
+        }
+      };
+    };
+  }
+});
+
+// node_modules/.pnpm/@floating-ui+utils@0.2.8/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+function hasWindow() {
+  return typeof window !== "undefined";
+}
+function getNodeName(node) {
+  if (isNode(node)) {
+    return (node.nodeName || "").toLowerCase();
+  }
+  return "#document";
+}
+function getWindow(node) {
+  var _node$ownerDocument;
+  return (node == null || (_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
+}
+function getDocumentElement(node) {
+  var _ref;
+  return (_ref = (isNode(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref.documentElement;
+}
+function isNode(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof Node || value instanceof getWindow(value).Node;
+}
+function isElement(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof Element || value instanceof getWindow(value).Element;
+}
+function isHTMLElement(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof HTMLElement || value instanceof getWindow(value).HTMLElement;
+}
+function isShadowRoot(value) {
+  if (!hasWindow() || typeof ShadowRoot === "undefined") {
+    return false;
+  }
+  return value instanceof ShadowRoot || value instanceof getWindow(value).ShadowRoot;
+}
+function isOverflowElement(element) {
+  const {
+    overflow,
+    overflowX,
+    overflowY,
+    display
+  } = getComputedStyle2(element);
+  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
+}
+function isTableElement(element) {
+  return ["table", "td", "th"].includes(getNodeName(element));
+}
+function isTopLayer(element) {
+  return [":popover-open", ":modal"].some((selector) => {
+    try {
+      return element.matches(selector);
+    } catch (e10) {
+      return false;
+    }
+  });
+}
+function isContainingBlock(elementOrCss) {
+  const webkit = isWebKit();
+  const css = isElement(elementOrCss) ? getComputedStyle2(elementOrCss) : elementOrCss;
+  return css.transform !== "none" || css.perspective !== "none" || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || ["transform", "perspective", "filter"].some((value) => (css.willChange || "").includes(value)) || ["paint", "layout", "strict", "content"].some((value) => (css.contain || "").includes(value));
+}
+function getContainingBlock(element) {
+  let currentNode = getParentNode(element);
+  while (isHTMLElement(currentNode) && !isLastTraversableNode(currentNode)) {
+    if (isContainingBlock(currentNode)) {
+      return currentNode;
+    } else if (isTopLayer(currentNode)) {
+      return null;
+    }
+    currentNode = getParentNode(currentNode);
+  }
+  return null;
+}
+function isWebKit() {
+  if (typeof CSS === "undefined" || !CSS.supports) return false;
+  return CSS.supports("-webkit-backdrop-filter", "none");
+}
+function isLastTraversableNode(node) {
+  return ["html", "body", "#document"].includes(getNodeName(node));
+}
+function getComputedStyle2(element) {
+  return getWindow(element).getComputedStyle(element);
+}
+function getNodeScroll(element) {
+  if (isElement(element)) {
+    return {
+      scrollLeft: element.scrollLeft,
+      scrollTop: element.scrollTop
+    };
+  }
+  return {
+    scrollLeft: element.scrollX,
+    scrollTop: element.scrollY
+  };
+}
+function getParentNode(node) {
+  if (getNodeName(node) === "html") {
+    return node;
+  }
+  const result = (
+    // Step into the shadow DOM of the parent of a slotted node.
+    node.assignedSlot || // DOM Element detected.
+    node.parentNode || // ShadowRoot detected.
+    isShadowRoot(node) && node.host || // Fallback.
+    getDocumentElement(node)
+  );
+  return isShadowRoot(result) ? result.host : result;
+}
+function getNearestOverflowAncestor(node) {
+  const parentNode = getParentNode(node);
+  if (isLastTraversableNode(parentNode)) {
+    return node.ownerDocument ? node.ownerDocument.body : node.body;
+  }
+  if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) {
+    return parentNode;
+  }
+  return getNearestOverflowAncestor(parentNode);
+}
+function getOverflowAncestors(node, list, traverseIframes) {
+  var _node$ownerDocument2;
+  if (list === void 0) {
+    list = [];
+  }
+  if (traverseIframes === void 0) {
+    traverseIframes = true;
+  }
+  const scrollableAncestor = getNearestOverflowAncestor(node);
+  const isBody = scrollableAncestor === ((_node$ownerDocument2 = node.ownerDocument) == null ? void 0 : _node$ownerDocument2.body);
+  const win = getWindow(scrollableAncestor);
+  if (isBody) {
+    const frameElement = getFrameElement(win);
+    return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
+  }
+  return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
+}
+function getFrameElement(win) {
+  return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
+}
+var init_floating_ui_utils_dom = __esm({
+  "node_modules/.pnpm/@floating-ui+utils@0.2.8/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs"() {
+  }
+});
+
+// node_modules/.pnpm/@floating-ui+dom@1.6.12/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+function getCssDimensions(element) {
+  const css = getComputedStyle2(element);
+  let width = parseFloat(css.width) || 0;
+  let height = parseFloat(css.height) || 0;
+  const hasOffset = isHTMLElement(element);
+  const offsetWidth = hasOffset ? element.offsetWidth : width;
+  const offsetHeight = hasOffset ? element.offsetHeight : height;
+  const shouldFallback = round(width) !== offsetWidth || round(height) !== offsetHeight;
+  if (shouldFallback) {
+    width = offsetWidth;
+    height = offsetHeight;
+  }
+  return {
+    width,
+    height,
+    $: shouldFallback
+  };
+}
+function unwrapElement(element) {
+  return !isElement(element) ? element.contextElement : element;
+}
+function getScale(element) {
+  const domElement = unwrapElement(element);
+  if (!isHTMLElement(domElement)) {
+    return createCoords(1);
+  }
+  const rect = domElement.getBoundingClientRect();
+  const {
+    width,
+    height,
+    $: $3
+  } = getCssDimensions(domElement);
+  let x2 = ($3 ? round(rect.width) : rect.width) / width;
+  let y3 = ($3 ? round(rect.height) : rect.height) / height;
+  if (!x2 || !Number.isFinite(x2)) {
+    x2 = 1;
+  }
+  if (!y3 || !Number.isFinite(y3)) {
+    y3 = 1;
+  }
+  return {
+    x: x2,
+    y: y3
+  };
+}
+function getVisualOffsets(element) {
+  const win = getWindow(element);
+  if (!isWebKit() || !win.visualViewport) {
+    return noOffsets;
+  }
+  return {
+    x: win.visualViewport.offsetLeft,
+    y: win.visualViewport.offsetTop
+  };
+}
+function shouldAddVisualOffsets(element, isFixed, floatingOffsetParent) {
+  if (isFixed === void 0) {
+    isFixed = false;
+  }
+  if (!floatingOffsetParent || isFixed && floatingOffsetParent !== getWindow(element)) {
+    return false;
+  }
+  return isFixed;
+}
+function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetParent) {
+  if (includeScale === void 0) {
+    includeScale = false;
+  }
+  if (isFixedStrategy === void 0) {
+    isFixedStrategy = false;
+  }
+  const clientRect = element.getBoundingClientRect();
+  const domElement = unwrapElement(element);
+  let scale = createCoords(1);
+  if (includeScale) {
+    if (offsetParent) {
+      if (isElement(offsetParent)) {
+        scale = getScale(offsetParent);
+      }
+    } else {
+      scale = getScale(element);
+    }
+  }
+  const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
+  let x2 = (clientRect.left + visualOffsets.x) / scale.x;
+  let y3 = (clientRect.top + visualOffsets.y) / scale.y;
+  let width = clientRect.width / scale.x;
+  let height = clientRect.height / scale.y;
+  if (domElement) {
+    const win = getWindow(domElement);
+    const offsetWin = offsetParent && isElement(offsetParent) ? getWindow(offsetParent) : offsetParent;
+    let currentWin = win;
+    let currentIFrame = getFrameElement(currentWin);
+    while (currentIFrame && offsetParent && offsetWin !== currentWin) {
+      const iframeScale = getScale(currentIFrame);
+      const iframeRect = currentIFrame.getBoundingClientRect();
+      const css = getComputedStyle2(currentIFrame);
+      const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
+      const top = iframeRect.top + (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
+      x2 *= iframeScale.x;
+      y3 *= iframeScale.y;
+      width *= iframeScale.x;
+      height *= iframeScale.y;
+      x2 += left;
+      y3 += top;
+      currentWin = getWindow(currentIFrame);
+      currentIFrame = getFrameElement(currentWin);
+    }
+  }
+  return rectToClientRect({
+    width,
+    height,
+    x: x2,
+    y: y3
+  });
+}
+function getWindowScrollBarX(element, rect) {
+  const leftScroll = getNodeScroll(element).scrollLeft;
+  if (!rect) {
+    return getBoundingClientRect(getDocumentElement(element)).left + leftScroll;
+  }
+  return rect.left + leftScroll;
+}
+function getHTMLOffset(documentElement, scroll, ignoreScrollbarX) {
+  if (ignoreScrollbarX === void 0) {
+    ignoreScrollbarX = false;
+  }
+  const htmlRect = documentElement.getBoundingClientRect();
+  const x2 = htmlRect.left + scroll.scrollLeft - (ignoreScrollbarX ? 0 : (
+    // RTL <body> scrollbar.
+    getWindowScrollBarX(documentElement, htmlRect)
+  ));
+  const y3 = htmlRect.top + scroll.scrollTop;
+  return {
+    x: x2,
+    y: y3
+  };
+}
+function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
+  let {
+    elements,
+    rect,
+    offsetParent,
+    strategy
+  } = _ref;
+  const isFixed = strategy === "fixed";
+  const documentElement = getDocumentElement(offsetParent);
+  const topLayer = elements ? isTopLayer(elements.floating) : false;
+  if (offsetParent === documentElement || topLayer && isFixed) {
+    return rect;
+  }
+  let scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  let scale = createCoords(1);
+  const offsets = createCoords(0);
+  const isOffsetParentAnElement = isHTMLElement(offsetParent);
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+    if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isHTMLElement(offsetParent)) {
+      const offsetRect = getBoundingClientRect(offsetParent);
+      scale = getScale(offsetParent);
+      offsets.x = offsetRect.x + offsetParent.clientLeft;
+      offsets.y = offsetRect.y + offsetParent.clientTop;
+    }
+  }
+  const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll, true) : createCoords(0);
+  return {
+    width: rect.width * scale.x,
+    height: rect.height * scale.y,
+    x: rect.x * scale.x - scroll.scrollLeft * scale.x + offsets.x + htmlOffset.x,
+    y: rect.y * scale.y - scroll.scrollTop * scale.y + offsets.y + htmlOffset.y
+  };
+}
+function getClientRects(element) {
+  return Array.from(element.getClientRects());
+}
+function getDocumentRect(element) {
+  const html = getDocumentElement(element);
+  const scroll = getNodeScroll(element);
+  const body = element.ownerDocument.body;
+  const width = max(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
+  const height = max(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
+  let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
+  const y3 = -scroll.scrollTop;
+  if (getComputedStyle2(body).direction === "rtl") {
+    x2 += max(html.clientWidth, body.clientWidth) - width;
+  }
+  return {
+    width,
+    height,
+    x: x2,
+    y: y3
+  };
+}
+function getViewportRect(element, strategy) {
+  const win = getWindow(element);
+  const html = getDocumentElement(element);
+  const visualViewport = win.visualViewport;
+  let width = html.clientWidth;
+  let height = html.clientHeight;
+  let x2 = 0;
+  let y3 = 0;
+  if (visualViewport) {
+    width = visualViewport.width;
+    height = visualViewport.height;
+    const visualViewportBased = isWebKit();
+    if (!visualViewportBased || visualViewportBased && strategy === "fixed") {
+      x2 = visualViewport.offsetLeft;
+      y3 = visualViewport.offsetTop;
+    }
+  }
+  return {
+    width,
+    height,
+    x: x2,
+    y: y3
+  };
+}
+function getInnerBoundingClientRect(element, strategy) {
+  const clientRect = getBoundingClientRect(element, true, strategy === "fixed");
+  const top = clientRect.top + element.clientTop;
+  const left = clientRect.left + element.clientLeft;
+  const scale = isHTMLElement(element) ? getScale(element) : createCoords(1);
+  const width = element.clientWidth * scale.x;
+  const height = element.clientHeight * scale.y;
+  const x2 = left * scale.x;
+  const y3 = top * scale.y;
+  return {
+    width,
+    height,
+    x: x2,
+    y: y3
+  };
+}
+function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) {
+  let rect;
+  if (clippingAncestor === "viewport") {
+    rect = getViewportRect(element, strategy);
+  } else if (clippingAncestor === "document") {
+    rect = getDocumentRect(getDocumentElement(element));
+  } else if (isElement(clippingAncestor)) {
+    rect = getInnerBoundingClientRect(clippingAncestor, strategy);
+  } else {
+    const visualOffsets = getVisualOffsets(element);
+    rect = {
+      x: clippingAncestor.x - visualOffsets.x,
+      y: clippingAncestor.y - visualOffsets.y,
+      width: clippingAncestor.width,
+      height: clippingAncestor.height
+    };
+  }
+  return rectToClientRect(rect);
+}
+function hasFixedPositionAncestor(element, stopNode) {
+  const parentNode = getParentNode(element);
+  if (parentNode === stopNode || !isElement(parentNode) || isLastTraversableNode(parentNode)) {
+    return false;
+  }
+  return getComputedStyle2(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
+}
+function getClippingElementAncestors(element, cache) {
+  const cachedResult = cache.get(element);
+  if (cachedResult) {
+    return cachedResult;
+  }
+  let result = getOverflowAncestors(element, [], false).filter((el) => isElement(el) && getNodeName(el) !== "body");
+  let currentContainingBlockComputedStyle = null;
+  const elementIsFixed = getComputedStyle2(element).position === "fixed";
+  let currentNode = elementIsFixed ? getParentNode(element) : element;
+  while (isElement(currentNode) && !isLastTraversableNode(currentNode)) {
+    const computedStyle = getComputedStyle2(currentNode);
+    const currentNodeIsContaining = isContainingBlock(currentNode);
+    if (!currentNodeIsContaining && computedStyle.position === "fixed") {
+      currentContainingBlockComputedStyle = null;
+    }
+    const shouldDropCurrentNode = elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && ["absolute", "fixed"].includes(currentContainingBlockComputedStyle.position) || isOverflowElement(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode);
+    if (shouldDropCurrentNode) {
+      result = result.filter((ancestor) => ancestor !== currentNode);
+    } else {
+      currentContainingBlockComputedStyle = computedStyle;
+    }
+    currentNode = getParentNode(currentNode);
+  }
+  cache.set(element, result);
+  return result;
+}
+function getClippingRect(_ref) {
+  let {
+    element,
+    boundary,
+    rootBoundary,
+    strategy
+  } = _ref;
+  const elementClippingAncestors = boundary === "clippingAncestors" ? isTopLayer(element) ? [] : getClippingElementAncestors(element, this._c) : [].concat(boundary);
+  const clippingAncestors = [...elementClippingAncestors, rootBoundary];
+  const firstClippingAncestor = clippingAncestors[0];
+  const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
+    const rect = getClientRectFromClippingAncestor(element, clippingAncestor, strategy);
+    accRect.top = max(rect.top, accRect.top);
+    accRect.right = min(rect.right, accRect.right);
+    accRect.bottom = min(rect.bottom, accRect.bottom);
+    accRect.left = max(rect.left, accRect.left);
+    return accRect;
+  }, getClientRectFromClippingAncestor(element, firstClippingAncestor, strategy));
+  return {
+    width: clippingRect.right - clippingRect.left,
+    height: clippingRect.bottom - clippingRect.top,
+    x: clippingRect.left,
+    y: clippingRect.top
+  };
+}
+function getDimensions(element) {
+  const {
+    width,
+    height
+  } = getCssDimensions(element);
+  return {
+    width,
+    height
+  };
+}
+function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
+  const isOffsetParentAnElement = isHTMLElement(offsetParent);
+  const documentElement = getDocumentElement(offsetParent);
+  const isFixed = strategy === "fixed";
+  const rect = getBoundingClientRect(element, true, isFixed, offsetParent);
+  let scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  const offsets = createCoords(0);
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+    if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isOffsetParentAnElement) {
+      const offsetRect = getBoundingClientRect(offsetParent, true, isFixed, offsetParent);
+      offsets.x = offsetRect.x + offsetParent.clientLeft;
+      offsets.y = offsetRect.y + offsetParent.clientTop;
+    } else if (documentElement) {
+      offsets.x = getWindowScrollBarX(documentElement);
+    }
+  }
+  const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
+  const x2 = rect.left + scroll.scrollLeft - offsets.x - htmlOffset.x;
+  const y3 = rect.top + scroll.scrollTop - offsets.y - htmlOffset.y;
+  return {
+    x: x2,
+    y: y3,
+    width: rect.width,
+    height: rect.height
+  };
+}
+function isStaticPositioned(element) {
+  return getComputedStyle2(element).position === "static";
+}
+function getTrueOffsetParent(element, polyfill) {
+  if (!isHTMLElement(element) || getComputedStyle2(element).position === "fixed") {
+    return null;
+  }
+  if (polyfill) {
+    return polyfill(element);
+  }
+  let rawOffsetParent = element.offsetParent;
+  if (getDocumentElement(element) === rawOffsetParent) {
+    rawOffsetParent = rawOffsetParent.ownerDocument.body;
+  }
+  return rawOffsetParent;
+}
+function getOffsetParent(element, polyfill) {
+  const win = getWindow(element);
+  if (isTopLayer(element)) {
+    return win;
+  }
+  if (!isHTMLElement(element)) {
+    let svgOffsetParent = getParentNode(element);
+    while (svgOffsetParent && !isLastTraversableNode(svgOffsetParent)) {
+      if (isElement(svgOffsetParent) && !isStaticPositioned(svgOffsetParent)) {
+        return svgOffsetParent;
+      }
+      svgOffsetParent = getParentNode(svgOffsetParent);
+    }
+    return win;
+  }
+  let offsetParent = getTrueOffsetParent(element, polyfill);
+  while (offsetParent && isTableElement(offsetParent) && isStaticPositioned(offsetParent)) {
+    offsetParent = getTrueOffsetParent(offsetParent, polyfill);
+  }
+  if (offsetParent && isLastTraversableNode(offsetParent) && isStaticPositioned(offsetParent) && !isContainingBlock(offsetParent)) {
+    return win;
+  }
+  return offsetParent || getContainingBlock(element) || win;
+}
+function isRTL(element) {
+  return getComputedStyle2(element).direction === "rtl";
+}
+function observeMove(element, onMove) {
+  let io = null;
+  let timeoutId;
+  const root = getDocumentElement(element);
+  function cleanup() {
+    var _io;
+    clearTimeout(timeoutId);
+    (_io = io) == null || _io.disconnect();
+    io = null;
+  }
+  function refresh(skip, threshold) {
+    if (skip === void 0) {
+      skip = false;
+    }
+    if (threshold === void 0) {
+      threshold = 1;
+    }
+    cleanup();
+    const {
+      left,
+      top,
+      width,
+      height
+    } = element.getBoundingClientRect();
+    if (!skip) {
+      onMove();
+    }
+    if (!width || !height) {
+      return;
+    }
+    const insetTop = floor(top);
+    const insetRight = floor(root.clientWidth - (left + width));
+    const insetBottom = floor(root.clientHeight - (top + height));
+    const insetLeft = floor(left);
+    const rootMargin = -insetTop + "px " + -insetRight + "px " + -insetBottom + "px " + -insetLeft + "px";
+    const options = {
+      rootMargin,
+      threshold: max(0, min(1, threshold)) || 1
+    };
+    let isFirstUpdate = true;
+    function handleObserve(entries) {
+      const ratio = entries[0].intersectionRatio;
+      if (ratio !== threshold) {
+        if (!isFirstUpdate) {
+          return refresh();
+        }
+        if (!ratio) {
+          timeoutId = setTimeout(() => {
+            refresh(false, 1e-7);
+          }, 1e3);
+        } else {
+          refresh(false, ratio);
+        }
+      }
+      isFirstUpdate = false;
+    }
+    try {
+      io = new IntersectionObserver(handleObserve, {
+        ...options,
+        // Handle <iframe>s
+        root: root.ownerDocument
+      });
+    } catch (e10) {
+      io = new IntersectionObserver(handleObserve, options);
+    }
+    io.observe(element);
+  }
+  refresh(true);
+  return cleanup;
+}
+function autoUpdate(reference, floating, update2, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  const {
+    ancestorScroll = true,
+    ancestorResize = true,
+    elementResize = typeof ResizeObserver === "function",
+    layoutShift = typeof IntersectionObserver === "function",
+    animationFrame = false
+  } = options;
+  const referenceEl = unwrapElement(reference);
+  const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...getOverflowAncestors(floating)] : [];
+  ancestors.forEach((ancestor) => {
+    ancestorScroll && ancestor.addEventListener("scroll", update2, {
+      passive: true
+    });
+    ancestorResize && ancestor.addEventListener("resize", update2);
+  });
+  const cleanupIo = referenceEl && layoutShift ? observeMove(referenceEl, update2) : null;
+  let reobserveFrame = -1;
+  let resizeObserver = null;
+  if (elementResize) {
+    resizeObserver = new ResizeObserver((_ref) => {
+      let [firstEntry] = _ref;
+      if (firstEntry && firstEntry.target === referenceEl && resizeObserver) {
+        resizeObserver.unobserve(floating);
+        cancelAnimationFrame(reobserveFrame);
+        reobserveFrame = requestAnimationFrame(() => {
+          var _resizeObserver;
+          (_resizeObserver = resizeObserver) == null || _resizeObserver.observe(floating);
+        });
+      }
+      update2();
+    });
+    if (referenceEl && !animationFrame) {
+      resizeObserver.observe(referenceEl);
+    }
+    resizeObserver.observe(floating);
+  }
+  let frameId;
+  let prevRefRect = animationFrame ? getBoundingClientRect(reference) : null;
+  if (animationFrame) {
+    frameLoop();
+  }
+  function frameLoop() {
+    const nextRefRect = getBoundingClientRect(reference);
+    if (prevRefRect && (nextRefRect.x !== prevRefRect.x || nextRefRect.y !== prevRefRect.y || nextRefRect.width !== prevRefRect.width || nextRefRect.height !== prevRefRect.height)) {
+      update2();
+    }
+    prevRefRect = nextRefRect;
+    frameId = requestAnimationFrame(frameLoop);
+  }
+  update2();
+  return () => {
+    var _resizeObserver2;
+    ancestors.forEach((ancestor) => {
+      ancestorScroll && ancestor.removeEventListener("scroll", update2);
+      ancestorResize && ancestor.removeEventListener("resize", update2);
+    });
+    cleanupIo == null || cleanupIo();
+    (_resizeObserver2 = resizeObserver) == null || _resizeObserver2.disconnect();
+    resizeObserver = null;
+    if (animationFrame) {
+      cancelAnimationFrame(frameId);
+    }
+  };
+}
+var noOffsets, getElementRects, platform, offset2, shift2, flip2, size2, arrow2, computePosition2;
+var init_floating_ui_dom = __esm({
+  "node_modules/.pnpm/@floating-ui+dom@1.6.12/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs"() {
+    init_floating_ui_core();
+    init_floating_ui_utils();
+    init_floating_ui_utils_dom();
+    noOffsets = /* @__PURE__ */ createCoords(0);
+    getElementRects = async function(data) {
+      const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
+      const getDimensionsFn = this.getDimensions;
+      const floatingDimensions = await getDimensionsFn(data.floating);
+      return {
+        reference: getRectRelativeToOffsetParent(data.reference, await getOffsetParentFn(data.floating), data.strategy),
+        floating: {
+          x: 0,
+          y: 0,
+          width: floatingDimensions.width,
+          height: floatingDimensions.height
+        }
+      };
+    };
+    platform = {
+      convertOffsetParentRelativeRectToViewportRelativeRect,
+      getDocumentElement,
+      getClippingRect,
+      getOffsetParent,
+      getElementRects,
+      getClientRects,
+      getDimensions,
+      getScale,
+      isElement,
+      isRTL
+    };
+    offset2 = offset;
+    shift2 = shift;
+    flip2 = flip;
+    size2 = size;
+    arrow2 = arrow;
+    computePosition2 = (reference, floating, options) => {
+      const cache = /* @__PURE__ */ new Map();
+      const mergedOptions = {
+        platform,
+        ...options
+      };
+      const platformWithCache = {
+        ...mergedOptions.platform,
+        _c: cache
+      };
+      return computePosition(reference, floating, {
+        ...mergedOptions,
+        platform: platformWithCache
+      });
+    };
+  }
+});
+
+// node_modules/.pnpm/composed-offset-position@0.0.4/node_modules/composed-offset-position/dist/composed-offset-position.browser.min.mjs
+function t5(t6) {
+  return r7(t6);
+}
+function o6(t6) {
+  return t6.assignedSlot ? t6.assignedSlot : t6.parentNode instanceof ShadowRoot ? t6.parentNode.host : t6.parentNode;
+}
+function r7(t6) {
+  for (let e10 = t6; e10; e10 = o6(e10)) if (e10 instanceof Element && "none" === getComputedStyle(e10).display) return null;
+  for (let e10 = o6(t6); e10; e10 = o6(e10)) {
+    if (!(e10 instanceof Element)) continue;
+    const t7 = getComputedStyle(e10);
+    if ("contents" !== t7.display) {
+      if ("static" !== t7.position || "none" !== t7.filter) return e10;
+      if ("BODY" === e10.tagName) return e10;
+    }
+  }
+  return null;
+}
+var init_composed_offset_position_browser_min = __esm({
+  "node_modules/.pnpm/composed-offset-position@0.0.4/node_modules/composed-offset-position/dist/composed-offset-position.browser.min.mjs"() {
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.5J7BMMD5.js
+function isVirtualElement(e10) {
+  return e10 !== null && typeof e10 === "object" && "getBoundingClientRect" in e10 && ("contextElement" in e10 ? e10 instanceof Element : true);
+}
+var SlPopup;
+var init_chunk_5J7BMMD5 = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.5J7BMMD5.js"() {
+    init_chunk_3KSWVBQ5();
+    init_chunk_WLV3FVBR();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+    init_floating_ui_dom();
+    init_class_map2();
+    init_lit();
+    init_composed_offset_position_browser_min();
+    init_decorators();
+    SlPopup = class extends ShoelaceElement {
+      constructor() {
+        super(...arguments);
+        this.localize = new LocalizeController2(this);
+        this.active = false;
+        this.placement = "top";
+        this.strategy = "absolute";
+        this.distance = 0;
+        this.skidding = 0;
+        this.arrow = false;
+        this.arrowPlacement = "anchor";
+        this.arrowPadding = 10;
+        this.flip = false;
+        this.flipFallbackPlacements = "";
+        this.flipFallbackStrategy = "best-fit";
+        this.flipPadding = 0;
+        this.shift = false;
+        this.shiftPadding = 0;
+        this.autoSizePadding = 0;
+        this.hoverBridge = false;
+        this.updateHoverBridge = () => {
+          if (this.hoverBridge && this.anchorEl) {
+            const anchorRect = this.anchorEl.getBoundingClientRect();
+            const popupRect = this.popup.getBoundingClientRect();
+            const isVertical = this.placement.includes("top") || this.placement.includes("bottom");
+            let topLeftX = 0;
+            let topLeftY = 0;
+            let topRightX = 0;
+            let topRightY = 0;
+            let bottomLeftX = 0;
+            let bottomLeftY = 0;
+            let bottomRightX = 0;
+            let bottomRightY = 0;
+            if (isVertical) {
+              if (anchorRect.top < popupRect.top) {
+                topLeftX = anchorRect.left;
+                topLeftY = anchorRect.bottom;
+                topRightX = anchorRect.right;
+                topRightY = anchorRect.bottom;
+                bottomLeftX = popupRect.left;
+                bottomLeftY = popupRect.top;
+                bottomRightX = popupRect.right;
+                bottomRightY = popupRect.top;
+              } else {
+                topLeftX = popupRect.left;
+                topLeftY = popupRect.bottom;
+                topRightX = popupRect.right;
+                topRightY = popupRect.bottom;
+                bottomLeftX = anchorRect.left;
+                bottomLeftY = anchorRect.top;
+                bottomRightX = anchorRect.right;
+                bottomRightY = anchorRect.top;
+              }
+            } else {
+              if (anchorRect.left < popupRect.left) {
+                topLeftX = anchorRect.right;
+                topLeftY = anchorRect.top;
+                topRightX = popupRect.left;
+                topRightY = popupRect.top;
+                bottomLeftX = anchorRect.right;
+                bottomLeftY = anchorRect.bottom;
+                bottomRightX = popupRect.left;
+                bottomRightY = popupRect.bottom;
+              } else {
+                topLeftX = popupRect.right;
+                topLeftY = popupRect.top;
+                topRightX = anchorRect.left;
+                topRightY = anchorRect.top;
+                bottomLeftX = popupRect.right;
+                bottomLeftY = popupRect.bottom;
+                bottomRightX = anchorRect.left;
+                bottomRightY = anchorRect.bottom;
+              }
+            }
+            this.style.setProperty("--hover-bridge-top-left-x", `${topLeftX}px`);
+            this.style.setProperty("--hover-bridge-top-left-y", `${topLeftY}px`);
+            this.style.setProperty("--hover-bridge-top-right-x", `${topRightX}px`);
+            this.style.setProperty("--hover-bridge-top-right-y", `${topRightY}px`);
+            this.style.setProperty("--hover-bridge-bottom-left-x", `${bottomLeftX}px`);
+            this.style.setProperty("--hover-bridge-bottom-left-y", `${bottomLeftY}px`);
+            this.style.setProperty("--hover-bridge-bottom-right-x", `${bottomRightX}px`);
+            this.style.setProperty("--hover-bridge-bottom-right-y", `${bottomRightY}px`);
+          }
+        };
+      }
+      async connectedCallback() {
+        super.connectedCallback();
+        await this.updateComplete;
+        this.start();
+      }
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this.stop();
+      }
+      async updated(changedProps) {
+        super.updated(changedProps);
+        if (changedProps.has("active")) {
+          if (this.active) {
+            this.start();
+          } else {
+            this.stop();
+          }
+        }
+        if (changedProps.has("anchor")) {
+          this.handleAnchorChange();
+        }
+        if (this.active) {
+          await this.updateComplete;
+          this.reposition();
+        }
+      }
+      async handleAnchorChange() {
+        await this.stop();
+        if (this.anchor && typeof this.anchor === "string") {
+          const root = this.getRootNode();
+          this.anchorEl = root.getElementById(this.anchor);
+        } else if (this.anchor instanceof Element || isVirtualElement(this.anchor)) {
+          this.anchorEl = this.anchor;
+        } else {
+          this.anchorEl = this.querySelector('[slot="anchor"]');
+        }
+        if (this.anchorEl instanceof HTMLSlotElement) {
+          this.anchorEl = this.anchorEl.assignedElements({ flatten: true })[0];
+        }
+        if (this.anchorEl && this.active) {
+          this.start();
+        }
+      }
+      start() {
+        if (!this.anchorEl) {
+          return;
+        }
+        this.cleanup = autoUpdate(this.anchorEl, this.popup, () => {
+          this.reposition();
+        });
+      }
+      async stop() {
+        return new Promise((resolve) => {
+          if (this.cleanup) {
+            this.cleanup();
+            this.cleanup = void 0;
+            this.removeAttribute("data-current-placement");
+            this.style.removeProperty("--auto-size-available-width");
+            this.style.removeProperty("--auto-size-available-height");
+            requestAnimationFrame(() => resolve());
+          } else {
+            resolve();
+          }
+        });
+      }
+      /** Forces the popup to recalculate and reposition itself. */
+      reposition() {
+        if (!this.active || !this.anchorEl) {
+          return;
+        }
+        const middleware = [
+          // The offset middleware goes first
+          offset2({ mainAxis: this.distance, crossAxis: this.skidding })
+        ];
+        if (this.sync) {
+          middleware.push(
+            size2({
+              apply: ({ rects }) => {
+                const syncWidth = this.sync === "width" || this.sync === "both";
+                const syncHeight = this.sync === "height" || this.sync === "both";
+                this.popup.style.width = syncWidth ? `${rects.reference.width}px` : "";
+                this.popup.style.height = syncHeight ? `${rects.reference.height}px` : "";
+              }
+            })
+          );
+        } else {
+          this.popup.style.width = "";
+          this.popup.style.height = "";
+        }
+        if (this.flip) {
+          middleware.push(
+            flip2({
+              boundary: this.flipBoundary,
+              // @ts-expect-error - We're converting a string attribute to an array here
+              fallbackPlacements: this.flipFallbackPlacements,
+              fallbackStrategy: this.flipFallbackStrategy === "best-fit" ? "bestFit" : "initialPlacement",
+              padding: this.flipPadding
+            })
+          );
+        }
+        if (this.shift) {
+          middleware.push(
+            shift2({
+              boundary: this.shiftBoundary,
+              padding: this.shiftPadding
+            })
+          );
+        }
+        if (this.autoSize) {
+          middleware.push(
+            size2({
+              boundary: this.autoSizeBoundary,
+              padding: this.autoSizePadding,
+              apply: ({ availableWidth, availableHeight }) => {
+                if (this.autoSize === "vertical" || this.autoSize === "both") {
+                  this.style.setProperty("--auto-size-available-height", `${availableHeight}px`);
+                } else {
+                  this.style.removeProperty("--auto-size-available-height");
+                }
+                if (this.autoSize === "horizontal" || this.autoSize === "both") {
+                  this.style.setProperty("--auto-size-available-width", `${availableWidth}px`);
+                } else {
+                  this.style.removeProperty("--auto-size-available-width");
+                }
+              }
+            })
+          );
+        } else {
+          this.style.removeProperty("--auto-size-available-width");
+          this.style.removeProperty("--auto-size-available-height");
+        }
+        if (this.arrow) {
+          middleware.push(
+            arrow2({
+              element: this.arrowEl,
+              padding: this.arrowPadding
+            })
+          );
+        }
+        const getOffsetParent2 = this.strategy === "absolute" ? (element) => platform.getOffsetParent(element, t5) : platform.getOffsetParent;
+        computePosition2(this.anchorEl, this.popup, {
+          placement: this.placement,
+          middleware,
+          strategy: this.strategy,
+          platform: __spreadProps(__spreadValues({}, platform), {
+            getOffsetParent: getOffsetParent2
+          })
+        }).then(({ x: x2, y: y3, middlewareData, placement }) => {
+          const isRtl = this.localize.dir() === "rtl";
+          const staticSide = { top: "bottom", right: "left", bottom: "top", left: "right" }[placement.split("-")[0]];
+          this.setAttribute("data-current-placement", placement);
+          Object.assign(this.popup.style, {
+            left: `${x2}px`,
+            top: `${y3}px`
+          });
+          if (this.arrow) {
+            const arrowX = middlewareData.arrow.x;
+            const arrowY = middlewareData.arrow.y;
+            let top = "";
+            let right = "";
+            let bottom = "";
+            let left = "";
+            if (this.arrowPlacement === "start") {
+              const value = typeof arrowX === "number" ? `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` : "";
+              top = typeof arrowY === "number" ? `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` : "";
+              right = isRtl ? value : "";
+              left = isRtl ? "" : value;
+            } else if (this.arrowPlacement === "end") {
+              const value = typeof arrowX === "number" ? `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` : "";
+              right = isRtl ? "" : value;
+              left = isRtl ? value : "";
+              bottom = typeof arrowY === "number" ? `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` : "";
+            } else if (this.arrowPlacement === "center") {
+              left = typeof arrowX === "number" ? `calc(50% - var(--arrow-size-diagonal))` : "";
+              top = typeof arrowY === "number" ? `calc(50% - var(--arrow-size-diagonal))` : "";
+            } else {
+              left = typeof arrowX === "number" ? `${arrowX}px` : "";
+              top = typeof arrowY === "number" ? `${arrowY}px` : "";
+            }
+            Object.assign(this.arrowEl.style, {
+              top,
+              right,
+              bottom,
+              left,
+              [staticSide]: "calc(var(--arrow-size-diagonal) * -1)"
+            });
+          }
+        });
+        requestAnimationFrame(() => this.updateHoverBridge());
+        this.emit("sl-reposition");
+      }
+      render() {
+        return x`
+      <slot name="anchor" @slotchange=${this.handleAnchorChange}></slot>
+
+      <span
+        part="hover-bridge"
+        class=${e7({
+          "popup-hover-bridge": true,
+          "popup-hover-bridge--visible": this.hoverBridge && this.active
+        })}
+      ></span>
+
+      <div
+        part="popup"
+        class=${e7({
+          popup: true,
+          "popup--active": this.active,
+          "popup--fixed": this.strategy === "fixed",
+          "popup--has-arrow": this.arrow
+        })}
+      >
+        <slot></slot>
+        ${this.arrow ? x`<div part="arrow" class="popup__arrow" role="presentation"></div>` : ""}
+      </div>
+    `;
+      }
+    };
+    SlPopup.styles = [component_styles_default, popup_styles_default];
+    __decorateClass([
+      e5(".popup")
+    ], SlPopup.prototype, "popup", 2);
+    __decorateClass([
+      e5(".popup__arrow")
+    ], SlPopup.prototype, "arrowEl", 2);
+    __decorateClass([
+      n4()
+    ], SlPopup.prototype, "anchor", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlPopup.prototype, "active", 2);
+    __decorateClass([
+      n4({ reflect: true })
+    ], SlPopup.prototype, "placement", 2);
+    __decorateClass([
+      n4({ reflect: true })
+    ], SlPopup.prototype, "strategy", 2);
+    __decorateClass([
+      n4({ type: Number })
+    ], SlPopup.prototype, "distance", 2);
+    __decorateClass([
+      n4({ type: Number })
+    ], SlPopup.prototype, "skidding", 2);
+    __decorateClass([
+      n4({ type: Boolean })
+    ], SlPopup.prototype, "arrow", 2);
+    __decorateClass([
+      n4({ attribute: "arrow-placement" })
+    ], SlPopup.prototype, "arrowPlacement", 2);
+    __decorateClass([
+      n4({ attribute: "arrow-padding", type: Number })
+    ], SlPopup.prototype, "arrowPadding", 2);
+    __decorateClass([
+      n4({ type: Boolean })
+    ], SlPopup.prototype, "flip", 2);
+    __decorateClass([
+      n4({
+        attribute: "flip-fallback-placements",
+        converter: {
+          fromAttribute: (value) => {
+            return value.split(" ").map((p3) => p3.trim()).filter((p3) => p3 !== "");
+          },
+          toAttribute: (value) => {
+            return value.join(" ");
+          }
+        }
+      })
+    ], SlPopup.prototype, "flipFallbackPlacements", 2);
+    __decorateClass([
+      n4({ attribute: "flip-fallback-strategy" })
+    ], SlPopup.prototype, "flipFallbackStrategy", 2);
+    __decorateClass([
+      n4({ type: Object })
+    ], SlPopup.prototype, "flipBoundary", 2);
+    __decorateClass([
+      n4({ attribute: "flip-padding", type: Number })
+    ], SlPopup.prototype, "flipPadding", 2);
+    __decorateClass([
+      n4({ type: Boolean })
+    ], SlPopup.prototype, "shift", 2);
+    __decorateClass([
+      n4({ type: Object })
+    ], SlPopup.prototype, "shiftBoundary", 2);
+    __decorateClass([
+      n4({ attribute: "shift-padding", type: Number })
+    ], SlPopup.prototype, "shiftPadding", 2);
+    __decorateClass([
+      n4({ attribute: "auto-size" })
+    ], SlPopup.prototype, "autoSize", 2);
+    __decorateClass([
+      n4()
+    ], SlPopup.prototype, "sync", 2);
+    __decorateClass([
+      n4({ type: Object })
+    ], SlPopup.prototype, "autoSizeBoundary", 2);
+    __decorateClass([
+      n4({ attribute: "auto-size-padding", type: Number })
+    ], SlPopup.prototype, "autoSizePadding", 2);
+    __decorateClass([
+      n4({ attribute: "hover-bridge", type: Boolean })
+    ], SlPopup.prototype, "hoverBridge", 2);
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.ZSH6VD4N.js
+var SlDropdown;
+var init_chunk_ZSH6VD4N = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.ZSH6VD4N.js"() {
+    init_chunk_LXP7GVU3();
+    init_chunk_LXDTFLWU();
+    init_chunk_5J7BMMD5();
+    init_chunk_UW6SLYOK();
+    init_chunk_B4BZKR24();
+    init_chunk_3EPZX5HE();
+    init_chunk_WLV3FVBR();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+    init_class_map2();
+    init_lit();
+    init_if_defined2();
+    init_decorators();
+    SlDropdown = class extends ShoelaceElement {
+      constructor() {
+        super(...arguments);
+        this.localize = new LocalizeController2(this);
+        this.open = false;
+        this.placement = "bottom-start";
+        this.disabled = false;
+        this.stayOpenOnSelect = false;
+        this.distance = 0;
+        this.skidding = 0;
+        this.hoist = false;
+        this.sync = void 0;
+        this.handleKeyDown = (event) => {
+          if (this.open && event.key === "Escape") {
+            event.stopPropagation();
+            this.hide();
+            this.focusOnTrigger();
+          }
+        };
+        this.handleDocumentKeyDown = (event) => {
+          var _a;
+          if (event.key === "Escape" && this.open && !this.closeWatcher) {
+            event.stopPropagation();
+            this.focusOnTrigger();
+            this.hide();
+            return;
+          }
+          if (event.key === "Tab") {
+            if (this.open && ((_a = document.activeElement) == null ? void 0 : _a.tagName.toLowerCase()) === "sl-menu-item") {
+              event.preventDefault();
+              this.hide();
+              this.focusOnTrigger();
+              return;
+            }
+            setTimeout(() => {
+              var _a2, _b, _c;
+              const activeElement = ((_a2 = this.containingElement) == null ? void 0 : _a2.getRootNode()) instanceof ShadowRoot ? (_c = (_b = document.activeElement) == null ? void 0 : _b.shadowRoot) == null ? void 0 : _c.activeElement : document.activeElement;
+              if (!this.containingElement || (activeElement == null ? void 0 : activeElement.closest(this.containingElement.tagName.toLowerCase())) !== this.containingElement) {
+                this.hide();
+              }
+            });
+          }
+        };
+        this.handleDocumentMouseDown = (event) => {
+          const path = event.composedPath();
+          if (this.containingElement && !path.includes(this.containingElement)) {
+            this.hide();
+          }
+        };
+        this.handlePanelSelect = (event) => {
+          const target = event.target;
+          if (!this.stayOpenOnSelect && target.tagName.toLowerCase() === "sl-menu") {
+            this.hide();
+            this.focusOnTrigger();
+          }
+        };
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        if (!this.containingElement) {
+          this.containingElement = this;
+        }
+      }
+      firstUpdated() {
+        this.panel.hidden = !this.open;
+        if (this.open) {
+          this.addOpenListeners();
+          this.popup.active = true;
+        }
+      }
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeOpenListeners();
+        this.hide();
+      }
+      focusOnTrigger() {
+        const trigger = this.trigger.assignedElements({ flatten: true })[0];
+        if (typeof (trigger == null ? void 0 : trigger.focus) === "function") {
+          trigger.focus();
+        }
+      }
+      getMenu() {
+        return this.panel.assignedElements({ flatten: true }).find((el) => el.tagName.toLowerCase() === "sl-menu");
+      }
+      handleTriggerClick() {
+        if (this.open) {
+          this.hide();
+        } else {
+          this.show();
+          this.focusOnTrigger();
+        }
+      }
+      async handleTriggerKeyDown(event) {
+        if ([" ", "Enter"].includes(event.key)) {
+          event.preventDefault();
+          this.handleTriggerClick();
+          return;
+        }
+        const menu = this.getMenu();
+        if (menu) {
+          const menuItems = menu.getAllItems();
+          const firstMenuItem = menuItems[0];
+          const lastMenuItem = menuItems[menuItems.length - 1];
+          if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+            event.preventDefault();
+            if (!this.open) {
+              this.show();
+              await this.updateComplete;
+            }
+            if (menuItems.length > 0) {
+              this.updateComplete.then(() => {
+                if (event.key === "ArrowDown" || event.key === "Home") {
+                  menu.setCurrentItem(firstMenuItem);
+                  firstMenuItem.focus();
+                }
+                if (event.key === "ArrowUp" || event.key === "End") {
+                  menu.setCurrentItem(lastMenuItem);
+                  lastMenuItem.focus();
+                }
+              });
+            }
+          }
+        }
+      }
+      handleTriggerKeyUp(event) {
+        if (event.key === " ") {
+          event.preventDefault();
+        }
+      }
+      handleTriggerSlotChange() {
+        this.updateAccessibleTrigger();
+      }
+      //
+      // Slotted triggers can be arbitrary content, but we need to link them to the dropdown panel with `aria-haspopup` and
+      // `aria-expanded`. These must be applied to the "accessible trigger" (the tabbable portion of the trigger element
+      // that gets slotted in) so screen readers will understand them. The accessible trigger could be the slotted element,
+      // a child of the slotted element, or an element in the slotted element's shadow root.
+      //
+      // For example, the accessible trigger of an <sl-button> is a <button> located inside its shadow root.
+      //
+      // To determine this, we assume the first tabbable element in the trigger slot is the "accessible trigger."
+      //
+      updateAccessibleTrigger() {
+        const assignedElements = this.trigger.assignedElements({ flatten: true });
+        const accessibleTrigger = assignedElements.find((el) => getTabbableBoundary(el).start);
+        let target;
+        if (accessibleTrigger) {
+          switch (accessibleTrigger.tagName.toLowerCase()) {
+            case "sl-button":
+            case "sl-icon-button":
+              target = accessibleTrigger.button;
+              break;
+            default:
+              target = accessibleTrigger;
+          }
+          target.setAttribute("aria-haspopup", "true");
+          target.setAttribute("aria-expanded", this.open ? "true" : "false");
+        }
+      }
+      /** Shows the dropdown panel. */
+      async show() {
+        if (this.open) {
+          return void 0;
+        }
+        this.open = true;
+        return waitForEvent(this, "sl-after-show");
+      }
+      /** Hides the dropdown panel */
+      async hide() {
+        if (!this.open) {
+          return void 0;
+        }
+        this.open = false;
+        return waitForEvent(this, "sl-after-hide");
+      }
+      /**
+       * Instructs the dropdown menu to reposition. Useful when the position or size of the trigger changes when the menu
+       * is activated.
+       */
+      reposition() {
+        this.popup.reposition();
+      }
+      addOpenListeners() {
+        var _a;
+        this.panel.addEventListener("sl-select", this.handlePanelSelect);
+        if ("CloseWatcher" in window) {
+          (_a = this.closeWatcher) == null ? void 0 : _a.destroy();
+          this.closeWatcher = new CloseWatcher();
+          this.closeWatcher.onclose = () => {
+            this.hide();
+            this.focusOnTrigger();
+          };
+        } else {
+          this.panel.addEventListener("keydown", this.handleKeyDown);
+        }
+        document.addEventListener("keydown", this.handleDocumentKeyDown);
+        document.addEventListener("mousedown", this.handleDocumentMouseDown);
+      }
+      removeOpenListeners() {
+        var _a;
+        if (this.panel) {
+          this.panel.removeEventListener("sl-select", this.handlePanelSelect);
+          this.panel.removeEventListener("keydown", this.handleKeyDown);
+        }
+        document.removeEventListener("keydown", this.handleDocumentKeyDown);
+        document.removeEventListener("mousedown", this.handleDocumentMouseDown);
+        (_a = this.closeWatcher) == null ? void 0 : _a.destroy();
+      }
+      async handleOpenChange() {
+        if (this.disabled) {
+          this.open = false;
+          return;
+        }
+        this.updateAccessibleTrigger();
+        if (this.open) {
+          this.emit("sl-show");
+          this.addOpenListeners();
+          await stopAnimations(this);
+          this.panel.hidden = false;
+          this.popup.active = true;
+          const { keyframes, options } = getAnimation(this, "dropdown.show", { dir: this.localize.dir() });
+          await animateTo(this.popup.popup, keyframes, options);
+          this.emit("sl-after-show");
+        } else {
+          this.emit("sl-hide");
+          this.removeOpenListeners();
+          await stopAnimations(this);
+          const { keyframes, options } = getAnimation(this, "dropdown.hide", { dir: this.localize.dir() });
+          await animateTo(this.popup.popup, keyframes, options);
+          this.panel.hidden = true;
+          this.popup.active = false;
+          this.emit("sl-after-hide");
+        }
+      }
+      render() {
+        return x`
+      <sl-popup
+        part="base"
+        exportparts="popup:base__popup"
+        id="dropdown"
+        placement=${this.placement}
+        distance=${this.distance}
+        skidding=${this.skidding}
+        strategy=${this.hoist ? "fixed" : "absolute"}
+        flip
+        shift
+        auto-size="vertical"
+        auto-size-padding="10"
+        sync=${o5(this.sync ? this.sync : void 0)}
+        class=${e7({
+          dropdown: true,
+          "dropdown--open": this.open
+        })}
+      >
+        <slot
+          name="trigger"
+          slot="anchor"
+          part="trigger"
+          class="dropdown__trigger"
+          @click=${this.handleTriggerClick}
+          @keydown=${this.handleTriggerKeyDown}
+          @keyup=${this.handleTriggerKeyUp}
+          @slotchange=${this.handleTriggerSlotChange}
+        ></slot>
+
+        <div aria-hidden=${this.open ? "false" : "true"} aria-labelledby="dropdown">
+          <slot part="panel" class="dropdown__panel"></slot>
+        </div>
+      </sl-popup>
+    `;
+      }
+    };
+    SlDropdown.styles = [component_styles_default, dropdown_styles_default];
+    SlDropdown.dependencies = { "sl-popup": SlPopup };
+    __decorateClass([
+      e5(".dropdown")
+    ], SlDropdown.prototype, "popup", 2);
+    __decorateClass([
+      e5(".dropdown__trigger")
+    ], SlDropdown.prototype, "trigger", 2);
+    __decorateClass([
+      e5(".dropdown__panel")
+    ], SlDropdown.prototype, "panel", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlDropdown.prototype, "open", 2);
+    __decorateClass([
+      n4({ reflect: true })
+    ], SlDropdown.prototype, "placement", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlDropdown.prototype, "disabled", 2);
+    __decorateClass([
+      n4({ attribute: "stay-open-on-select", type: Boolean, reflect: true })
+    ], SlDropdown.prototype, "stayOpenOnSelect", 2);
+    __decorateClass([
+      n4({ attribute: false })
+    ], SlDropdown.prototype, "containingElement", 2);
+    __decorateClass([
+      n4({ type: Number })
+    ], SlDropdown.prototype, "distance", 2);
+    __decorateClass([
+      n4({ type: Number })
+    ], SlDropdown.prototype, "skidding", 2);
+    __decorateClass([
+      n4({ type: Boolean })
+    ], SlDropdown.prototype, "hoist", 2);
+    __decorateClass([
+      n4({ reflect: true })
+    ], SlDropdown.prototype, "sync", 2);
+    __decorateClass([
+      watch("open", { waitUntilFirstUpdate: true })
+    ], SlDropdown.prototype, "handleOpenChange", 1);
+    setDefaultAnimation("dropdown.show", {
+      keyframes: [
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1 }
+      ],
+      options: { duration: 100, easing: "ease" }
+    });
+    setDefaultAnimation("dropdown.hide", {
+      keyframes: [
+        { opacity: 1, scale: 1 },
+        { opacity: 0, scale: 0.9 }
+      ],
+      options: { duration: 100, easing: "ease" }
+    });
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.QVOIHCVY.js
+var init_chunk_QVOIHCVY = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.QVOIHCVY.js"() {
+    init_chunk_ZSH6VD4N();
+    SlDropdown.define("sl-dropdown");
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/dropdown/dropdown.js
+var init_dropdown = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/dropdown/dropdown.js"() {
+    init_chunk_QVOIHCVY();
+    init_chunk_ZSH6VD4N();
+    init_chunk_LXP7GVU3();
+    init_chunk_LXDTFLWU();
+    init_chunk_5J7BMMD5();
+    init_chunk_3KSWVBQ5();
+    init_chunk_UW6SLYOK();
+    init_chunk_B4BZKR24();
+    init_chunk_3EPZX5HE();
+    init_chunk_WLV3FVBR();
+    init_chunk_MAS2SHYD();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.VVA35HTY.js
+var menu_styles_default;
+var init_chunk_VVA35HTY = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.VVA35HTY.js"() {
+    init_lit();
+    menu_styles_default = i`
+  :host {
+    display: block;
+    position: relative;
+    background: var(--sl-panel-background-color);
+    border: solid var(--sl-panel-border-width) var(--sl-panel-border-color);
+    border-radius: var(--sl-border-radius-medium);
+    padding: var(--sl-spacing-x-small) 0;
+    overflow: auto;
+    overscroll-behavior: none;
+  }
+
+  ::slotted(sl-divider) {
+    --spacing: var(--sl-spacing-x-small);
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.ZNAKKORO.js
+var SlMenu;
+var init_chunk_ZNAKKORO = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.ZNAKKORO.js"() {
+    init_chunk_VVA35HTY();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+    init_lit();
+    init_decorators();
+    SlMenu = class extends ShoelaceElement {
+      connectedCallback() {
+        super.connectedCallback();
+        this.setAttribute("role", "menu");
+      }
+      handleClick(event) {
+        const menuItemTypes = ["menuitem", "menuitemcheckbox"];
+        const composedPath = event.composedPath();
+        const target = composedPath.find((el) => {
+          var _a;
+          return menuItemTypes.includes(((_a = el == null ? void 0 : el.getAttribute) == null ? void 0 : _a.call(el, "role")) || "");
+        });
+        if (!target)
+          return;
+        const closestMenu = composedPath.find((el) => {
+          var _a;
+          return ((_a = el == null ? void 0 : el.getAttribute) == null ? void 0 : _a.call(el, "role")) === "menu";
+        });
+        const clickHasSubmenu = closestMenu !== this;
+        if (clickHasSubmenu)
+          return;
+        const item = target;
+        if (item.type === "checkbox") {
+          item.checked = !item.checked;
+        }
+        this.emit("sl-select", { detail: { item } });
+      }
+      handleKeyDown(event) {
+        if (event.key === "Enter" || event.key === " ") {
+          const item = this.getCurrentItem();
+          event.preventDefault();
+          event.stopPropagation();
+          item == null ? void 0 : item.click();
+        } else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+          const items = this.getAllItems();
+          const activeItem = this.getCurrentItem();
+          let index = activeItem ? items.indexOf(activeItem) : 0;
+          if (items.length > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (event.key === "ArrowDown") {
+              index++;
+            } else if (event.key === "ArrowUp") {
+              index--;
+            } else if (event.key === "Home") {
+              index = 0;
+            } else if (event.key === "End") {
+              index = items.length - 1;
+            }
+            if (index < 0) {
+              index = items.length - 1;
+            }
+            if (index > items.length - 1) {
+              index = 0;
+            }
+            this.setCurrentItem(items[index]);
+            items[index].focus();
+          }
+        }
+      }
+      handleMouseDown(event) {
+        const target = event.target;
+        if (this.isMenuItem(target)) {
+          this.setCurrentItem(target);
+        }
+      }
+      handleSlotChange() {
+        const items = this.getAllItems();
+        if (items.length > 0) {
+          this.setCurrentItem(items[0]);
+        }
+      }
+      isMenuItem(item) {
+        var _a;
+        return item.tagName.toLowerCase() === "sl-menu-item" || ["menuitem", "menuitemcheckbox", "menuitemradio"].includes((_a = item.getAttribute("role")) != null ? _a : "");
+      }
+      /** @internal Gets all slotted menu items, ignoring dividers, headers, and other elements. */
+      getAllItems() {
+        return [...this.defaultSlot.assignedElements({ flatten: true })].filter((el) => {
+          if (el.inert || !this.isMenuItem(el)) {
+            return false;
+          }
+          return true;
+        });
+      }
+      /**
+       * @internal Gets the current menu item, which is the menu item that has `tabindex="0"` within the roving tab index.
+       * The menu item may or may not have focus, but for keyboard interaction purposes it's considered the "active" item.
+       */
+      getCurrentItem() {
+        return this.getAllItems().find((i7) => i7.getAttribute("tabindex") === "0");
+      }
+      /**
+       * @internal Sets the current menu item to the specified element. This sets `tabindex="0"` on the target element and
+       * `tabindex="-1"` to all other items. This method must be called prior to setting focus on a menu item.
+       */
+      setCurrentItem(item) {
+        const items = this.getAllItems();
+        items.forEach((i7) => {
+          i7.setAttribute("tabindex", i7 === item ? "0" : "-1");
+        });
+      }
+      render() {
+        return x`
+      <slot
+        @slotchange=${this.handleSlotChange}
+        @click=${this.handleClick}
+        @keydown=${this.handleKeyDown}
+        @mousedown=${this.handleMouseDown}
+      ></slot>
+    `;
+      }
+    };
+    SlMenu.styles = [component_styles_default, menu_styles_default];
+    __decorateClass([
+      e5("slot")
+    ], SlMenu.prototype, "defaultSlot", 2);
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.JW3F7MUK.js
+var init_chunk_JW3F7MUK = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.JW3F7MUK.js"() {
+    init_chunk_ZNAKKORO();
+    SlMenu.define("sl-menu");
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/menu/menu.js
+var init_menu = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/menu/menu.js"() {
+    init_chunk_JW3F7MUK();
+    init_chunk_ZNAKKORO();
+    init_chunk_VVA35HTY();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.KZJNDGFO.js
+var menu_item_styles_default;
+var init_chunk_KZJNDGFO = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.KZJNDGFO.js"() {
+    init_lit();
+    menu_item_styles_default = i`
+  :host {
+    --submenu-offset: -2px;
+
+    display: block;
+  }
+
+  :host([inert]) {
+    display: none;
+  }
+
+  .menu-item {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    font-family: var(--sl-font-sans);
+    font-size: var(--sl-font-size-medium);
+    font-weight: var(--sl-font-weight-normal);
+    line-height: var(--sl-line-height-normal);
+    letter-spacing: var(--sl-letter-spacing-normal);
+    color: var(--sl-color-neutral-700);
+    padding: var(--sl-spacing-2x-small) var(--sl-spacing-2x-small);
+    transition: var(--sl-transition-fast) fill;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .menu-item.menu-item--disabled {
+    outline: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .menu-item.menu-item--loading {
+    outline: none;
+    cursor: wait;
+  }
+
+  .menu-item.menu-item--loading *:not(sl-spinner) {
+    opacity: 0.5;
+  }
+
+  .menu-item--loading sl-spinner {
+    --indicator-color: currentColor;
+    --track-width: 1px;
+    position: absolute;
+    font-size: 0.75em;
+    top: calc(50% - 0.5em);
+    left: 0.65rem;
+    opacity: 1;
+  }
+
+  .menu-item .menu-item__label {
+    flex: 1 1 auto;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .menu-item .menu-item__prefix {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-item .menu-item__prefix::slotted(*) {
+    margin-inline-end: var(--sl-spacing-x-small);
+  }
+
+  .menu-item .menu-item__suffix {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-item .menu-item__suffix::slotted(*) {
+    margin-inline-start: var(--sl-spacing-x-small);
+  }
+
+  /* Safe triangle */
+  .menu-item--submenu-expanded::after {
+    content: '';
+    position: fixed;
+    z-index: calc(var(--sl-z-index-dropdown) - 1);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    clip-path: polygon(
+      var(--safe-triangle-cursor-x, 0) var(--safe-triangle-cursor-y, 0),
+      var(--safe-triangle-submenu-start-x, 0) var(--safe-triangle-submenu-start-y, 0),
+      var(--safe-triangle-submenu-end-x, 0) var(--safe-triangle-submenu-end-y, 0)
+    );
+  }
+
+  :host(:focus-visible) {
+    outline: none;
+  }
+
+  :host(:hover:not([aria-disabled='true'], :focus-visible)) .menu-item,
+  .menu-item--submenu-expanded {
+    background-color: var(--sl-color-neutral-100);
+    color: var(--sl-color-neutral-1000);
+  }
+
+  :host(:focus-visible) .menu-item {
+    outline: none;
+    background-color: var(--sl-color-primary-600);
+    color: var(--sl-color-neutral-0);
+    opacity: 1;
+  }
+
+  .menu-item .menu-item__check,
+  .menu-item .menu-item__chevron {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5em;
+    visibility: hidden;
+  }
+
+  .menu-item--checked .menu-item__check,
+  .menu-item--has-submenu .menu-item__chevron {
+    visibility: visible;
+  }
+
+  /* Add elevation and z-index to submenus */
+  sl-popup::part(popup) {
+    box-shadow: var(--sl-shadow-large);
+    z-index: var(--sl-z-index-dropdown);
+    margin-left: var(--submenu-offset);
+  }
+
+  .menu-item--rtl sl-popup::part(popup) {
+    margin-left: calc(-1 * var(--submenu-offset));
+  }
+
+  @media (forced-colors: active) {
+    :host(:hover:not([aria-disabled='true'])) .menu-item,
+    :host(:focus-visible) .menu-item {
+      outline: dashed 1px SelectedItem;
+      outline-offset: -1px;
+    }
+  }
+
+  ::slotted(sl-menu) {
+    max-width: var(--auto-size-available-width) !important;
+    max-height: var(--auto-size-available-height) !important;
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/async-directive.js
+function h3(i7) {
+  void 0 !== this._$AN ? (o7(this), this._$AM = i7, r8(this)) : this._$AM = i7;
+}
+function n5(i7, t6 = false, e10 = 0) {
+  const r9 = this._$AH, h5 = this._$AN;
+  if (void 0 !== h5 && 0 !== h5.size) if (t6) if (Array.isArray(r9)) for (let i8 = e10; i8 < r9.length; i8++) s3(r9[i8], false), o7(r9[i8]);
+  else null != r9 && (s3(r9, false), o7(r9));
+  else s3(this, i7);
+}
+var s3, o7, r8, c4, f4;
+var init_async_directive = __esm({
+  "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/async-directive.js"() {
+    init_directive_helpers();
+    init_directive();
+    init_directive();
+    s3 = (i7, t6) => {
+      const e10 = i7._$AN;
+      if (void 0 === e10) return false;
+      for (const i8 of e10) i8._$AO?.(t6, false), s3(i8, t6);
+      return true;
+    };
+    o7 = (i7) => {
+      let t6, e10;
+      do {
+        if (void 0 === (t6 = i7._$AM)) break;
+        e10 = t6._$AN, e10.delete(i7), i7 = t6;
+      } while (0 === e10?.size);
+    };
+    r8 = (i7) => {
+      for (let t6; t6 = i7._$AM; i7 = t6) {
+        let e10 = t6._$AN;
+        if (void 0 === e10) t6._$AN = e10 = /* @__PURE__ */ new Set();
+        else if (e10.has(i7)) break;
+        e10.add(i7), c4(t6);
+      }
+    };
+    c4 = (i7) => {
+      i7.type == t3.CHILD && (i7._$AP ?? (i7._$AP = n5), i7._$AQ ?? (i7._$AQ = h3));
+    };
+    f4 = class extends i5 {
+      constructor() {
+        super(...arguments), this._$AN = void 0;
+      }
+      _$AT(i7, t6, e10) {
+        super._$AT(i7, t6, e10), r8(this), this.isConnected = i7._$AU;
+      }
+      _$AO(i7, t6 = true) {
+        i7 !== this.isConnected && (this.isConnected = i7, i7 ? this.reconnected?.() : this.disconnected?.()), t6 && (s3(this, i7), o7(this));
+      }
+      setValue(t6) {
+        if (f3(this._$Ct)) this._$Ct._$AI(t6, this);
+        else {
+          const i7 = [...this._$Ct._$AH];
+          i7[this._$Ci] = t6, this._$Ct._$AI(i7, this, 0);
+        }
+      }
+      disconnected() {
+      }
+      reconnected() {
+      }
+    };
+  }
+});
+
+// node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/directives/ref.js
+var e9, h4, o8, n6;
+var init_ref = __esm({
+  "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/directives/ref.js"() {
+    init_lit_html();
+    init_async_directive();
+    init_directive();
+    e9 = () => new h4();
+    h4 = class {
+    };
+    o8 = /* @__PURE__ */ new WeakMap();
+    n6 = e6(class extends f4 {
+      render(i7) {
+        return E;
+      }
+      update(i7, [s4]) {
+        const e10 = s4 !== this.Y;
+        return e10 && void 0 !== this.Y && this.rt(void 0), (e10 || this.lt !== this.ct) && (this.Y = s4, this.ht = i7.options?.host, this.rt(this.ct = i7.element)), E;
+      }
+      rt(t6) {
+        if (this.isConnected || (t6 = void 0), "function" == typeof this.Y) {
+          const i7 = this.ht ?? globalThis;
+          let s4 = o8.get(i7);
+          void 0 === s4 && (s4 = /* @__PURE__ */ new WeakMap(), o8.set(i7, s4)), void 0 !== s4.get(this.Y) && this.Y.call(this.ht, void 0), s4.set(this.Y, t6), void 0 !== t6 && this.Y.call(this.ht, t6);
+        } else this.Y.value = t6;
+      }
+      get lt() {
+        return "function" == typeof this.Y ? o8.get(this.ht ?? globalThis)?.get(this.Y) : this.Y?.value;
+      }
+      disconnected() {
+        this.lt === this.ct && this.rt(void 0);
+      }
+      reconnected() {
+        this.rt(this.ct);
+      }
+    });
+  }
+});
+
+// node_modules/.pnpm/lit@3.2.1/node_modules/lit/directives/ref.js
+var init_ref2 = __esm({
+  "node_modules/.pnpm/lit@3.2.1/node_modules/lit/directives/ref.js"() {
+    init_ref();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.ZLIGP6HZ.js
+var SubmenuController;
+var init_chunk_ZLIGP6HZ = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.ZLIGP6HZ.js"() {
+    init_ref2();
+    init_lit();
+    SubmenuController = class {
+      constructor(host, hasSlotController) {
+        this.popupRef = e9();
+        this.enableSubmenuTimer = -1;
+        this.isConnected = false;
+        this.isPopupConnected = false;
+        this.skidding = 0;
+        this.submenuOpenDelay = 100;
+        this.handleMouseMove = (event) => {
+          this.host.style.setProperty("--safe-triangle-cursor-x", `${event.clientX}px`);
+          this.host.style.setProperty("--safe-triangle-cursor-y", `${event.clientY}px`);
+        };
+        this.handleMouseOver = () => {
+          if (this.hasSlotController.test("submenu")) {
+            this.enableSubmenu();
+          }
+        };
+        this.handleKeyDown = (event) => {
+          switch (event.key) {
+            case "Escape":
+            case "Tab":
+              this.disableSubmenu();
+              break;
+            case "ArrowLeft":
+              if (event.target !== this.host) {
+                event.preventDefault();
+                event.stopPropagation();
+                this.host.focus();
+                this.disableSubmenu();
+              }
+              break;
+            case "ArrowRight":
+            case "Enter":
+            case " ":
+              this.handleSubmenuEntry(event);
+              break;
+            default:
+              break;
+          }
+        };
+        this.handleClick = (event) => {
+          var _a;
+          if (event.target === this.host) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else if (event.target instanceof Element && (event.target.tagName === "sl-menu-item" || ((_a = event.target.role) == null ? void 0 : _a.startsWith("menuitem")))) {
+            this.disableSubmenu();
+          }
+        };
+        this.handleFocusOut = (event) => {
+          if (event.relatedTarget && event.relatedTarget instanceof Element && this.host.contains(event.relatedTarget)) {
+            return;
+          }
+          this.disableSubmenu();
+        };
+        this.handlePopupMouseover = (event) => {
+          event.stopPropagation();
+        };
+        this.handlePopupReposition = () => {
+          const submenuSlot = this.host.renderRoot.querySelector("slot[name='submenu']");
+          const menu = submenuSlot == null ? void 0 : submenuSlot.assignedElements({ flatten: true }).filter((el) => el.localName === "sl-menu")[0];
+          const isRtl = getComputedStyle(this.host).direction === "rtl";
+          if (!menu) {
+            return;
+          }
+          const { left, top, width, height } = menu.getBoundingClientRect();
+          this.host.style.setProperty("--safe-triangle-submenu-start-x", `${isRtl ? left + width : left}px`);
+          this.host.style.setProperty("--safe-triangle-submenu-start-y", `${top}px`);
+          this.host.style.setProperty("--safe-triangle-submenu-end-x", `${isRtl ? left + width : left}px`);
+          this.host.style.setProperty("--safe-triangle-submenu-end-y", `${top + height}px`);
+        };
+        (this.host = host).addController(this);
+        this.hasSlotController = hasSlotController;
+      }
+      hostConnected() {
+        if (this.hasSlotController.test("submenu") && !this.host.disabled) {
+          this.addListeners();
+        }
+      }
+      hostDisconnected() {
+        this.removeListeners();
+      }
+      hostUpdated() {
+        if (this.hasSlotController.test("submenu") && !this.host.disabled) {
+          this.addListeners();
+          this.updateSkidding();
+        } else {
+          this.removeListeners();
+        }
+      }
+      addListeners() {
+        if (!this.isConnected) {
+          this.host.addEventListener("mousemove", this.handleMouseMove);
+          this.host.addEventListener("mouseover", this.handleMouseOver);
+          this.host.addEventListener("keydown", this.handleKeyDown);
+          this.host.addEventListener("click", this.handleClick);
+          this.host.addEventListener("focusout", this.handleFocusOut);
+          this.isConnected = true;
+        }
+        if (!this.isPopupConnected) {
+          if (this.popupRef.value) {
+            this.popupRef.value.addEventListener("mouseover", this.handlePopupMouseover);
+            this.popupRef.value.addEventListener("sl-reposition", this.handlePopupReposition);
+            this.isPopupConnected = true;
+          }
+        }
+      }
+      removeListeners() {
+        if (this.isConnected) {
+          this.host.removeEventListener("mousemove", this.handleMouseMove);
+          this.host.removeEventListener("mouseover", this.handleMouseOver);
+          this.host.removeEventListener("keydown", this.handleKeyDown);
+          this.host.removeEventListener("click", this.handleClick);
+          this.host.removeEventListener("focusout", this.handleFocusOut);
+          this.isConnected = false;
+        }
+        if (this.isPopupConnected) {
+          if (this.popupRef.value) {
+            this.popupRef.value.removeEventListener("mouseover", this.handlePopupMouseover);
+            this.popupRef.value.removeEventListener("sl-reposition", this.handlePopupReposition);
+            this.isPopupConnected = false;
+          }
+        }
+      }
+      handleSubmenuEntry(event) {
+        const submenuSlot = this.host.renderRoot.querySelector("slot[name='submenu']");
+        if (!submenuSlot) {
+          console.error("Cannot activate a submenu if no corresponding menuitem can be found.", this);
+          return;
+        }
+        let menuItems = null;
+        for (const elt of submenuSlot.assignedElements()) {
+          menuItems = elt.querySelectorAll("sl-menu-item, [role^='menuitem']");
+          if (menuItems.length !== 0) {
+            break;
+          }
+        }
+        if (!menuItems || menuItems.length === 0) {
+          return;
+        }
+        menuItems[0].setAttribute("tabindex", "0");
+        for (let i7 = 1; i7 !== menuItems.length; ++i7) {
+          menuItems[i7].setAttribute("tabindex", "-1");
+        }
+        if (this.popupRef.value) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (this.popupRef.value.active) {
+            if (menuItems[0] instanceof HTMLElement) {
+              menuItems[0].focus();
+            }
+          } else {
+            this.enableSubmenu(false);
+            this.host.updateComplete.then(() => {
+              if (menuItems[0] instanceof HTMLElement) {
+                menuItems[0].focus();
+              }
+            });
+            this.host.requestUpdate();
+          }
+        }
+      }
+      setSubmenuState(state) {
+        if (this.popupRef.value) {
+          if (this.popupRef.value.active !== state) {
+            this.popupRef.value.active = state;
+            this.host.requestUpdate();
+          }
+        }
+      }
+      // Shows the submenu. Supports disabling the opening delay, e.g. for keyboard events that want to set the focus to the
+      // newly opened menu.
+      enableSubmenu(delay = true) {
+        if (delay) {
+          window.clearTimeout(this.enableSubmenuTimer);
+          this.enableSubmenuTimer = window.setTimeout(() => {
+            this.setSubmenuState(true);
+          }, this.submenuOpenDelay);
+        } else {
+          this.setSubmenuState(true);
+        }
+      }
+      disableSubmenu() {
+        window.clearTimeout(this.enableSubmenuTimer);
+        this.setSubmenuState(false);
+      }
+      // Calculate the space the top of a menu takes-up, for aligning the popup menu-item with the activating element.
+      updateSkidding() {
+        var _a;
+        if (!((_a = this.host.parentElement) == null ? void 0 : _a.computedStyleMap)) {
+          return;
+        }
+        const styleMap = this.host.parentElement.computedStyleMap();
+        const attrs = ["padding-top", "border-top-width", "margin-top"];
+        const skidding = attrs.reduce((accumulator, attr) => {
+          var _a2;
+          const styleValue = (_a2 = styleMap.get(attr)) != null ? _a2 : new CSSUnitValue(0, "px");
+          const unitValue = styleValue instanceof CSSUnitValue ? styleValue : new CSSUnitValue(0, "px");
+          const pxValue = unitValue.to("px");
+          return accumulator - pxValue.value;
+        }, 0);
+        this.skidding = skidding;
+      }
+      isExpanded() {
+        return this.popupRef.value ? this.popupRef.value.active : false;
+      }
+      renderSubmenu() {
+        const isRtl = getComputedStyle(this.host).direction === "rtl";
+        if (!this.isConnected) {
+          return x` <slot name="submenu" hidden></slot> `;
+        }
+        return x`
+      <sl-popup
+        ${n6(this.popupRef)}
+        placement=${isRtl ? "left-start" : "right-start"}
+        anchor="anchor"
+        flip
+        flip-fallback-strategy="best-fit"
+        skidding="${this.skidding}"
+        strategy="fixed"
+        auto-size="vertical"
+        auto-size-padding="10"
+      >
+        <slot name="submenu"></slot>
+      </sl-popup>
+    `;
+      }
+    };
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.NYIIDP5N.js
+function getTextContent(slot) {
+  if (!slot) {
+    return "";
+  }
+  const nodes = slot.assignedNodes({ flatten: true });
+  let text = "";
+  [...nodes].forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      text += node.textContent;
+    }
+  });
+  return text;
+}
+var HasSlotController;
+var init_chunk_NYIIDP5N = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.NYIIDP5N.js"() {
+    HasSlotController = class {
+      constructor(host, ...slotNames) {
+        this.slotNames = [];
+        this.handleSlotChange = (event) => {
+          const slot = event.target;
+          if (this.slotNames.includes("[default]") && !slot.name || slot.name && this.slotNames.includes(slot.name)) {
+            this.host.requestUpdate();
+          }
+        };
+        (this.host = host).addController(this);
+        this.slotNames = slotNames;
+      }
+      hasDefaultSlot() {
+        return [...this.host.childNodes].some((node) => {
+          if (node.nodeType === node.TEXT_NODE && node.textContent.trim() !== "") {
+            return true;
+          }
+          if (node.nodeType === node.ELEMENT_NODE) {
+            const el = node;
+            const tagName = el.tagName.toLowerCase();
+            if (tagName === "sl-visually-hidden") {
+              return false;
+            }
+            if (!el.hasAttribute("slot")) {
+              return true;
+            }
+          }
+          return false;
+        });
+      }
+      hasNamedSlot(name) {
+        return this.host.querySelector(`:scope > [slot="${name}"]`) !== null;
+      }
+      test(slotName) {
+        return slotName === "[default]" ? this.hasDefaultSlot() : this.hasNamedSlot(slotName);
+      }
+      hostConnected() {
+        this.host.shadowRoot.addEventListener("slotchange", this.handleSlotChange);
+      }
+      hostDisconnected() {
+        this.host.shadowRoot.removeEventListener("slotchange", this.handleSlotChange);
+      }
+    };
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.22WT5API.js
+var SlMenuItem;
+var init_chunk_22WT5API = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.22WT5API.js"() {
+    init_chunk_KZJNDGFO();
+    init_chunk_ZLIGP6HZ();
+    init_chunk_5J7BMMD5();
+    init_chunk_TLKDQ5JG();
+    init_chunk_WLV3FVBR();
+    init_chunk_NYIIDP5N();
+    init_chunk_E6QAPUBK();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+    init_class_map2();
+    init_lit();
+    init_decorators();
+    SlMenuItem = class extends ShoelaceElement {
+      constructor() {
+        super(...arguments);
+        this.localize = new LocalizeController2(this);
+        this.type = "normal";
+        this.checked = false;
+        this.value = "";
+        this.loading = false;
+        this.disabled = false;
+        this.hasSlotController = new HasSlotController(this, "submenu");
+        this.submenuController = new SubmenuController(this, this.hasSlotController);
+        this.handleHostClick = (event) => {
+          if (this.disabled) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        };
+        this.handleMouseOver = (event) => {
+          this.focus();
+          event.stopPropagation();
+        };
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener("click", this.handleHostClick);
+        this.addEventListener("mouseover", this.handleMouseOver);
+      }
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeEventListener("click", this.handleHostClick);
+        this.removeEventListener("mouseover", this.handleMouseOver);
+      }
+      handleDefaultSlotChange() {
+        const textLabel = this.getTextLabel();
+        if (typeof this.cachedTextLabel === "undefined") {
+          this.cachedTextLabel = textLabel;
+          return;
+        }
+        if (textLabel !== this.cachedTextLabel) {
+          this.cachedTextLabel = textLabel;
+          this.emit("slotchange", { bubbles: true, composed: false, cancelable: false });
+        }
+      }
+      handleCheckedChange() {
+        if (this.checked && this.type !== "checkbox") {
+          this.checked = false;
+          console.error('The checked attribute can only be used on menu items with type="checkbox"', this);
+          return;
+        }
+        if (this.type === "checkbox") {
+          this.setAttribute("aria-checked", this.checked ? "true" : "false");
+        } else {
+          this.removeAttribute("aria-checked");
+        }
+      }
+      handleDisabledChange() {
+        this.setAttribute("aria-disabled", this.disabled ? "true" : "false");
+      }
+      handleTypeChange() {
+        if (this.type === "checkbox") {
+          this.setAttribute("role", "menuitemcheckbox");
+          this.setAttribute("aria-checked", this.checked ? "true" : "false");
+        } else {
+          this.setAttribute("role", "menuitem");
+          this.removeAttribute("aria-checked");
+        }
+      }
+      /** Returns a text label based on the contents of the menu item's default slot. */
+      getTextLabel() {
+        return getTextContent(this.defaultSlot);
+      }
+      isSubmenu() {
+        return this.hasSlotController.test("submenu");
+      }
+      render() {
+        const isRtl = this.localize.dir() === "rtl";
+        const isSubmenuExpanded = this.submenuController.isExpanded();
+        return x`
+      <div
+        id="anchor"
+        part="base"
+        class=${e7({
+          "menu-item": true,
+          "menu-item--rtl": isRtl,
+          "menu-item--checked": this.checked,
+          "menu-item--disabled": this.disabled,
+          "menu-item--loading": this.loading,
+          "menu-item--has-submenu": this.isSubmenu(),
+          "menu-item--submenu-expanded": isSubmenuExpanded
+        })}
+        ?aria-haspopup="${this.isSubmenu()}"
+        ?aria-expanded="${isSubmenuExpanded ? true : false}"
+      >
+        <span part="checked-icon" class="menu-item__check">
+          <sl-icon name="check" library="system" aria-hidden="true"></sl-icon>
+        </span>
+
+        <slot name="prefix" part="prefix" class="menu-item__prefix"></slot>
+
+        <slot part="label" class="menu-item__label" @slotchange=${this.handleDefaultSlotChange}></slot>
+
+        <slot name="suffix" part="suffix" class="menu-item__suffix"></slot>
+
+        <span part="submenu-icon" class="menu-item__chevron">
+          <sl-icon name=${isRtl ? "chevron-left" : "chevron-right"} library="system" aria-hidden="true"></sl-icon>
+        </span>
+
+        ${this.submenuController.renderSubmenu()}
+        ${this.loading ? x` <sl-spinner part="spinner" exportparts="base:spinner__base"></sl-spinner> ` : ""}
+      </div>
+    `;
+      }
+    };
+    SlMenuItem.styles = [component_styles_default, menu_item_styles_default];
+    SlMenuItem.dependencies = {
+      "sl-icon": SlIcon,
+      "sl-popup": SlPopup,
+      "sl-spinner": SlSpinner
+    };
+    __decorateClass([
+      e5("slot:not([name])")
+    ], SlMenuItem.prototype, "defaultSlot", 2);
+    __decorateClass([
+      e5(".menu-item")
+    ], SlMenuItem.prototype, "menuItem", 2);
+    __decorateClass([
+      n4()
+    ], SlMenuItem.prototype, "type", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlMenuItem.prototype, "checked", 2);
+    __decorateClass([
+      n4()
+    ], SlMenuItem.prototype, "value", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlMenuItem.prototype, "loading", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlMenuItem.prototype, "disabled", 2);
+    __decorateClass([
+      watch("checked")
+    ], SlMenuItem.prototype, "handleCheckedChange", 1);
+    __decorateClass([
+      watch("disabled")
+    ], SlMenuItem.prototype, "handleDisabledChange", 1);
+    __decorateClass([
+      watch("type")
+    ], SlMenuItem.prototype, "handleTypeChange", 1);
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.I2JSEN3V.js
+var init_chunk_I2JSEN3V = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.I2JSEN3V.js"() {
+    init_chunk_22WT5API();
+    SlMenuItem.define("sl-menu-item");
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/menu-item/menu-item.js
+var init_menu_item = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/menu-item/menu-item.js"() {
+    init_chunk_I2JSEN3V();
+    init_chunk_22WT5API();
+    init_chunk_KZJNDGFO();
+    init_chunk_ZLIGP6HZ();
+    init_chunk_5J7BMMD5();
+    init_chunk_3KSWVBQ5();
+    init_chunk_TLKDQ5JG();
+    init_chunk_7DUCI5S4();
+    init_chunk_WLV3FVBR();
+    init_chunk_MAS2SHYD();
+    init_chunk_NYIIDP5N();
+    init_chunk_E6QAPUBK();
+    init_chunk_ZL53POKZ();
+    init_chunk_P7ZG6EMR();
+    init_chunk_3TFKS637();
+    init_chunk_QLXRCYS4();
+    init_chunk_3Y6SB6QS();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.2RCF7SLU.js
+var formCollections, reportValidityOverloads, checkValidityOverloads, userInteractedControls, interactions, FormControlController, validValidityState, valueMissingValidityState, customErrorValidityState;
+var init_chunk_2RCF7SLU = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.2RCF7SLU.js"() {
+    init_chunk_B3BW2AY6();
+    formCollections = /* @__PURE__ */ new WeakMap();
+    reportValidityOverloads = /* @__PURE__ */ new WeakMap();
+    checkValidityOverloads = /* @__PURE__ */ new WeakMap();
+    userInteractedControls = /* @__PURE__ */ new WeakSet();
+    interactions = /* @__PURE__ */ new WeakMap();
+    FormControlController = class {
+      constructor(host, options) {
+        this.handleFormData = (event) => {
+          const disabled = this.options.disabled(this.host);
+          const name = this.options.name(this.host);
+          const value = this.options.value(this.host);
+          const isButton = this.host.tagName.toLowerCase() === "sl-button";
+          if (this.host.isConnected && !disabled && !isButton && typeof name === "string" && name.length > 0 && typeof value !== "undefined") {
+            if (Array.isArray(value)) {
+              value.forEach((val) => {
+                event.formData.append(name, val.toString());
+              });
+            } else {
+              event.formData.append(name, value.toString());
+            }
+          }
+        };
+        this.handleFormSubmit = (event) => {
+          var _a;
+          const disabled = this.options.disabled(this.host);
+          const reportValidity = this.options.reportValidity;
+          if (this.form && !this.form.noValidate) {
+            (_a = formCollections.get(this.form)) == null ? void 0 : _a.forEach((control) => {
+              this.setUserInteracted(control, true);
+            });
+          }
+          if (this.form && !this.form.noValidate && !disabled && !reportValidity(this.host)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        };
+        this.handleFormReset = () => {
+          this.options.setValue(this.host, this.options.defaultValue(this.host));
+          this.setUserInteracted(this.host, false);
+          interactions.set(this.host, []);
+        };
+        this.handleInteraction = (event) => {
+          const emittedEvents = interactions.get(this.host);
+          if (!emittedEvents.includes(event.type)) {
+            emittedEvents.push(event.type);
+          }
+          if (emittedEvents.length === this.options.assumeInteractionOn.length) {
+            this.setUserInteracted(this.host, true);
+          }
+        };
+        this.checkFormValidity = () => {
+          if (this.form && !this.form.noValidate) {
+            const elements = this.form.querySelectorAll("*");
+            for (const element of elements) {
+              if (typeof element.checkValidity === "function") {
+                if (!element.checkValidity()) {
+                  return false;
+                }
+              }
+            }
+          }
+          return true;
+        };
+        this.reportFormValidity = () => {
+          if (this.form && !this.form.noValidate) {
+            const elements = this.form.querySelectorAll("*");
+            for (const element of elements) {
+              if (typeof element.reportValidity === "function") {
+                if (!element.reportValidity()) {
+                  return false;
+                }
+              }
+            }
+          }
+          return true;
+        };
+        (this.host = host).addController(this);
+        this.options = __spreadValues({
+          form: (input) => {
+            const formId = input.form;
+            if (formId) {
+              const root = input.getRootNode();
+              const form = root.querySelector(`#${formId}`);
+              if (form) {
+                return form;
+              }
+            }
+            return input.closest("form");
+          },
+          name: (input) => input.name,
+          value: (input) => input.value,
+          defaultValue: (input) => input.defaultValue,
+          disabled: (input) => {
+            var _a;
+            return (_a = input.disabled) != null ? _a : false;
+          },
+          reportValidity: (input) => typeof input.reportValidity === "function" ? input.reportValidity() : true,
+          checkValidity: (input) => typeof input.checkValidity === "function" ? input.checkValidity() : true,
+          setValue: (input, value) => input.value = value,
+          assumeInteractionOn: ["sl-input"]
+        }, options);
+      }
+      hostConnected() {
+        const form = this.options.form(this.host);
+        if (form) {
+          this.attachForm(form);
+        }
+        interactions.set(this.host, []);
+        this.options.assumeInteractionOn.forEach((event) => {
+          this.host.addEventListener(event, this.handleInteraction);
+        });
+      }
+      hostDisconnected() {
+        this.detachForm();
+        interactions.delete(this.host);
+        this.options.assumeInteractionOn.forEach((event) => {
+          this.host.removeEventListener(event, this.handleInteraction);
+        });
+      }
+      hostUpdated() {
+        const form = this.options.form(this.host);
+        if (!form) {
+          this.detachForm();
+        }
+        if (form && this.form !== form) {
+          this.detachForm();
+          this.attachForm(form);
+        }
+        if (this.host.hasUpdated) {
+          this.setValidity(this.host.validity.valid);
+        }
+      }
+      attachForm(form) {
+        if (form) {
+          this.form = form;
+          if (formCollections.has(this.form)) {
+            formCollections.get(this.form).add(this.host);
+          } else {
+            formCollections.set(this.form, /* @__PURE__ */ new Set([this.host]));
+          }
+          this.form.addEventListener("formdata", this.handleFormData);
+          this.form.addEventListener("submit", this.handleFormSubmit);
+          this.form.addEventListener("reset", this.handleFormReset);
+          if (!reportValidityOverloads.has(this.form)) {
+            reportValidityOverloads.set(this.form, this.form.reportValidity);
+            this.form.reportValidity = () => this.reportFormValidity();
+          }
+          if (!checkValidityOverloads.has(this.form)) {
+            checkValidityOverloads.set(this.form, this.form.checkValidity);
+            this.form.checkValidity = () => this.checkFormValidity();
+          }
+        } else {
+          this.form = void 0;
+        }
+      }
+      detachForm() {
+        if (!this.form)
+          return;
+        const formCollection = formCollections.get(this.form);
+        if (!formCollection) {
+          return;
+        }
+        formCollection.delete(this.host);
+        if (formCollection.size <= 0) {
+          this.form.removeEventListener("formdata", this.handleFormData);
+          this.form.removeEventListener("submit", this.handleFormSubmit);
+          this.form.removeEventListener("reset", this.handleFormReset);
+          if (reportValidityOverloads.has(this.form)) {
+            this.form.reportValidity = reportValidityOverloads.get(this.form);
+            reportValidityOverloads.delete(this.form);
+          }
+          if (checkValidityOverloads.has(this.form)) {
+            this.form.checkValidity = checkValidityOverloads.get(this.form);
+            checkValidityOverloads.delete(this.form);
+          }
+          this.form = void 0;
+        }
+      }
+      setUserInteracted(el, hasInteracted) {
+        if (hasInteracted) {
+          userInteractedControls.add(el);
+        } else {
+          userInteractedControls.delete(el);
+        }
+        el.requestUpdate();
+      }
+      doAction(type5, submitter) {
+        if (this.form) {
+          const button = document.createElement("button");
+          button.type = type5;
+          button.style.position = "absolute";
+          button.style.width = "0";
+          button.style.height = "0";
+          button.style.clipPath = "inset(50%)";
+          button.style.overflow = "hidden";
+          button.style.whiteSpace = "nowrap";
+          if (submitter) {
+            button.name = submitter.name;
+            button.value = submitter.value;
+            ["formaction", "formenctype", "formmethod", "formnovalidate", "formtarget"].forEach((attr) => {
+              if (submitter.hasAttribute(attr)) {
+                button.setAttribute(attr, submitter.getAttribute(attr));
+              }
+            });
+          }
+          this.form.append(button);
+          button.click();
+          button.remove();
+        }
+      }
+      /** Returns the associated `<form>` element, if one exists. */
+      getForm() {
+        var _a;
+        return (_a = this.form) != null ? _a : null;
+      }
+      /** Resets the form, restoring all the control to their default value */
+      reset(submitter) {
+        this.doAction("reset", submitter);
+      }
+      /** Submits the form, triggering validation and form data injection. */
+      submit(submitter) {
+        this.doAction("submit", submitter);
+      }
+      /**
+       * Synchronously sets the form control's validity. Call this when you know the future validity but need to update
+       * the host element immediately, i.e. before Lit updates the component in the next update.
+       */
+      setValidity(isValid) {
+        const host = this.host;
+        const hasInteracted = Boolean(userInteractedControls.has(host));
+        const required = Boolean(host.required);
+        host.toggleAttribute("data-required", required);
+        host.toggleAttribute("data-optional", !required);
+        host.toggleAttribute("data-invalid", !isValid);
+        host.toggleAttribute("data-valid", isValid);
+        host.toggleAttribute("data-user-invalid", !isValid && hasInteracted);
+        host.toggleAttribute("data-user-valid", isValid && hasInteracted);
+      }
+      /**
+       * Updates the form control's validity based on the current value of `host.validity.valid`. Call this when anything
+       * that affects constraint validation changes so the component receives the correct validity states.
+       */
+      updateValidity() {
+        const host = this.host;
+        this.setValidity(host.validity.valid);
+      }
+      /**
+       * Dispatches a non-bubbling, cancelable custom event of type `sl-invalid`.
+       * If the `sl-invalid` event will be cancelled then the original `invalid`
+       * event (which may have been passed as argument) will also be cancelled.
+       * If no original `invalid` event has been passed then the `sl-invalid`
+       * event will be cancelled before being dispatched.
+       */
+      emitInvalidEvent(originalInvalidEvent) {
+        const slInvalidEvent = new CustomEvent("sl-invalid", {
+          bubbles: false,
+          composed: false,
+          cancelable: true,
+          detail: {}
+        });
+        if (!originalInvalidEvent) {
+          slInvalidEvent.preventDefault();
+        }
+        if (!this.host.dispatchEvent(slInvalidEvent)) {
+          originalInvalidEvent == null ? void 0 : originalInvalidEvent.preventDefault();
+        }
+      }
+    };
+    validValidityState = Object.freeze({
+      badInput: false,
+      customError: false,
+      patternMismatch: false,
+      rangeOverflow: false,
+      rangeUnderflow: false,
+      stepMismatch: false,
+      tooLong: false,
+      tooShort: false,
+      typeMismatch: false,
+      valid: true,
+      valueMissing: false
+    });
+    valueMissingValidityState = Object.freeze(__spreadProps(__spreadValues({}, validValidityState), {
+      valid: false,
+      valueMissing: true
+    }));
+    customErrorValidityState = Object.freeze(__spreadProps(__spreadValues({}, validValidityState), {
+      valid: false,
+      customError: true
+    }));
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.MAQXLKQ7.js
+var button_styles_default;
+var init_chunk_MAQXLKQ7 = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.MAQXLKQ7.js"() {
+    init_lit();
+    button_styles_default = i`
+  :host {
+    display: inline-block;
+    position: relative;
+    width: auto;
+    cursor: pointer;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    border-style: solid;
+    border-width: var(--sl-input-border-width);
+    font-family: var(--sl-input-font-family);
+    font-weight: var(--sl-font-weight-semibold);
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 0;
+    transition:
+      var(--sl-transition-x-fast) background-color,
+      var(--sl-transition-x-fast) color,
+      var(--sl-transition-x-fast) border,
+      var(--sl-transition-x-fast) box-shadow;
+    cursor: inherit;
+  }
+
+  .button::-moz-focus-inner {
+    border: 0;
+  }
+
+  .button:focus {
+    outline: none;
+  }
+
+  .button:focus-visible {
+    outline: var(--sl-focus-ring);
+    outline-offset: var(--sl-focus-ring-offset);
+  }
+
+  .button--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* When disabled, prevent mouse events from bubbling up from children */
+  .button--disabled * {
+    pointer-events: none;
+  }
+
+  .button__prefix,
+  .button__suffix {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .button__label {
+    display: inline-block;
+  }
+
+  .button__label::slotted(sl-icon) {
+    vertical-align: -2px;
+  }
+
+  /*
+   * Standard buttons
+   */
+
+  /* Default */
+  .button--standard.button--default {
+    background-color: var(--sl-color-neutral-0);
+    border-color: var(--sl-input-border-color);
+    color: var(--sl-color-neutral-700);
+  }
+
+  .button--standard.button--default:hover:not(.button--disabled) {
+    background-color: var(--sl-color-primary-50);
+    border-color: var(--sl-color-primary-300);
+    color: var(--sl-color-primary-700);
+  }
+
+  .button--standard.button--default:active:not(.button--disabled) {
+    background-color: var(--sl-color-primary-100);
+    border-color: var(--sl-color-primary-400);
+    color: var(--sl-color-primary-700);
+  }
+
+  /* Primary */
+  .button--standard.button--primary {
+    background-color: var(--sl-color-primary-600);
+    border-color: var(--sl-color-primary-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--primary:hover:not(.button--disabled) {
+    background-color: var(--sl-color-primary-500);
+    border-color: var(--sl-color-primary-500);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--primary:active:not(.button--disabled) {
+    background-color: var(--sl-color-primary-600);
+    border-color: var(--sl-color-primary-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Success */
+  .button--standard.button--success {
+    background-color: var(--sl-color-success-600);
+    border-color: var(--sl-color-success-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--success:hover:not(.button--disabled) {
+    background-color: var(--sl-color-success-500);
+    border-color: var(--sl-color-success-500);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--success:active:not(.button--disabled) {
+    background-color: var(--sl-color-success-600);
+    border-color: var(--sl-color-success-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Neutral */
+  .button--standard.button--neutral {
+    background-color: var(--sl-color-neutral-600);
+    border-color: var(--sl-color-neutral-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--neutral:hover:not(.button--disabled) {
+    background-color: var(--sl-color-neutral-500);
+    border-color: var(--sl-color-neutral-500);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--neutral:active:not(.button--disabled) {
+    background-color: var(--sl-color-neutral-600);
+    border-color: var(--sl-color-neutral-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Warning */
+  .button--standard.button--warning {
+    background-color: var(--sl-color-warning-600);
+    border-color: var(--sl-color-warning-600);
+    color: var(--sl-color-neutral-0);
+  }
+  .button--standard.button--warning:hover:not(.button--disabled) {
+    background-color: var(--sl-color-warning-500);
+    border-color: var(--sl-color-warning-500);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--warning:active:not(.button--disabled) {
+    background-color: var(--sl-color-warning-600);
+    border-color: var(--sl-color-warning-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Danger */
+  .button--standard.button--danger {
+    background-color: var(--sl-color-danger-600);
+    border-color: var(--sl-color-danger-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--danger:hover:not(.button--disabled) {
+    background-color: var(--sl-color-danger-500);
+    border-color: var(--sl-color-danger-500);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--standard.button--danger:active:not(.button--disabled) {
+    background-color: var(--sl-color-danger-600);
+    border-color: var(--sl-color-danger-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /*
+   * Outline buttons
+   */
+
+  .button--outline {
+    background: none;
+    border: solid 1px;
+  }
+
+  /* Default */
+  .button--outline.button--default {
+    border-color: var(--sl-input-border-color);
+    color: var(--sl-color-neutral-700);
+  }
+
+  .button--outline.button--default:hover:not(.button--disabled),
+  .button--outline.button--default.button--checked:not(.button--disabled) {
+    border-color: var(--sl-color-primary-600);
+    background-color: var(--sl-color-primary-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--outline.button--default:active:not(.button--disabled) {
+    border-color: var(--sl-color-primary-700);
+    background-color: var(--sl-color-primary-700);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Primary */
+  .button--outline.button--primary {
+    border-color: var(--sl-color-primary-600);
+    color: var(--sl-color-primary-600);
+  }
+
+  .button--outline.button--primary:hover:not(.button--disabled),
+  .button--outline.button--primary.button--checked:not(.button--disabled) {
+    background-color: var(--sl-color-primary-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--outline.button--primary:active:not(.button--disabled) {
+    border-color: var(--sl-color-primary-700);
+    background-color: var(--sl-color-primary-700);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Success */
+  .button--outline.button--success {
+    border-color: var(--sl-color-success-600);
+    color: var(--sl-color-success-600);
+  }
+
+  .button--outline.button--success:hover:not(.button--disabled),
+  .button--outline.button--success.button--checked:not(.button--disabled) {
+    background-color: var(--sl-color-success-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--outline.button--success:active:not(.button--disabled) {
+    border-color: var(--sl-color-success-700);
+    background-color: var(--sl-color-success-700);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Neutral */
+  .button--outline.button--neutral {
+    border-color: var(--sl-color-neutral-600);
+    color: var(--sl-color-neutral-600);
+  }
+
+  .button--outline.button--neutral:hover:not(.button--disabled),
+  .button--outline.button--neutral.button--checked:not(.button--disabled) {
+    background-color: var(--sl-color-neutral-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--outline.button--neutral:active:not(.button--disabled) {
+    border-color: var(--sl-color-neutral-700);
+    background-color: var(--sl-color-neutral-700);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Warning */
+  .button--outline.button--warning {
+    border-color: var(--sl-color-warning-600);
+    color: var(--sl-color-warning-600);
+  }
+
+  .button--outline.button--warning:hover:not(.button--disabled),
+  .button--outline.button--warning.button--checked:not(.button--disabled) {
+    background-color: var(--sl-color-warning-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--outline.button--warning:active:not(.button--disabled) {
+    border-color: var(--sl-color-warning-700);
+    background-color: var(--sl-color-warning-700);
+    color: var(--sl-color-neutral-0);
+  }
+
+  /* Danger */
+  .button--outline.button--danger {
+    border-color: var(--sl-color-danger-600);
+    color: var(--sl-color-danger-600);
+  }
+
+  .button--outline.button--danger:hover:not(.button--disabled),
+  .button--outline.button--danger.button--checked:not(.button--disabled) {
+    background-color: var(--sl-color-danger-600);
+    color: var(--sl-color-neutral-0);
+  }
+
+  .button--outline.button--danger:active:not(.button--disabled) {
+    border-color: var(--sl-color-danger-700);
+    background-color: var(--sl-color-danger-700);
+    color: var(--sl-color-neutral-0);
+  }
+
+  @media (forced-colors: active) {
+    .button.button--outline.button--checked:not(.button--disabled) {
+      outline: solid 2px transparent;
+    }
+  }
+
+  /*
+   * Text buttons
+   */
+
+  .button--text {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--sl-color-primary-600);
+  }
+
+  .button--text:hover:not(.button--disabled) {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--sl-color-primary-500);
+  }
+
+  .button--text:focus-visible:not(.button--disabled) {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--sl-color-primary-500);
+  }
+
+  .button--text:active:not(.button--disabled) {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--sl-color-primary-700);
+  }
+
+  /*
+   * Size modifiers
+   */
+
+  .button--small {
+    height: auto;
+    min-height: var(--sl-input-height-small);
+    font-size: var(--sl-button-font-size-small);
+    line-height: calc(var(--sl-input-height-small) - var(--sl-input-border-width) * 2);
+    border-radius: var(--sl-input-border-radius-small);
+  }
+
+  .button--medium {
+    height: auto;
+    min-height: var(--sl-input-height-medium);
+    font-size: var(--sl-button-font-size-medium);
+    line-height: calc(var(--sl-input-height-medium) - var(--sl-input-border-width) * 2);
+    border-radius: var(--sl-input-border-radius-medium);
+  }
+
+  .button--large {
+    height: auto;
+    min-height: var(--sl-input-height-large);
+    font-size: var(--sl-button-font-size-large);
+    line-height: calc(var(--sl-input-height-large) - var(--sl-input-border-width) * 2);
+    border-radius: var(--sl-input-border-radius-large);
+  }
+
+  /*
+   * Pill modifier
+   */
+
+  .button--pill.button--small {
+    border-radius: var(--sl-input-height-small);
+  }
+
+  .button--pill.button--medium {
+    border-radius: var(--sl-input-height-medium);
+  }
+
+  .button--pill.button--large {
+    border-radius: var(--sl-input-height-large);
+  }
+
+  /*
+   * Circle modifier
+   */
+
+  .button--circle {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .button--circle.button--small {
+    width: var(--sl-input-height-small);
+    border-radius: 50%;
+  }
+
+  .button--circle.button--medium {
+    width: var(--sl-input-height-medium);
+    border-radius: 50%;
+  }
+
+  .button--circle.button--large {
+    width: var(--sl-input-height-large);
+    border-radius: 50%;
+  }
+
+  .button--circle .button__prefix,
+  .button--circle .button__suffix,
+  .button--circle .button__caret {
+    display: none;
+  }
+
+  /*
+   * Caret modifier
+   */
+
+  .button--caret .button__suffix {
+    display: none;
+  }
+
+  .button--caret .button__caret {
+    height: auto;
+  }
+
+  /*
+   * Loading modifier
+   */
+
+  .button--loading {
+    position: relative;
+    cursor: wait;
+  }
+
+  .button--loading .button__prefix,
+  .button--loading .button__label,
+  .button--loading .button__suffix,
+  .button--loading .button__caret {
+    visibility: hidden;
+  }
+
+  .button--loading sl-spinner {
+    --indicator-color: currentColor;
+    position: absolute;
+    font-size: 1em;
+    height: 1em;
+    width: 1em;
+    top: calc(50% - 0.5em);
+    left: calc(50% - 0.5em);
+  }
+
+  /*
+   * Badges
+   */
+
+  .button ::slotted(sl-badge) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    translate: 50% -50%;
+    pointer-events: none;
+  }
+
+  .button--rtl ::slotted(sl-badge) {
+    right: auto;
+    left: 0;
+    translate: -50% -50%;
+  }
+
+  /*
+   * Button spacing
+   */
+
+  .button--has-label.button--small .button__label {
+    padding: 0 var(--sl-spacing-small);
+  }
+
+  .button--has-label.button--medium .button__label {
+    padding: 0 var(--sl-spacing-medium);
+  }
+
+  .button--has-label.button--large .button__label {
+    padding: 0 var(--sl-spacing-large);
+  }
+
+  .button--has-prefix.button--small {
+    padding-inline-start: var(--sl-spacing-x-small);
+  }
+
+  .button--has-prefix.button--small .button__label {
+    padding-inline-start: var(--sl-spacing-x-small);
+  }
+
+  .button--has-prefix.button--medium {
+    padding-inline-start: var(--sl-spacing-small);
+  }
+
+  .button--has-prefix.button--medium .button__label {
+    padding-inline-start: var(--sl-spacing-small);
+  }
+
+  .button--has-prefix.button--large {
+    padding-inline-start: var(--sl-spacing-small);
+  }
+
+  .button--has-prefix.button--large .button__label {
+    padding-inline-start: var(--sl-spacing-small);
+  }
+
+  .button--has-suffix.button--small,
+  .button--caret.button--small {
+    padding-inline-end: var(--sl-spacing-x-small);
+  }
+
+  .button--has-suffix.button--small .button__label,
+  .button--caret.button--small .button__label {
+    padding-inline-end: var(--sl-spacing-x-small);
+  }
+
+  .button--has-suffix.button--medium,
+  .button--caret.button--medium {
+    padding-inline-end: var(--sl-spacing-small);
+  }
+
+  .button--has-suffix.button--medium .button__label,
+  .button--caret.button--medium .button__label {
+    padding-inline-end: var(--sl-spacing-small);
+  }
+
+  .button--has-suffix.button--large,
+  .button--caret.button--large {
+    padding-inline-end: var(--sl-spacing-small);
+  }
+
+  .button--has-suffix.button--large .button__label,
+  .button--caret.button--large .button__label {
+    padding-inline-end: var(--sl-spacing-small);
+  }
+
+  /*
+   * Button groups support a variety of button types (e.g. buttons with tooltips, buttons as dropdown triggers, etc.).
+   * This means buttons aren't always direct descendants of the button group, thus we can't target them with the
+   * ::slotted selector. To work around this, the button group component does some magic to add these special classes to
+   * buttons and we style them here instead.
+   */
+
+  :host([data-sl-button-group__button--first]:not([data-sl-button-group__button--last])) .button {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  :host([data-sl-button-group__button--inner]) .button {
+    border-radius: 0;
+  }
+
+  :host([data-sl-button-group__button--last]:not([data-sl-button-group__button--first])) .button {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  /* All except the first */
+  :host([data-sl-button-group__button]:not([data-sl-button-group__button--first])) {
+    margin-inline-start: calc(-1 * var(--sl-input-border-width));
+  }
+
+  /* Add a visual separator between solid buttons */
+  :host(
+      [data-sl-button-group__button]:not(
+          [data-sl-button-group__button--first],
+          [data-sl-button-group__button--radio],
+          [variant='default']
+        ):not(:hover)
+    )
+    .button:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    bottom: 0;
+    border-left: solid 1px rgb(128 128 128 / 33%);
+    mix-blend-mode: multiply;
+  }
+
+  /* Bump hovered, focused, and checked buttons up so their focus ring isn't clipped */
+  :host([data-sl-button-group__button--hover]) {
+    z-index: 1;
+  }
+
+  /* Focus and checked are always on top */
+  :host([data-sl-button-group__button--focus]),
+  :host([data-sl-button-group__button][checked]) {
+    z-index: 2;
+  }
+`;
+  }
+});
+
+// node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/static.js
+var a3, o9, i6, l3, n7, u3, c5, $2;
+var init_static = __esm({
+  "node_modules/.pnpm/lit-html@3.2.1/node_modules/lit-html/static.js"() {
+    init_lit_html();
+    a3 = Symbol.for("");
+    o9 = (t6) => {
+      if (t6?.r === a3) return t6?._$litStatic$;
+    };
+    i6 = (t6, ...r9) => ({ _$litStatic$: r9.reduce((r10, e10, a4) => r10 + ((t7) => {
+      if (void 0 !== t7._$litStatic$) return t7._$litStatic$;
+      throw Error(`Value passed to 'literal' function must be a 'literal' result: ${t7}. Use 'unsafeStatic' to pass non-literal values, but
+            take care to ensure page security.`);
+    })(e10) + t6[a4 + 1], t6[0]), r: a3 });
+    l3 = /* @__PURE__ */ new Map();
+    n7 = (t6) => (r9, ...e10) => {
+      const a4 = e10.length;
+      let s4, i7;
+      const n8 = [], u4 = [];
+      let c6, $3 = 0, f5 = false;
+      for (; $3 < a4; ) {
+        for (c6 = r9[$3]; $3 < a4 && void 0 !== (i7 = e10[$3], s4 = o9(i7)); ) c6 += s4 + r9[++$3], f5 = true;
+        $3 !== a4 && u4.push(i7), n8.push(c6), $3++;
+      }
+      if ($3 === a4 && n8.push(r9[a4]), f5) {
+        const t7 = n8.join("$$lit$$");
+        void 0 === (r9 = l3.get(t7)) && (n8.raw = n8, l3.set(t7, r9 = n8)), e10 = u4;
+      }
+      return t6(r9, ...e10);
+    };
+    u3 = n7(x);
+    c5 = n7(b2);
+    $2 = n7(w);
+  }
+});
+
+// node_modules/.pnpm/lit@3.2.1/node_modules/lit/static-html.js
+var init_static_html = __esm({
+  "node_modules/.pnpm/lit@3.2.1/node_modules/lit/static-html.js"() {
+    init_static();
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.N2SNE3QN.js
+var SlButton;
+var init_chunk_N2SNE3QN = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.N2SNE3QN.js"() {
+    init_chunk_TLKDQ5JG();
+    init_chunk_2RCF7SLU();
+    init_chunk_MAQXLKQ7();
+    init_chunk_WLV3FVBR();
+    init_chunk_NYIIDP5N();
+    init_chunk_E6QAPUBK();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+    init_class_map2();
+    init_static_html();
+    init_if_defined2();
+    init_decorators();
+    SlButton = class extends ShoelaceElement {
+      constructor() {
+        super(...arguments);
+        this.formControlController = new FormControlController(this, {
+          assumeInteractionOn: ["click"]
+        });
+        this.hasSlotController = new HasSlotController(this, "[default]", "prefix", "suffix");
+        this.localize = new LocalizeController2(this);
+        this.hasFocus = false;
+        this.invalid = false;
+        this.title = "";
+        this.variant = "default";
+        this.size = "medium";
+        this.caret = false;
+        this.disabled = false;
+        this.loading = false;
+        this.outline = false;
+        this.pill = false;
+        this.circle = false;
+        this.type = "button";
+        this.name = "";
+        this.value = "";
+        this.href = "";
+        this.rel = "noreferrer noopener";
+      }
+      /** Gets the validity state object */
+      get validity() {
+        if (this.isButton()) {
+          return this.button.validity;
+        }
+        return validValidityState;
+      }
+      /** Gets the validation message */
+      get validationMessage() {
+        if (this.isButton()) {
+          return this.button.validationMessage;
+        }
+        return "";
+      }
+      firstUpdated() {
+        if (this.isButton()) {
+          this.formControlController.updateValidity();
+        }
+      }
+      handleBlur() {
+        this.hasFocus = false;
+        this.emit("sl-blur");
+      }
+      handleFocus() {
+        this.hasFocus = true;
+        this.emit("sl-focus");
+      }
+      handleClick() {
+        if (this.type === "submit") {
+          this.formControlController.submit(this);
+        }
+        if (this.type === "reset") {
+          this.formControlController.reset(this);
+        }
+      }
+      handleInvalid(event) {
+        this.formControlController.setValidity(false);
+        this.formControlController.emitInvalidEvent(event);
+      }
+      isButton() {
+        return this.href ? false : true;
+      }
+      isLink() {
+        return this.href ? true : false;
+      }
+      handleDisabledChange() {
+        if (this.isButton()) {
+          this.formControlController.setValidity(this.disabled);
+        }
+      }
+      /** Simulates a click on the button. */
+      click() {
+        this.button.click();
+      }
+      /** Sets focus on the button. */
+      focus(options) {
+        this.button.focus(options);
+      }
+      /** Removes focus from the button. */
+      blur() {
+        this.button.blur();
+      }
+      /** Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid. */
+      checkValidity() {
+        if (this.isButton()) {
+          return this.button.checkValidity();
+        }
+        return true;
+      }
+      /** Gets the associated form, if one exists. */
+      getForm() {
+        return this.formControlController.getForm();
+      }
+      /** Checks for validity and shows the browser's validation message if the control is invalid. */
+      reportValidity() {
+        if (this.isButton()) {
+          return this.button.reportValidity();
+        }
+        return true;
+      }
+      /** Sets a custom validation message. Pass an empty string to restore validity. */
+      setCustomValidity(message) {
+        if (this.isButton()) {
+          this.button.setCustomValidity(message);
+          this.formControlController.updateValidity();
+        }
+      }
+      render() {
+        const isLink = this.isLink();
+        const tag = isLink ? i6`a` : i6`button`;
+        return u3`
+      <${tag}
+        part="base"
+        class=${e7({
+          button: true,
+          "button--default": this.variant === "default",
+          "button--primary": this.variant === "primary",
+          "button--success": this.variant === "success",
+          "button--neutral": this.variant === "neutral",
+          "button--warning": this.variant === "warning",
+          "button--danger": this.variant === "danger",
+          "button--text": this.variant === "text",
+          "button--small": this.size === "small",
+          "button--medium": this.size === "medium",
+          "button--large": this.size === "large",
+          "button--caret": this.caret,
+          "button--circle": this.circle,
+          "button--disabled": this.disabled,
+          "button--focused": this.hasFocus,
+          "button--loading": this.loading,
+          "button--standard": !this.outline,
+          "button--outline": this.outline,
+          "button--pill": this.pill,
+          "button--rtl": this.localize.dir() === "rtl",
+          "button--has-label": this.hasSlotController.test("[default]"),
+          "button--has-prefix": this.hasSlotController.test("prefix"),
+          "button--has-suffix": this.hasSlotController.test("suffix")
+        })}
+        ?disabled=${o5(isLink ? void 0 : this.disabled)}
+        type=${o5(isLink ? void 0 : this.type)}
+        title=${this.title}
+        name=${o5(isLink ? void 0 : this.name)}
+        value=${o5(isLink ? void 0 : this.value)}
+        href=${o5(isLink && !this.disabled ? this.href : void 0)}
+        target=${o5(isLink ? this.target : void 0)}
+        download=${o5(isLink ? this.download : void 0)}
+        rel=${o5(isLink ? this.rel : void 0)}
+        role=${o5(isLink ? void 0 : "button")}
+        aria-disabled=${this.disabled ? "true" : "false"}
+        tabindex=${this.disabled ? "-1" : "0"}
+        @blur=${this.handleBlur}
+        @focus=${this.handleFocus}
+        @invalid=${this.isButton() ? this.handleInvalid : null}
+        @click=${this.handleClick}
+      >
+        <slot name="prefix" part="prefix" class="button__prefix"></slot>
+        <slot part="label" class="button__label"></slot>
+        <slot name="suffix" part="suffix" class="button__suffix"></slot>
+        ${this.caret ? u3` <sl-icon part="caret" class="button__caret" library="system" name="caret"></sl-icon> ` : ""}
+        ${this.loading ? u3`<sl-spinner part="spinner"></sl-spinner>` : ""}
+      </${tag}>
+    `;
+      }
+    };
+    SlButton.styles = [component_styles_default, button_styles_default];
+    SlButton.dependencies = {
+      "sl-icon": SlIcon,
+      "sl-spinner": SlSpinner
+    };
+    __decorateClass([
+      e5(".button")
+    ], SlButton.prototype, "button", 2);
+    __decorateClass([
+      r6()
+    ], SlButton.prototype, "hasFocus", 2);
+    __decorateClass([
+      r6()
+    ], SlButton.prototype, "invalid", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "title", 2);
+    __decorateClass([
+      n4({ reflect: true })
+    ], SlButton.prototype, "variant", 2);
+    __decorateClass([
+      n4({ reflect: true })
+    ], SlButton.prototype, "size", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlButton.prototype, "caret", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlButton.prototype, "disabled", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlButton.prototype, "loading", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlButton.prototype, "outline", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlButton.prototype, "pill", 2);
+    __decorateClass([
+      n4({ type: Boolean, reflect: true })
+    ], SlButton.prototype, "circle", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "type", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "name", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "value", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "href", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "target", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "rel", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "download", 2);
+    __decorateClass([
+      n4()
+    ], SlButton.prototype, "form", 2);
+    __decorateClass([
+      n4({ attribute: "formaction" })
+    ], SlButton.prototype, "formAction", 2);
+    __decorateClass([
+      n4({ attribute: "formenctype" })
+    ], SlButton.prototype, "formEnctype", 2);
+    __decorateClass([
+      n4({ attribute: "formmethod" })
+    ], SlButton.prototype, "formMethod", 2);
+    __decorateClass([
+      n4({ attribute: "formnovalidate", type: Boolean })
+    ], SlButton.prototype, "formNoValidate", 2);
+    __decorateClass([
+      n4({ attribute: "formtarget" })
+    ], SlButton.prototype, "formTarget", 2);
+    __decorateClass([
+      watch("disabled", { waitUntilFirstUpdate: true })
+    ], SlButton.prototype, "handleDisabledChange", 1);
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.Q6JS2LBD.js
+var init_chunk_Q6JS2LBD = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.Q6JS2LBD.js"() {
+    init_chunk_N2SNE3QN();
+    SlButton.define("sl-button");
+  }
+});
+
+// node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/button/button.js
+var init_button = __esm({
+  "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/components/button/button.js"() {
+    init_chunk_Q6JS2LBD();
+    init_chunk_N2SNE3QN();
+    init_chunk_TLKDQ5JG();
+    init_chunk_7DUCI5S4();
+    init_chunk_2RCF7SLU();
+    init_chunk_MAQXLKQ7();
+    init_chunk_WLV3FVBR();
+    init_chunk_MAS2SHYD();
+    init_chunk_NYIIDP5N();
+    init_chunk_E6QAPUBK();
+    init_chunk_ZL53POKZ();
+    init_chunk_P7ZG6EMR();
+    init_chunk_3TFKS637();
+    init_chunk_QLXRCYS4();
+    init_chunk_3Y6SB6QS();
+    init_chunk_CCJUT23E();
+    init_chunk_TUVJKY7S();
+    init_chunk_UYAO2JRR();
+    init_chunk_B3BW2AY6();
+  }
+});
+
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.HBPNMM7A.js
 var init_chunk_HBPNMM7A = __esm({
   "node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/chunks/chunk.HBPNMM7A.js"() {
@@ -3557,6 +8287,10 @@ var require_imageWindow = __commonJS({
     init_spinner();
     init_badge();
     init_details();
+    init_dropdown();
+    init_menu();
+    init_menu_item();
+    init_button();
     init_icon();
     setBasePath("../../node_modules/@shoelace-style/shoelace/dist");
     var channel = new BroadcastChannel2("jk-image-viewer");
@@ -3575,7 +8309,7 @@ var require_imageWindow = __commonJS({
           case "heartbeat":
             break;
           case "new-image":
-            Gallery.addImage(m2.data);
+            Gallery.addImage(m2.data, true);
             break;
           case "request-all":
             await init();
@@ -3612,7 +8346,7 @@ var require_imageWindow = __commonJS({
             );
             feedWindow.comfyAPI = window.comfyAPI;
           }
-          window.addEventListener("beforeunload", (e9) => {
+          window.addEventListener("beforeunload", (e10) => {
             feedWindow?.close();
           });
         };
@@ -3669,8 +8403,8 @@ var require_imageWindow = __commonJS({
               const title = node.title;
               if (detail?.output?.images) {
                 if (detail.node?.includes?.(":")) {
-                  const n5 = app.graph.getNodeById(detail.node.split(":")[0]);
-                  if (n5?.getInnerNodes) return;
+                  const n8 = app.graph.getNodeById(detail.node.split(":")[0]);
+                  if (n8?.getInnerNodes) return;
                 }
                 detail.output.images.forEach((src) => {
                   const href = `/view?filename=${encodeURIComponent(src.filename)}&type=${src.type}&subfolder=${encodeURIComponent(
@@ -3843,6 +8577,27 @@ lit-html/directives/class-map.js:
    *)
 
 lit-html/directive-helpers.js:
+  (**
+   * @license
+   * Copyright 2020 Google LLC
+   * SPDX-License-Identifier: BSD-3-Clause
+   *)
+
+lit-html/async-directive.js:
+  (**
+   * @license
+   * Copyright 2017 Google LLC
+   * SPDX-License-Identifier: BSD-3-Clause
+   *)
+
+lit-html/directives/ref.js:
+  (**
+   * @license
+   * Copyright 2020 Google LLC
+   * SPDX-License-Identifier: BSD-3-Clause
+   *)
+
+lit-html/static.js:
   (**
    * @license
    * Copyright 2020 Google LLC

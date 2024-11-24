@@ -6,6 +6,10 @@ import type { JsonViewer } from '../../node_modules/@alenaksu/json-viewer/dist/J
 //@ts-ignore
 import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
 
+const formattedTitle = (m: GalleryImageData) => {
+    return `${m.nodeTitle} - (#${m.nodeId})`;
+};
+
 export interface GalleryImageData {
     subfolder: string;
     type: string;
@@ -21,6 +25,10 @@ class JKImage {
     spinner: HTMLDivElement;
     info?: HTMLDivElement;
     opacityOverlay?: HTMLDivElement;
+
+    public get data() {
+        return this.m;
+    }
 
     loadImage(url: string) {
         return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -284,6 +292,7 @@ export class JKImageGallery extends EventTarget {
             this.initialized = true;
             await this.FeedBar.init();
             this.FeedBar.addEventListener(FeedBarEvents['feed-clear'], this.clearFeed);
+            this.FeedBar.addEventListener(FeedBarEvents['check-change'], this.updateImageVisibility);
         }
     }
 
@@ -297,8 +306,8 @@ export class JKImageGallery extends EventTarget {
         this.selectImage(data);
     };
 
-    public async addImage(data: GalleryImageData) {
-        const nodeTitle = `${data.nodeTitle} - (#${data.nodeId})`;
+    public async addImage(data: GalleryImageData, updateFeedBar: boolean) {
+        const nodeTitle = formattedTitle(data);
 
         if (!this.imageMap.has(nodeTitle)) this.imageMap.set(nodeTitle, []);
 
@@ -307,6 +316,10 @@ export class JKImageGallery extends EventTarget {
         const img = await new JKImage(data, true, false, this.handleImageClicked).init();
         this.images.unshift(img);
         this.leftPanel.prepend(img.getEl());
+
+        if (updateFeedBar) {
+            this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], false);
+        }
     }
 
     public async addImages(imgs: GalleryImageData[]) {
@@ -314,12 +327,13 @@ export class JKImageGallery extends EventTarget {
         //promise.all was not executing in order so they were appearing in random order on page reload
         //await Promise.all(imgs.map((i) => this.addImage(i)));
         for (const i of imgs) {
-            await this.addImage(i);
+            await this.addImage(i, false);
         }
 
         if (!this.selectedImage && imgs.length) {
             this.selectImage(imgs[0]!);
         }
+        this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], true);
     }
 
     public clearFeed = (ev: any) => {
@@ -334,5 +348,12 @@ export class JKImageGallery extends EventTarget {
             this.imageMap = new Map<string, GalleryImageData[]>();
             this.dispatchEvent(new Event(FeedBarEvents['feed-clear']));
         }
+    };
+
+    private updateImageVisibility = () => {
+        this.images.forEach((i) => {
+            const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i.data));
+            i.getEl().style.display = isChecked ? 'flex' : 'none';
+        });
     };
 }
