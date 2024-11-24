@@ -1266,16 +1266,42 @@ var JKRightPanelImage = class {
     this.container.classList.add("jk-rightpanel-container");
     this.title = document.createElement("div");
     this.title.classList.add("jk-rightpanel-title");
-    this.infoWrapper = document.createElement("details");
-    this.infoWrapper.classList.add("jk-rightpanel-info");
-    this.infoWrapper.innerHTML = `
-              <summary>Show Prompt Info</summary>
+    this.infoDialog = document.createElement("dialog");
+    this.infoDialog.classList.add("jk-info-dialog");
+    this.dialogCloseBtn = document.createElement("button");
+    this.dialogCloseBtn.innerText = "X";
+    this.dialogCloseBtn.classList.add("jk-dialog-close-btn");
+    this.dialogCloseBtn.onclick = () => {
+      if (this.infoDialog) {
+        this.infoDialog.close();
+      }
+    };
+    this.infoDialog.innerHTML = `
+            <div class="info-dialog-header">
+                <input id="prompt-search" type="text" placeholder="search"></input>
+            </div>
         `;
+    this.infoDialog.appendChild(this.dialogCloseBtn);
+    this.buttonGroup = document.createElement("div");
+    this.buttonGroup.classList.add("comfyui-button-group");
     this.info = document.createElement("div");
-    this.infoWrapper.appendChild(this.info);
+    this.info.classList.add("jk-info-dialog-inner");
+    this.infoDialog.appendChild(this.info);
   }
   getEl() {
     return this.container;
+  }
+  showInfoModal() {
+    this.infoDialog.showModal();
+    this.promptSearch = document.getElementById("prompt-search");
+    this.promptSearch.addEventListener("input", (ev) => {
+      this.currentSearch = this.promptViewer?.search(ev?.target?.value ?? "");
+    });
+    this.promptSearch.addEventListener("keyup", (e8) => {
+      if (this.currentSearch && (e8.keyCode === 13 || e8.key.toLowerCase() === "enter")) {
+        this.currentSearch.next();
+      }
+    });
   }
   async tryLoadMetaData() {
     try {
@@ -1285,13 +1311,22 @@ var JKRightPanelImage = class {
       const seed = findKeyValueRecursive(this.promptMetadata, "seed");
       if (typeof seed?.seed === "number") {
         this.seed = seed.seed;
-        const seedDisplay = document.createElement("div");
-        seedDisplay.innerText = `Seed: ${this.seed}`;
-        this.title.appendChild(seedDisplay);
+        document.getElementById("seed").innerText = `Seed: ${this.seed}`;
       }
       this.promptViewer = document.createElement("json-viewer");
       this.promptViewer.data = { prompt: this.promptMetadata };
       this.info.appendChild(this.promptViewer);
+      const ComfyButton = (await import("../../../scripts/ui/components/button.js")).ComfyButton;
+      this.viewPrompInfoButton = new ComfyButton({
+        icon: "info",
+        action: () => {
+          this.showInfoModal();
+        },
+        tooltip: "View Prompt Info",
+        content: "Prompt Info"
+      });
+      this.viewPrompInfoButton.element.classList.add("jk-view-prompt-info-btn");
+      document.getElementById("right-panel-btn-group")?.appendChild(this.viewPrompInfoButton.element);
     } catch (err) {
       console.error("failed to get metadata", err);
     }
@@ -1305,10 +1340,14 @@ var JKRightPanelImage = class {
          <div>
             filename: ${this.m.fileName}
         </div>
+        <div id="seed"> </div>
+        <div id="right-panel-btn-group" class="comfyui-menu">
+            
+        </div>
         `;
     this.img = await new JKImage(this.m, false, true).init();
     this.container.appendChild(this.img.getEl());
-    this.container.appendChild(this.infoWrapper);
+    this.container.appendChild(this.infoDialog);
     this.tryLoadMetaData();
     return this;
   }

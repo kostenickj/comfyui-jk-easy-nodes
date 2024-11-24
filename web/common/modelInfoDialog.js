@@ -1,8 +1,7 @@
 // src_web/common/modelInfoDialog.ts
 import { $el, ComfyDialog } from "../../../../scripts/ui.js";
 import { api } from "../../../../scripts/api.js";
-import { addStylesheet } from "./utils.js";
-addStylesheet(import.meta.url);
+window.comfyAPI.utils.addStylesheet(import.meta.url);
 var MetadataDialog = class extends ComfyDialog {
   constructor() {
     super();

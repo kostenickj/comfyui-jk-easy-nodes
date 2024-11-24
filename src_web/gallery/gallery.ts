@@ -98,7 +98,13 @@ class JKRightPanelImage {
     title: HTMLDivElement;
 
     seed?: number | null;
-    infoWrapper: HTMLDetailsElement;
+    infoDialog: HTMLDialogElement;
+    buttonGroup: HTMLDivElement;
+    viewPrompInfoButton?: { element: HTMLElement };
+    dialogCloseBtn: HTMLButtonElement;
+    promptSearch?: HTMLInputElement;
+
+    currentSearch?: Generator<any>;
 
     constructor(private m: GalleryImageData) {
         this.container = document.createElement('div');
@@ -107,21 +113,49 @@ class JKRightPanelImage {
         this.title = document.createElement('div');
         this.title.classList.add('jk-rightpanel-title');
 
-        this.infoWrapper = document.createElement('details');
-        this.infoWrapper.classList.add('jk-rightpanel-info');
+        this.infoDialog = document.createElement('dialog');
+        this.infoDialog.classList.add('jk-info-dialog');
 
-        // TODO, change this to a button that opens prompt info a modal instead, make it searchable like the demo
-        // https://github.com/alenaksu/json-viewer#demo
-        // make a patch for his search function tho so it also searches keys, shouldnt be hard
-        this.infoWrapper.innerHTML = `
-              <summary>Show Prompt Info</summary>
-        `
+        this.dialogCloseBtn = document.createElement('button');
+        this.dialogCloseBtn.innerText = 'X';
+        this.dialogCloseBtn.classList.add('jk-dialog-close-btn');
+        this.dialogCloseBtn.onclick = () => {
+            if (this.infoDialog) {
+                this.infoDialog.close();
+            }
+        };
+        this.infoDialog.innerHTML = `
+            <div class="info-dialog-header">
+                <input id="prompt-search" type="text" placeholder="search"></input>
+            </div>
+        `;
+
+        this.infoDialog.appendChild(this.dialogCloseBtn);
+
+        // make a patch for his search function tho so it also searches keys and also make it case insensitive, shouldnt be hard
+
+        this.buttonGroup = document.createElement('div');
+        this.buttonGroup.classList.add('comfyui-button-group');
         this.info = document.createElement('div');
-        this.infoWrapper.appendChild(this.info);
+        this.info.classList.add('jk-info-dialog-inner');
+        this.infoDialog.appendChild(this.info);
     }
 
     public getEl() {
         return this.container;
+    }
+
+    private showInfoModal() {
+        this.infoDialog.showModal();
+        this.promptSearch = document.getElementById('prompt-search') as HTMLInputElement;
+        this.promptSearch.addEventListener('input', (ev) => {
+            this.currentSearch = this.promptViewer?.search(((ev?.target as HTMLInputElement)?.value as string) ?? '');
+        });
+        this.promptSearch.addEventListener('keyup', (e) => {
+            if (this.currentSearch && (e.keyCode === 13 || e.key.toLowerCase() === 'enter')) {
+                this.currentSearch.next();
+            }
+        });
     }
 
     private async tryLoadMetaData() {
@@ -133,13 +167,25 @@ class JKRightPanelImage {
             const seed = findKeyValueRecursive(this.promptMetadata, 'seed');
             if (typeof seed?.seed === 'number') {
                 this.seed = seed.seed;
-                const seedDisplay = document.createElement('div');
-                seedDisplay.innerText = `Seed: ${this.seed}`;
-                this.title.appendChild(seedDisplay);
+                document.getElementById('seed')!.innerText = `Seed: ${this.seed}`;
             }
             this.promptViewer = document.createElement('json-viewer') as unknown as JsonViewer;
             this.promptViewer.data = { prompt: this.promptMetadata! };
             this.info.appendChild(this.promptViewer as any);
+
+            //@ts-ignore
+            const ComfyButton = (await import('../../../scripts/ui/components/button.js')).ComfyButton;
+
+            this.viewPrompInfoButton = new ComfyButton({
+                icon: 'info',
+                action: () => {
+                    this.showInfoModal();
+                },
+                tooltip: 'View Prompt Info',
+                content: 'Prompt Info'
+            });
+            this.viewPrompInfoButton!.element.classList.add('jk-view-prompt-info-btn');
+            document.getElementById('right-panel-btn-group')?.appendChild(this.viewPrompInfoButton!.element);
         } catch (err) {
             console.error('failed to get metadata', err);
         }
@@ -154,12 +200,16 @@ class JKRightPanelImage {
          <div>
             filename: ${this.m.fileName}
         </div>
+        <div id="seed"> </div>
+        <div id="right-panel-btn-group" class="comfyui-menu">
+            
+        </div>
         `;
 
         this.img = await new JKImage(this.m, false, true).init();
         this.container.appendChild(this.img.getEl());
 
-        this.container.appendChild(this.infoWrapper);
+        this.container.appendChild(this.infoDialog);
 
         // dont await, it takes a bit
         this.tryLoadMetaData();

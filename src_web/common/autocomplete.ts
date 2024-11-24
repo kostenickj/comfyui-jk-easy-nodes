@@ -4,9 +4,8 @@
 // @ts-nocheck
 
 import { $el } from "../../../../scripts/ui.js";
-import { addStylesheet } from "./utils.js";
 
-addStylesheet(import.meta.url);
+window.comfyAPI.utils.addStylesheet(import.meta.url);
 
 /*
 	https://github.com/component/textarea-caret-position

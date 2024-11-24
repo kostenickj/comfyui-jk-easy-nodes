@@ -7,7 +7,7 @@ import { $el, ComfyDialog } from "../../../../scripts/ui.js";
 import { api } from "../../../../scripts/api.js";
 import { addStylesheet } from "./utils.js";
 
-addStylesheet(import.meta.url);
+window.comfyAPI.utils.addStylesheet(import.meta.url);
 
 class MetadataDialog extends ComfyDialog {
 	constructor() {

@@ -7,8 +7,7 @@ var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "acce
 
 // src_web/common/autocomplete.ts
 import { $el } from "../../../../scripts/ui.js";
-import { addStylesheet } from "./utils.js";
-addStylesheet(import.meta.url);
+window.comfyAPI.utils.addStylesheet(import.meta.url);
 var getCaretCoordinates = function() {
   var properties = [
     "direction",
