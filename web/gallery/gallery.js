@@ -1,3 +1,27 @@
+// src_web/gallery/feedBar.ts
+var JKFeedBar = class {
+  constructor(el) {
+    this.el = el;
+    this.el.classList.add("comfyui-menu", "flex", "items-center");
+    this.buttonGroup = document.createElement("div");
+    this.el.append(this.buttonGroup);
+    this.buttonGroup.classList.add("comfyui-button-group");
+  }
+  async init() {
+    const ComfyButton = (await import("../../../scripts/ui/components/button.js")).ComfyButton;
+    const test = new ComfyButton({
+      icon: "image-multiple",
+      action: () => {
+        console.log("gldkdkd");
+      },
+      tooltip: "Toggle Image Window",
+      content: "test button"
+    });
+    this.buttonGroup.append(test.element);
+    console.log(test);
+  }
+};
+
 // src_web/gallery/gallery.ts
 var JKImage = class {
   constructor(m) {
@@ -15,10 +39,14 @@ var JKImage = class {
     this.title.textContent = `${m.nodeTitle} - (#${m.nodeId})`;
     this.title.innerHTML = `
             <div class="jk-img-info-title">
-                ${m.nodeTitle} - (#${m.nodeId})
+                <sl-badge variant="neutral">
+                        ${m.nodeTitle} - (#${m.nodeId})
+                </sl-badge>
             </div>
               <div class="jk-img-info-time">
-                ${(m.execTimeMs / 1e3).toFixed(2)}s
+                <sl-badge variant="success"> 
+                    ${(m.execTimeMs / 1e3).toFixed(2)}s
+                </sl-badge>
             </div>
         `;
     this.title.classList.add("jk-img-info-wrapper");
@@ -47,9 +75,13 @@ var JKImage = class {
   }
 };
 var JKImageGallery = class {
-  constructor(container) {
+  constructor(container, feedBarContainer) {
     this.container = container;
+    this.feedBarContainer = feedBarContainer;
+    this.initialized = false;
     this.images = [];
+    // node title and # => image
+    this.imageMap = /* @__PURE__ */ new Map();
     this.container.innerHTML = `
             <sl-split-panel position="15" style="--max: 35%; --min:10%;">
                 <div
@@ -65,18 +97,29 @@ var JKImageGallery = class {
                 </div>
             </sl-split-panel>
         `;
+    this.FeedBar = new JKFeedBar(feedBarContainer);
   }
   //TODO, add ability to toggle which ouputs to view images from based on node title/#
   // add clear button
-  // implement right sight of gallery
-  // show on click, also show filename below it
+  // implement right sigght of gallery, on first load if no image there load the first image we get
+  // on click go full screen?
+  // add grid mode like map does? not sure i care
   get leftPanel() {
     return document.getElementById("jk-gallery-left-panel");
   }
   get rightPanel() {
     return document.getElementById("jk-gallery-right-panel");
   }
+  async init() {
+    if (!this.initialized) {
+      this.initialized = true;
+      await this.FeedBar.init();
+    }
+  }
   async addImage(data) {
+    const nodeTitle = `${data.nodeTitle} - (#${data.nodeId})`;
+    if (!this.imageMap.has(nodeTitle)) this.imageMap.set(nodeTitle, []);
+    this.imageMap.get(nodeTitle).unshift(data);
     const img = await new JKImage(data).init();
     this.images.unshift(img);
     this.leftPanel.prepend(img.getEl());

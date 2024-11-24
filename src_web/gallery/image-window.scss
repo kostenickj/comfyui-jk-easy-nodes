@@ -137,7 +137,6 @@ body {
                     position: absolute;
                     bottom: 0;
                     left: calc(var(--left-panel-gutter-size) + 4px);
-                    background-color: rgba(1, 1, 1, .5);
                     padding: 4px;
                     max-width: calc(100% - var(--left-panel-gutter-size) - 24px);
                     overflow: hidden;

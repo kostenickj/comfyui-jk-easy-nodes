@@ -1,3 +1,5 @@
+import { JKFeedBar } from './feedBar';
+
 export interface GalleryImageData {
     subfolder: string;
     type: string;
@@ -43,10 +45,14 @@ class JKImage {
         this.title.textContent = `${m.nodeTitle} - (#${m.nodeId})`;
         this.title.innerHTML = `
             <div class="jk-img-info-title">
-                ${m.nodeTitle} - (#${m.nodeId})
+                <sl-badge variant="neutral">
+                        ${m.nodeTitle} - (#${m.nodeId})
+                </sl-badge>
             </div>
               <div class="jk-img-info-time">
-                ${(m.execTimeMs / 1000).toFixed(2)}s
+                <sl-badge variant="success"> 
+                    ${(m.execTimeMs / 1000).toFixed(2)}s
+                </sl-badge>
             </div>
         `;
         this.title.classList.add('jk-img-info-wrapper');
@@ -68,12 +74,18 @@ class JKImage {
 }
 
 export class JKImageGallery {
+    private initialized = false;
+
     private images: JKImage[] = [];
-    
+    // node title and # => image
+    imageMap: Map<string, GalleryImageData[]> = new Map<string, GalleryImageData[]>();
+    FeedBar: JKFeedBar;
+
     //TODO, add ability to toggle which ouputs to view images from based on node title/#
     // add clear button
-    // implement right sight of gallery
-    // show on click, also show filename below it
+    // implement right sigght of gallery, on first load if no image there load the first image we get
+    // on click go full screen?
+    // add grid mode like map does? not sure i care
 
     private get leftPanel() {
         return document.getElementById('jk-gallery-left-panel') as HTMLDivElement;
@@ -81,7 +93,7 @@ export class JKImageGallery {
     private get rightPanel() {
         return document.getElementById('jk-gallery-right-panel') as HTMLDivElement;
     }
-    constructor(private container: HTMLElement) {
+    constructor(private container: HTMLDivElement, private feedBarContainer: HTMLDivElement) {
         this.container.innerHTML = `
             <sl-split-panel position="15" style="--max: 35%; --min:10%;">
                 <div
@@ -97,9 +109,23 @@ export class JKImageGallery {
                 </div>
             </sl-split-panel>
         `;
+        this.FeedBar = new JKFeedBar(feedBarContainer);
+    }
+
+    public async init() {
+        if (!this.initialized) {
+            this.initialized = true;
+            await this.FeedBar.init();
+        }
     }
 
     public async addImage(data: GalleryImageData) {
+        const nodeTitle = `${data.nodeTitle} - (#${data.nodeId})`;
+
+        if (!this.imageMap.has(nodeTitle)) this.imageMap.set(nodeTitle, []);
+
+        this.imageMap.get(nodeTitle)!.unshift(data);
+
         const img = await new JKImage(data).init();
         this.images.unshift(img);
         this.leftPanel.prepend(img.getEl());

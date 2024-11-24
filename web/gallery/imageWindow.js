@@ -861,19 +861,15 @@ var init_esbrowser = __esm({
 // src_web/gallery/imageWindow.ts
 import { SessionStorageHelper } from "../common/storage.js";
 import { JKImageGallery } from "./gallery.js";
-import { JKFeedBar } from "./feedBar.js";
 var require_imageWindow = __commonJS({
   "src_web/gallery/imageWindow.ts"() {
     init_esbrowser();
     var channel = new BroadcastChannel2("jk-image-viewer");
     var IS_FEED_WINDOW = !!window.jkImageWindow;
     if (IS_FEED_WINDOW) {
-      const container = document.getElementById("jk-image-gallery");
-      const Gallery = new JKImageGallery(container);
-      const topBar = document.getElementById("jk-feed-bar");
-      const FeedBar = new JKFeedBar(topBar);
+      const Gallery = new JKImageGallery(document.getElementById("jk-image-gallery"), document.getElementById("jk-feed-bar"));
       const init = async () => {
-        await FeedBar.init();
+        await Gallery.init();
       };
       channel.addEventListener("message", async (m) => {
         switch (m.type) {

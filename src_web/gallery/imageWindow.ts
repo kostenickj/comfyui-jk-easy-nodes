@@ -28,15 +28,11 @@ const channel = new BroadcastChannel<HeartBeatMessage | NewImgMessage | RequestA
 const IS_FEED_WINDOW = !!(window as any).jkImageWindow;
 
 if (IS_FEED_WINDOW) {
-    const container = document.getElementById('jk-image-gallery');
-    const Gallery = new JKImageGallery(container!);
-    const topBar = document.getElementById('jk-feed-bar');
-    const FeedBar = new JKFeedBar(topBar! as HTMLDivElement);
+    const Gallery = new JKImageGallery(document.getElementById('jk-image-gallery') as HTMLDivElement, document.getElementById('jk-feed-bar') as HTMLDivElement);
 
     // dont do init till after we request-all data from main window, comfy api may not be available yet
     const init = async () => {
-        // @ts-ignore
-        await FeedBar.init();
+        await Gallery.init();
     };
 
     channel.addEventListener('message', async (m) => {
@@ -49,9 +45,9 @@ if (IS_FEED_WINDOW) {
             case 'request-all':
                 await init();
                 await Gallery.addImages(m.data.images);
-            for (const [key, value] of Object.entries(m.data.cssVars)) {
-                document.documentElement.style.setProperty(key, value);
-            }
+                for (const [key, value] of Object.entries(m.data.cssVars)) {
+                    document.documentElement.style.setProperty(key, value);
+                }
         }
     });
 
