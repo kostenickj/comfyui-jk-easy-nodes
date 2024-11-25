@@ -1445,6 +1445,11 @@ var JKRightPanelImage = class {
       } catch (e8) {
       }
     }
+    window.dispatchEvent(new Event("resize"));
+  }
+  resizeHack() {
+    if (!this.img || !this.title) return;
+    this.img.getEl().style.height = `calc(100% - ${this.title.clientHeight}px)`;
   }
   async init() {
     this.container.appendChild(this.title);
@@ -1464,6 +1469,9 @@ var JKRightPanelImage = class {
     this.container.appendChild(this.img.getEl());
     this.container.appendChild(this.infoDialog);
     this.tryLoadMetaData();
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 1);
     return this;
   }
 };
@@ -1510,10 +1518,13 @@ var JKImageGallery = class extends EventTarget {
             </sl-split-panel>
         `;
     this.FeedBar = new JKFeedBar(this.feedBarContainer);
+    window.addEventListener("resize", () => {
+      console.log("resized");
+      this.selectedImage?.resizeHack();
+    });
   }
-  //TODO, add ability to toggle which ouputs to view images from based on node title/#
-  // add clear button to empty it out
-  // add on image click go full screen
+  //TODO, the image in the right panel is being cutoff when the window gets smaller and i cant figure out why...
+  // TODO add on image click go full screen modal, keep it simple, probably use native dialog?
   get leftPanel() {
     return document.getElementById("jk-gallery-left-panel");
   }

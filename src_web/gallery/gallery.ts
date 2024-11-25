@@ -219,6 +219,14 @@ class JKRightPanelImage {
                 this.title.removeChild(document.getElementById('seed')!);
             } catch (e) {}
         }
+
+        window.dispatchEvent(new Event('resize'));
+    }
+
+    public resizeHack() {
+        // i suck at css, hence this
+        if (!this.img || !this.title) return;
+        this.img.getEl().style.height = `calc(100% - ${this.title.clientHeight}px)`;
     }
 
     public async init() {
@@ -244,6 +252,10 @@ class JKRightPanelImage {
         // dont await, it takes a bit
         this.tryLoadMetaData();
 
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 1);
+
         return this;
     }
 }
@@ -258,9 +270,8 @@ export class JKImageGallery extends EventTarget {
     imageMap: Map<string, GalleryImageData[]> = new Map<string, GalleryImageData[]>();
     FeedBar: JKFeedBar;
 
-    //TODO, add ability to toggle which ouputs to view images from based on node title/#
-    // add clear button to empty it out
-    // add on image click go full screen
+    //TODO, the image in the right panel is being cutoff when the window gets smaller and i cant figure out why...
+    // TODO add on image click go full screen modal, keep it simple, probably use native dialog?
 
     private get leftPanel() {
         return document.getElementById('jk-gallery-left-panel') as HTMLDivElement;
@@ -285,6 +296,12 @@ export class JKImageGallery extends EventTarget {
             </sl-split-panel>
         `;
         this.FeedBar = new JKFeedBar(this.feedBarContainer);
+
+        // i suck at css, hence this
+        window.addEventListener('resize', () => {
+            console.log('resized');
+            this.selectedImage?.resizeHack();
+        });
     }
 
     public async init() {
