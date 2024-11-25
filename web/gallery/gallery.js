@@ -1,11 +1,329 @@
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
+
+// node_modules/.pnpm/macy@2.5.1/node_modules/macy/dist/macy.js
+var require_macy = __commonJS({
+  "node_modules/.pnpm/macy@2.5.1/node_modules/macy/dist/macy.js"(exports, module) {
+    !function(t4, n6) {
+      "object" == typeof exports && "undefined" != typeof module ? module.exports = n6() : "function" == typeof define && define.amd ? define(n6) : t4.Macy = n6();
+    }(exports, function() {
+      "use strict";
+      function t4(t5, n7) {
+        var e9 = void 0;
+        return function() {
+          e9 && clearTimeout(e9), e9 = setTimeout(t5, n7);
+        };
+      }
+      function n6(t5, n7) {
+        for (var e9 = t5.length, r9 = e9, o7 = []; e9--; ) o7.push(n7(t5[r9 - e9 - 1]));
+        return o7;
+      }
+      function e8(t5, n7) {
+        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+        if (window.Promise) return A2(t5, n7, e9);
+        t5.recalculate(true, true);
+      }
+      function r8(t5) {
+        for (var n7 = t5.options, e9 = t5.responsiveOptions, r9 = t5.keys, o7 = t5.docWidth, i7 = void 0, s4 = 0; s4 < r9.length; s4++) {
+          var a4 = parseInt(r9[s4], 10);
+          o7 >= a4 && (i7 = n7.breakAt[a4], O(i7, e9));
+        }
+        return e9;
+      }
+      function o6(t5) {
+        for (var n7 = t5.options, e9 = t5.responsiveOptions, r9 = t5.keys, o7 = t5.docWidth, i7 = void 0, s4 = r9.length - 1; s4 >= 0; s4--) {
+          var a4 = parseInt(r9[s4], 10);
+          o7 <= a4 && (i7 = n7.breakAt[a4], O(i7, e9));
+        }
+        return e9;
+      }
+      function i6(t5) {
+        var n7 = t5.useContainerForBreakpoints ? t5.container.clientWidth : window.innerWidth, e9 = { columns: t5.columns };
+        b3(t5.margin) ? e9.margin = { x: t5.margin.x, y: t5.margin.y } : e9.margin = { x: t5.margin, y: t5.margin };
+        var i7 = Object.keys(t5.breakAt);
+        return t5.mobileFirst ? r8({ options: t5, responsiveOptions: e9, keys: i7, docWidth: n7 }) : o6({ options: t5, responsiveOptions: e9, keys: i7, docWidth: n7 });
+      }
+      function s3(t5) {
+        return i6(t5).columns;
+      }
+      function a3(t5) {
+        return i6(t5).margin;
+      }
+      function c4(t5) {
+        var n7 = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1], e9 = s3(t5), r9 = a3(t5).x, o7 = 100 / e9;
+        if (!n7) return o7;
+        if (1 === e9) return "100%";
+        var i7 = "px";
+        if ("string" == typeof r9) {
+          var c5 = parseFloat(r9);
+          i7 = r9.replace(c5, ""), r9 = c5;
+        }
+        return r9 = (e9 - 1) * r9 / e9, "%" === i7 ? o7 - r9 + "%" : "calc(" + o7 + "% - " + r9 + i7 + ")";
+      }
+      function u3(t5, n7) {
+        var e9 = s3(t5.options), r9 = 0, o7 = void 0, i7 = void 0;
+        if (1 === ++n7) return 0;
+        i7 = a3(t5.options).x;
+        var u4 = "px";
+        if ("string" == typeof i7) {
+          var l4 = parseFloat(i7, 10);
+          u4 = i7.replace(l4, ""), i7 = l4;
+        }
+        return o7 = (i7 - (e9 - 1) * i7 / e9) * (n7 - 1), r9 += c4(t5.options, false) * (n7 - 1), "%" === u4 ? r9 + o7 + "%" : "calc(" + r9 + "% + " + o7 + u4 + ")";
+      }
+      function l3(t5) {
+        var n7 = 0, e9 = t5.container, r9 = t5.rows;
+        v2(r9, function(t6) {
+          n7 = t6 > n7 ? t6 : n7;
+        }), e9.style.height = n7 + "px";
+      }
+      function p3(t5, n7) {
+        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], r9 = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], o7 = s3(t5.options), i7 = a3(t5.options).y;
+        M2(t5, o7, e9), v2(n7, function(n8) {
+          var e10 = 0, o8 = parseInt(n8.offsetHeight, 10);
+          isNaN(o8) || (t5.rows.forEach(function(n9, r10) {
+            n9 < t5.rows[e10] && (e10 = r10);
+          }), n8.style.position = "absolute", n8.style.top = t5.rows[e10] + "px", n8.style.left = "" + t5.cols[e10], t5.rows[e10] += isNaN(o8) ? 0 : o8 + i7, r9 && (n8.dataset.macyComplete = 1));
+        }), r9 && (t5.tmpRows = null), l3(t5);
+      }
+      function f3(t5, n7) {
+        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], r9 = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], o7 = s3(t5.options), i7 = a3(t5.options).y;
+        M2(t5, o7, e9), v2(n7, function(n8) {
+          t5.lastcol === o7 && (t5.lastcol = 0);
+          var e10 = C2(n8, "height");
+          e10 = parseInt(n8.offsetHeight, 10), isNaN(e10) || (n8.style.position = "absolute", n8.style.top = t5.rows[t5.lastcol] + "px", n8.style.left = "" + t5.cols[t5.lastcol], t5.rows[t5.lastcol] += isNaN(e10) ? 0 : e10 + i7, t5.lastcol += 1, r9 && (n8.dataset.macyComplete = 1));
+        }), r9 && (t5.tmpRows = null), l3(t5);
+      }
+      var h3 = function t5(n7, e9) {
+        if (!(this instanceof t5)) return new t5(n7, e9);
+        if (n7 && n7.nodeName) return n7;
+        if (n7 = n7.replace(/^\s*/, "").replace(/\s*$/, ""), e9) return this.byCss(n7, e9);
+        for (var r9 in this.selectors) if (e9 = r9.split("/"), new RegExp(e9[1], e9[2]).test(n7)) return this.selectors[r9](n7);
+        return this.byCss(n7);
+      };
+      h3.prototype.byCss = function(t5, n7) {
+        return (n7 || document).querySelectorAll(t5);
+      }, h3.prototype.selectors = {}, h3.prototype.selectors[/^\.[\w\-]+$/] = function(t5) {
+        return document.getElementsByClassName(t5.substring(1));
+      }, h3.prototype.selectors[/^\w+$/] = function(t5) {
+        return document.getElementsByTagName(t5);
+      }, h3.prototype.selectors[/^\#[\w\-]+$/] = function(t5) {
+        return document.getElementById(t5.substring(1));
+      };
+      var v2 = function(t5, n7) {
+        for (var e9 = t5.length, r9 = e9; e9--; ) n7(t5[r9 - e9 - 1]);
+      }, m2 = function() {
+        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
+        this.running = false, this.events = [], this.add(t5);
+      };
+      m2.prototype.run = function() {
+        if (!this.running && this.events.length > 0) {
+          var t5 = this.events.shift();
+          this.running = true, t5(), this.running = false, this.run();
+        }
+      }, m2.prototype.add = function() {
+        var t5 = this, n7 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
+        return !!n7 && (Array.isArray(n7) ? v2(n7, function(n8) {
+          return t5.add(n8);
+        }) : (this.events.push(n7), void this.run()));
+      }, m2.prototype.clear = function() {
+        this.events = [];
+      };
+      var d3 = function(t5) {
+        var n7 = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+        return this.instance = t5, this.data = n7, this;
+      }, y3 = function() {
+        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
+        this.events = {}, this.instance = t5;
+      };
+      y3.prototype.on = function() {
+        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0], n7 = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+        return !(!t5 || !n7) && (Array.isArray(this.events[t5]) || (this.events[t5] = []), this.events[t5].push(n7));
+      }, y3.prototype.emit = function() {
+        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0], n7 = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+        if (!t5 || !Array.isArray(this.events[t5])) return false;
+        var e9 = new d3(this.instance, n7);
+        v2(this.events[t5], function(t6) {
+          return t6(e9);
+        });
+      };
+      var g2 = function(t5) {
+        return !("naturalHeight" in t5 && t5.naturalHeight + t5.naturalWidth === 0) || t5.width + t5.height !== 0;
+      }, E2 = function(t5, n7) {
+        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+        return new Promise(function(t6, e10) {
+          if (n7.complete) return g2(n7) ? t6(n7) : e10(n7);
+          n7.addEventListener("load", function() {
+            return g2(n7) ? t6(n7) : e10(n7);
+          }), n7.addEventListener("error", function() {
+            return e10(n7);
+          });
+        }).then(function(n8) {
+          e9 && t5.emit(t5.constants.EVENT_IMAGE_LOAD, { img: n8 });
+        }).catch(function(n8) {
+          return t5.emit(t5.constants.EVENT_IMAGE_ERROR, { img: n8 });
+        });
+      }, w2 = function(t5, e9) {
+        var r9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+        return n6(e9, function(n7) {
+          return E2(t5, n7, r9);
+        });
+      }, A2 = function(t5, n7) {
+        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+        return Promise.all(w2(t5, n7, e9)).then(function() {
+          t5.emit(t5.constants.EVENT_IMAGE_COMPLETE);
+        });
+      }, I2 = function(n7) {
+        return t4(function() {
+          n7.emit(n7.constants.EVENT_RESIZE), n7.queue.add(function() {
+            return n7.recalculate(true, true);
+          });
+        }, 100);
+      }, N2 = function(t5) {
+        if (t5.container = h3(t5.options.container), t5.container instanceof h3 || !t5.container) return !!t5.options.debug && console.error("Error: Container not found");
+        t5.container.length && (t5.container = t5.container[0]), t5.options.container = t5.container, t5.container.style.position = "relative";
+      }, T2 = function(t5) {
+        t5.queue = new m2(), t5.events = new y3(t5), t5.rows = [], t5.resizer = I2(t5);
+      }, L2 = function(t5) {
+        var n7 = h3("img", t5.container);
+        window.addEventListener("resize", t5.resizer), t5.on(t5.constants.EVENT_IMAGE_LOAD, function() {
+          return t5.recalculate(false, false);
+        }), t5.on(t5.constants.EVENT_IMAGE_COMPLETE, function() {
+          return t5.recalculate(true, true);
+        }), t5.options.useOwnImageLoader || e8(t5, n7, !t5.options.waitForImages), t5.emit(t5.constants.EVENT_INITIALIZED);
+      }, _2 = function(t5) {
+        N2(t5), T2(t5), L2(t5);
+      }, b3 = function(t5) {
+        return t5 === Object(t5) && "[object Array]" !== Object.prototype.toString.call(t5);
+      }, O = function(t5, n7) {
+        b3(t5) || (n7.columns = t5), b3(t5) && t5.columns && (n7.columns = t5.columns), b3(t5) && t5.margin && !b3(t5.margin) && (n7.margin = { x: t5.margin, y: t5.margin }), b3(t5) && t5.margin && b3(t5.margin) && t5.margin.x && (n7.margin.x = t5.margin.x), b3(t5) && t5.margin && b3(t5.margin) && t5.margin.y && (n7.margin.y = t5.margin.y);
+      }, C2 = function(t5, n7) {
+        return window.getComputedStyle(t5, null).getPropertyValue(n7);
+      }, M2 = function(t5, n7) {
+        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
+        if (t5.lastcol || (t5.lastcol = 0), t5.rows.length < 1 && (e9 = true), e9) {
+          t5.rows = [], t5.cols = [], t5.lastcol = 0;
+          for (var r9 = n7 - 1; r9 >= 0; r9--) t5.rows[r9] = 0, t5.cols[r9] = u3(t5, r9);
+        } else if (t5.tmpRows) {
+          t5.rows = [];
+          for (var r9 = n7 - 1; r9 >= 0; r9--) t5.rows[r9] = t5.tmpRows[r9];
+        } else {
+          t5.tmpRows = [];
+          for (var r9 = n7 - 1; r9 >= 0; r9--) t5.tmpRows[r9] = t5.rows[r9];
+        }
+      }, V2 = function(t5) {
+        var n7 = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], e9 = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], r9 = n7 ? t5.container.children : h3(':scope > *:not([data-macy-complete="1"])', t5.container);
+        r9 = Array.from(r9).filter(function(t6) {
+          return null !== t6.offsetParent;
+        });
+        var o7 = c4(t5.options);
+        return v2(r9, function(t6) {
+          n7 && (t6.dataset.macyComplete = 0), t6.style.width = o7;
+        }), t5.options.trueOrder ? (f3(t5, r9, n7, e9), t5.emit(t5.constants.EVENT_RECALCULATED)) : (p3(t5, r9, n7, e9), t5.emit(t5.constants.EVENT_RECALCULATED));
+      }, R2 = function() {
+        return !!window.Promise;
+      }, x2 = Object.assign || function(t5) {
+        for (var n7 = 1; n7 < arguments.length; n7++) {
+          var e9 = arguments[n7];
+          for (var r9 in e9) Object.prototype.hasOwnProperty.call(e9, r9) && (t5[r9] = e9[r9]);
+        }
+        return t5;
+      };
+      Array.from || (Array.from = function(t5) {
+        for (var n7 = 0, e9 = []; n7 < t5.length; ) e9.push(t5[n7++]);
+        return e9;
+      });
+      var k2 = { columns: 4, margin: 2, trueOrder: false, waitForImages: false, useImageLoader: true, breakAt: {}, useOwnImageLoader: false, onInit: false, cancelLegacy: false, useContainerForBreakpoints: false };
+      !function() {
+        try {
+          document.createElement("a").querySelector(":scope *");
+        } catch (t5) {
+          !function() {
+            function t6(t7) {
+              return function(e10) {
+                if (e10 && n7.test(e10)) {
+                  var r10 = this.getAttribute("id");
+                  r10 || (this.id = "q" + Math.floor(9e6 * Math.random()) + 1e6), arguments[0] = e10.replace(n7, "#" + this.id);
+                  var o7 = t7.apply(this, arguments);
+                  return null === r10 ? this.removeAttribute("id") : r10 || (this.id = r10), o7;
+                }
+                return t7.apply(this, arguments);
+              };
+            }
+            var n7 = /:scope\b/gi, e9 = t6(Element.prototype.querySelector);
+            Element.prototype.querySelector = function(t7) {
+              return e9.apply(this, arguments);
+            };
+            var r9 = t6(Element.prototype.querySelectorAll);
+            Element.prototype.querySelectorAll = function(t7) {
+              return r9.apply(this, arguments);
+            };
+          }();
+        }
+      }();
+      var q = function t5() {
+        var n7 = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : k2;
+        if (!(this instanceof t5)) return new t5(n7);
+        this.options = {}, x2(this.options, k2, n7), this.options.cancelLegacy && !R2() || _2(this);
+      };
+      return q.init = function(t5) {
+        return console.warn("Depreciated: Macy.init will be removed in v3.0.0 opt to use Macy directly like so Macy({ /*options here*/ }) "), new q(t5);
+      }, q.prototype.recalculateOnImageLoad = function() {
+        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
+        return e8(this, h3("img", this.container), !t5);
+      }, q.prototype.runOnImageLoad = function(t5) {
+        var n7 = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r9 = h3("img", this.container);
+        return this.on(this.constants.EVENT_IMAGE_COMPLETE, t5), n7 && this.on(this.constants.EVENT_IMAGE_LOAD, t5), e8(this, r9, n7);
+      }, q.prototype.recalculate = function() {
+        var t5 = this, n7 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0], e9 = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];
+        return e9 && this.queue.clear(), this.queue.add(function() {
+          return V2(t5, n7, e9);
+        });
+      }, q.prototype.remove = function() {
+        window.removeEventListener("resize", this.resizer), v2(this.container.children, function(t5) {
+          t5.removeAttribute("data-macy-complete"), t5.removeAttribute("style");
+        }), this.container.removeAttribute("style");
+      }, q.prototype.reInit = function() {
+        this.recalculate(true, true), this.emit(this.constants.EVENT_INITIALIZED), window.addEventListener("resize", this.resizer), this.container.style.position = "relative";
+      }, q.prototype.on = function(t5, n7) {
+        this.events.on(t5, n7);
+      }, q.prototype.emit = function(t5, n7) {
+        this.events.emit(t5, n7);
+      }, q.constants = { EVENT_INITIALIZED: "macy.initialized", EVENT_RECALCULATED: "macy.recalculated", EVENT_IMAGE_LOAD: "macy.image.load", EVENT_IMAGE_ERROR: "macy.image.error", EVENT_IMAGE_COMPLETE: "macy.images.complete", EVENT_RESIZE: "macy.resize" }, q.prototype.constants = q.constants, q;
+    });
+  }
+});
 
 // src_web/gallery/feedBar.ts
 var FeedBarEvent = class extends CustomEvent {
@@ -821,14 +1139,14 @@ function n5(n6, r8, t4) {
 }
 
 // node_modules/.pnpm/@alenaksu+json-viewer@2.1.2_patch_hash=h6d5ny7gzeg2cflvjmbgs5cxte/node_modules/@alenaksu/json-viewer/dist/chunk-6HJCMUMX.js
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __defProp2 = Object.defineProperty;
+var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc2(target, key) : target;
   for (var i6 = decorators.length - 1, decorator; i6 >= 0; i6--)
     if (decorator = decorators[i6])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp(target, key, result);
+  if (kind && result) __defProp2(target, key, result);
   return result;
 };
 function isRegex(value) {
@@ -3900,6 +4218,7 @@ function biggerPicture(options) {
 }
 
 // src_web/gallery/gallery.ts
+var import_macy = __toESM(require_macy());
 var formattedTitle = (m2) => {
   return `${m2.nodeTitle} - (#${m2.nodeId})`;
 };
@@ -4119,13 +4438,20 @@ var JKImageGallery = class extends EventTarget {
       }
     };
     this.handleModeChange = async (newMode) => {
-      console.log(newMode, this.currentMode);
       if (newMode === "grid" /* grid */) {
         this.feedPanel.style.display = "none";
         this.gridPanel.style.display = "flex";
+        this.gridPanel.innerHTML = ``;
+        this.images.forEach((i6) => {
+          const newImg = document.createElement("img");
+          newImg.src = i6.data.href;
+          this.gridPanel.appendChild(newImg);
+        });
+        this.macy?.reInit();
       } else {
         this.feedPanel.style.display = "grid";
         this.gridPanel.style.display = "none";
+        this._macy?.remove();
       }
       this.currentMode = newMode;
     };
@@ -4181,18 +4507,35 @@ var JKImageGallery = class extends EventTarget {
                 </div>
             </sl-split-panel>
             <div id="jk-grid-panel"> 
-
+                <div id="jk-grid-inner"> </div>
             </div>
         `;
     this.FeedBar = new JKFeedBar(this.feedBarContainer);
     this.feedPanel = document.getElementById("jk-feed-panel");
-    this.gridPanel = document.getElementById("jk-grid-panel");
+    this.gridPanel = document.getElementById("jk-grid-inner");
     window.addEventListener("resize", () => {
       this.selectedImage?.resizeHack();
     });
     this.lightbox = biggerPicture({
       target: document.body
     });
+  }
+  get macy() {
+    if (!this._macy) {
+      this._macy = new import_macy.default({
+        container: "#jk-grid-inner",
+        trueOrder: true,
+        margin: 24,
+        columns: 6,
+        breakAt: {
+          1200: 5,
+          940: 3,
+          520: 2,
+          400: 1
+        }
+      });
+    }
+    return this._macy;
   }
   get leftPanel() {
     return document.getElementById("jk-gallery-left-panel");

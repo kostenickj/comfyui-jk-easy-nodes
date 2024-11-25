@@ -764,6 +764,8 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
+  scrollbar-width: thin;
 }
 html {
   display: flex;
@@ -884,8 +886,6 @@ body {
   overflow-y: scroll !important;
   flex-direction: column;
   overflow: hidden;
-  scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
-  scrollbar-width: thin;
   padding-bottom: 16px;
 }
 #jk-image-gallery sl-split-panel #jk-gallery-right-panel {
@@ -929,6 +929,16 @@ body {
   width: 100%;
   display: flex;
   padding: 16px;
+}
+#jk-image-gallery #jk-grid-panel {
+  display: flex;
+  position: relative;
+  flex: 1 auto;
+  height: 100%;
+  padding: 16px;
+  margin: 16px;
+  overflow-y: auto;
+  flex-direction: column;
 }
 #jk-feed-bar {
   height: var(--jk-feed-bar-height);

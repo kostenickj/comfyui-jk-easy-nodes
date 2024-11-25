@@ -9,6 +9,8 @@ import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/e
 import BiggerPicture, { BiggerPictureInstance } from 'bigger-picture';
 import type { SlSplitPanel } from '@shoelace-style/shoelace';
 
+import Macy from 'macy';
+
 // interface not exported -.-
 type BPItem = BiggerPictureInstance['items'][number];
 
@@ -48,9 +50,6 @@ class JKImage {
     }
 
     constructor(private m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, private clickedCallback?: (m: GalleryImageData) => void) {
-        // TODO, consider adding a "grid mode" to just view all images in a grid
-        // maybe use this? http://macyjs.com/
-
         this.wrapper = document.createElement('div');
         this.wrapper.classList.add('jk-img-wrapper');
 
@@ -284,6 +283,26 @@ export class JKImageGallery extends EventTarget {
     gridPanel: HTMLDivElement;
     currentMode: EFeedMode = EFeedMode.feed;
 
+    private _macy?: Macy;
+
+    private get macy() {
+        if (!this._macy) {
+            this._macy = new Macy({
+                container: '#jk-grid-inner',
+                trueOrder: true,
+                margin: 24,
+                columns: 6,
+                breakAt: {
+                    1200: 5,
+                    940: 3,
+                    520: 2,
+                    400: 1
+                }
+            });
+        }
+        return this._macy;
+    }
+
     private get leftPanel() {
         return document.getElementById('jk-gallery-left-panel') as HTMLDivElement;
     }
@@ -306,12 +325,12 @@ export class JKImageGallery extends EventTarget {
                 </div>
             </sl-split-panel>
             <div id="jk-grid-panel"> 
-
+                <div id="jk-grid-inner"> </div>
             </div>
         `;
         this.FeedBar = new JKFeedBar(this.feedBarContainer);
         this.feedPanel = document.getElementById('jk-feed-panel') as SlSplitPanel;
-        this.gridPanel = document.getElementById('jk-grid-panel') as HTMLDivElement;
+        this.gridPanel = document.getElementById('jk-grid-inner') as HTMLDivElement;
 
         // i suck at css, hence this
         window.addEventListener('resize', () => {
@@ -392,13 +411,24 @@ export class JKImageGallery extends EventTarget {
     };
 
     handleModeChange = async (newMode: EFeedMode) => {
-        console.log(newMode, this.currentMode);
         if (newMode === EFeedMode.grid) {
             this.feedPanel.style.display = 'none';
             this.gridPanel.style.display = 'flex';
+
+            this.gridPanel.innerHTML = ``;
+
+            // TODO, use jkimage for these so they have lightbox
+            this.images.forEach(i =>{
+                const newImg = document.createElement('img');
+                newImg.src = i.data.href;
+                this.gridPanel.appendChild(newImg);
+            });
+
+            this.macy?.reInit()
         } else {
             this.feedPanel.style.display = 'grid';
             this.gridPanel.style.display = 'none';
+            this._macy?.remove();
         }
 
         this.currentMode = newMode;

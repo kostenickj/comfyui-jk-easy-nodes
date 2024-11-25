@@ -22,6 +22,9 @@ importers:
       bigger-picture:
         specifier: ^1.1.18
         version: 1.1.18
+      macy:
+        specifier: ^2.5.1
+        version: 2.5.1
     devDependencies:
       '@types/node':
         specifier: ^22.9.1
@@ -500,6 +503,10 @@ packages:
 
   lit@3.2.1:
     resolution: {integrity: sha512-1BBa1E/z0O9ye5fZprPtdqnc0BFzxIxTTOO/tQFmyC/hj1O3jL4TfmLBw0WEwjAokdLwpclkvGgDJwTIh0/22w==}
+
+  macy@2.5.1:
+    resolution: {integrity: sha512-+y4WYyh3rl4G8UczZP30pXxhLQRZ941QcaDmWoGefzUBXdwNW8TOhjjN1g5i/VG3SmiSsHgpjVXhlnZ84P2QMw==}
+    engines: {node: '>= 0.9'}
 
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -1167,6 +1174,8 @@ snapshots:
       '@lit/reactive-element': 2.0.4
       lit-element: 4.1.1
       lit-html: 3.2.1
+
+  macy@2.5.1: {}
 
   merge2@1.4.1: {}
 

@@ -27,6 +27,7 @@
       "noPropertyAccessFromIndexSignature": true,
       "allowUnusedLabels": true,
       "skipLibCheck": true,
+      "typeRoots": ["src_web/types"]
     },
     "include": [
       "src_web/*.ts", "src_web/**/*.ts",

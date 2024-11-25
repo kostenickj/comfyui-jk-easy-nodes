@@ -7,6 +7,8 @@
     &::before,
     &::after {
         box-sizing: border-box;
+        scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
+        scrollbar-width: thin;
     }
 }
 
@@ -154,8 +156,6 @@ body {
             overflow-y: scroll !important;
             flex-direction: column;
             overflow: hidden;
-            scrollbar-color: var(--primary-hover-bg) var(--comfy-menu-bg);
-            scrollbar-width: thin;
             padding-bottom: 16px;
 
 
@@ -216,6 +216,17 @@ body {
                 }
             }
         }
+    }
+
+    #jk-grid-panel {
+        display: flex;
+        position: relative;
+        flex: 1 auto;
+        height: 100%;
+        padding: 16px;
+        margin: 16px;
+        overflow-y: auto;
+        flex-direction: column;
     }
 }
 
