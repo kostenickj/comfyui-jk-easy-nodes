@@ -4283,6 +4283,9 @@ var JKImage = class {
   getEl() {
     return this.wrapper;
   }
+  setVisibilty(shouldBevisible) {
+    this.getEl().style.display = shouldBevisible ? "block" : "none";
+  }
 };
 var JKRightPanelImage = class {
   constructor(data, onOpenLightboxRequest) {
@@ -4443,9 +4446,9 @@ var JKImageGallery = class extends EventTarget {
         this.gridPanel.style.display = "flex";
         this.gridPanel.innerHTML = ``;
         this.images.forEach((i6) => {
-          const newImg = document.createElement("img");
-          newImg.src = i6.data.href;
-          this.gridPanel.appendChild(newImg);
+          const newImg = new JKImage(i6.data, true, true);
+          newImg.init();
+          this.gridPanel.appendChild(newImg.getEl());
         });
         this.macy?.reInit();
       } else {
@@ -4490,7 +4493,7 @@ var JKImageGallery = class extends EventTarget {
     this.updateImageVisibility = () => {
       this.images.forEach((i6) => {
         const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i6.data));
-        i6.getEl().style.display = isChecked ? "flex" : "none";
+        i6.setVisibilty(!!isChecked);
       });
     };
     this.container.innerHTML = `

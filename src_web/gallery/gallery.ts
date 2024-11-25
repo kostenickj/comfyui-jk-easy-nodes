@@ -99,6 +99,10 @@ class JKImage {
     public getEl() {
         return this.wrapper;
     }
+
+    public setVisibilty(shouldBevisible: boolean) {
+        this.getEl().style.display = shouldBevisible ? 'block' : 'none';
+    }
 }
 
 class JKRightPanelImage {
@@ -418,13 +422,13 @@ export class JKImageGallery extends EventTarget {
             this.gridPanel.innerHTML = ``;
 
             // TODO, use jkimage for these so they have lightbox
-            this.images.forEach(i =>{
-                const newImg = document.createElement('img');
-                newImg.src = i.data.href;
-                this.gridPanel.appendChild(newImg);
+            this.images.forEach((i) => {
+                const newImg = new JKImage(i.data, true, true);
+                newImg.init();
+                this.gridPanel.appendChild(newImg.getEl());
             });
 
-            this.macy?.reInit()
+            this.macy?.reInit();
         } else {
             this.feedPanel.style.display = 'grid';
             this.gridPanel.style.display = 'none';
@@ -473,7 +477,7 @@ export class JKImageGallery extends EventTarget {
     private updateImageVisibility = () => {
         this.images.forEach((i) => {
             const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i.data));
-            i.getEl().style.display = isChecked ? 'flex' : 'none';
+            i.setVisibilty(!!isChecked);
         });
     };
 }
