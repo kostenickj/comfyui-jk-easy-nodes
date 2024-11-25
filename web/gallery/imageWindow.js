@@ -8278,7 +8278,7 @@ var init_icon = __esm({
 // src_web/gallery/imageWindow.ts
 import { SessionStorageHelper } from "../common/storage.js";
 import { JKImageGallery } from "./gallery.js";
-import { FeedBarEvents } from "./feedBar.js";
+import { EFeedBarEvents, EFeedMode } from "./feedBar.js";
 var require_imageWindow = __commonJS({
   "src_web/gallery/imageWindow.ts"() {
     init_esbrowser();
@@ -8298,9 +8298,9 @@ var require_imageWindow = __commonJS({
     if (IS_FEED_WINDOW) {
       const Gallery = new JKImageGallery(document.getElementById("jk-image-gallery"), document.getElementById("jk-feed-bar"));
       const init = async () => {
-        await Gallery.init();
+        await Gallery.init(EFeedMode.feed);
       };
-      Gallery.addEventListener(FeedBarEvents["feed-clear"], (ev) => {
+      Gallery.addEventListener(EFeedBarEvents["feed-clear"], (ev) => {
         SessionStorageHelper.setJSONVal("feed", []);
         channel.postMessage({ data: void 0, type: "clear-feed" });
       });

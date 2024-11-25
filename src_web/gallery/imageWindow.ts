@@ -13,7 +13,7 @@ import '@shoelace-style/shoelace/dist/components/menu/menu.js';
 import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/icon/icon.js';
-import { FeedBarEvents } from './feedBar.js';
+import { EFeedBarEvents, EFeedMode } from './feedBar.js';
 interface BaseImageViewMessage<T> {
     data: T;
     type: 'new-image' | 'heartbeat' | 'request-all' | 'closed' | 'clear-feed';
@@ -46,10 +46,10 @@ if (IS_FEED_WINDOW) {
 
     // dont do init till after we request-all data from main window, comfy api may not be available yet
     const init = async () => {
-        await Gallery.init();
+        await Gallery.init(EFeedMode.feed);
     };
 
-    Gallery.addEventListener(FeedBarEvents['feed-clear'], (ev) => {
+    Gallery.addEventListener(EFeedBarEvents['feed-clear'], (ev) => {
         SessionStorageHelper.setJSONVal('feed', []);
         channel.postMessage({ data: undefined, type: 'clear-feed' });
     });

@@ -934,16 +934,20 @@ body {
   height: var(--jk-feed-bar-height);
   background-color: var(--comfy-menu-bg);
   width: 100%;
-  justify-content: center;
-  align-items: center;
+  padding-left: 8px;
 }
 #jk-feed-bar .comfyui-button-group {
-  display: flex;
   height: 100%;
   padding: 4px;
+}
+#jk-feed-bar .comfyui-button-group.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+#jk-feed-bar .comfyui-button-group.right {
   position: absolute;
   right: 0;
-  height: 44px;
+  height: var(--jk-feed-bar-height);
 }
 @keyframes spin {
   0% {

@@ -1,4 +1,4 @@
-import { FeedBarEvents, JKFeedBar } from './feedBar';
+import { EFeedBarEvents, EFeedMode, FeedBarEvent, JKFeedBar } from './feedBar';
 import { findKeyValueRecursive } from '../common/utils';
 import '@alenaksu/json-viewer';
 // have to import this way cuz the exports/types seem to be exported wrong
@@ -7,6 +7,7 @@ import type { JsonViewer } from '../../node_modules/@alenaksu/json-viewer/dist/J
 import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
 
 import BiggerPicture, { BiggerPictureInstance } from 'bigger-picture';
+import type { SlSplitPanel } from '@shoelace-style/shoelace';
 
 // interface not exported -.-
 type BPItem = BiggerPictureInstance['items'][number];
@@ -47,7 +48,6 @@ class JKImage {
     }
 
     constructor(private m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, private clickedCallback?: (m: GalleryImageData) => void) {
-
         // TODO, consider adding a "grid mode" to just view all images in a grid
         // maybe use this? http://macyjs.com/
 
@@ -280,6 +280,9 @@ export class JKImageGallery extends EventTarget {
     imageMap: Map<string, GalleryImageData[]> = new Map<string, GalleryImageData[]>();
     FeedBar: JKFeedBar;
     lightbox: BiggerPictureInstance;
+    feedPanel: SlSplitPanel;
+    gridPanel: HTMLDivElement;
+    currentMode: EFeedMode = EFeedMode.feed;
 
     private get leftPanel() {
         return document.getElementById('jk-gallery-left-panel') as HTMLDivElement;
@@ -290,7 +293,7 @@ export class JKImageGallery extends EventTarget {
     constructor(private container: HTMLDivElement, private feedBarContainer: HTMLDivElement) {
         super();
         this.container.innerHTML = `
-            <sl-split-panel position="15" style="--max: 35%; --min:10%;">
+            <sl-split-panel id="jk-feed-panel" position="15" style="--max: 35%; --min:10%;">
                 <div
                     id="jk-gallery-left-panel"
                     slot="start"
@@ -302,8 +305,13 @@ export class JKImageGallery extends EventTarget {
                 >
                 </div>
             </sl-split-panel>
+            <div id="jk-grid-panel"> 
+
+            </div>
         `;
         this.FeedBar = new JKFeedBar(this.feedBarContainer);
+        this.feedPanel = document.getElementById('jk-feed-panel') as SlSplitPanel;
+        this.gridPanel = document.getElementById('jk-grid-panel') as HTMLDivElement;
 
         // i suck at css, hence this
         window.addEventListener('resize', () => {
@@ -315,12 +323,17 @@ export class JKImageGallery extends EventTarget {
         });
     }
 
-    public async init() {
+    public async init(mode: EFeedMode) {
         if (!this.initialized) {
             this.initialized = true;
             await this.FeedBar.init();
-            this.FeedBar.addEventListener(FeedBarEvents['feed-clear'], this.clearFeed);
-            this.FeedBar.addEventListener(FeedBarEvents['check-change'], this.updateImageVisibility);
+            this.FeedBar.addEventListener(EFeedBarEvents['feed-clear'], this.clearFeed);
+            this.FeedBar.addEventListener(EFeedBarEvents['check-change'], this.updateImageVisibility);
+            this.FeedBar.addEventListener(EFeedBarEvents['feed-mode'], (ev) => this.handleModeChange((ev as FeedBarEvent<EFeedMode>).detail));
+        }
+
+        if (mode !== this.currentMode) {
+            this.handleModeChange(mode);
         }
     }
 
@@ -368,24 +381,34 @@ export class JKImageGallery extends EventTarget {
     }
 
     public clearFeed = (ev: any) => {
-        if (confirm('are you sure you want to clear the feed?')) {
+        if (confirm('are you sure you want to clear the feed? This cant be undone!')) {
             this.leftPanel.innerHTML = ``;
             this.images = [];
             this.rightPanel.innerHTML = ``;
-
             this.selectedImage = undefined;
-            // node title and # => image
-
             this.imageMap = new Map<string, GalleryImageData[]>();
-            this.dispatchEvent(new Event(FeedBarEvents['feed-clear']));
+            this.dispatchEvent(new Event(EFeedBarEvents['feed-clear']));
         }
+    };
+
+    handleModeChange = async (newMode: EFeedMode) => {
+        console.log(newMode, this.currentMode);
+        if (newMode === EFeedMode.grid) {
+            this.feedPanel.style.display = 'none';
+            this.gridPanel.style.display = 'flex';
+        } else {
+            this.feedPanel.style.display = 'grid';
+            this.gridPanel.style.display = 'none';
+        }
+
+        this.currentMode = newMode;
     };
 
     private handleOpenLightbox = (selectedImg: JKImage, data: GalleryImageData) => {
         let openAtIndex = 0;
         const items: BPItem[] = [];
 
-        // TODO, parts of this could probably we cached for perf
+        // TODO, parts of this could probably we cached for perf, will def run into issues if someone gets thousands of images in a session
         let imageIndex = 0;
         this.images.forEach((x) => {
             const isChecked = this.FeedBar.checkedItems.get(formattedTitle(x.data));

@@ -8,24 +8,29 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
 
 // src_web/gallery/feedBar.ts
-var FeedBarEvents = {
-  "feed-clear": "feed-clear",
-  "check-change": "check-change"
+var FeedBarEvent = class extends CustomEvent {
+  constructor(eventType, payload) {
+    super(eventType, { detail: payload });
+  }
 };
 var JKFeedBar = class extends EventTarget {
   constructor(el) {
     super();
     this.el = el;
+    this.currentMode = "feed" /* feed */;
     this._checkedItems = /* @__PURE__ */ new Map();
-    this.el.classList.add("comfyui-menu", "flex", "items-center");
-    this.buttonGroup = document.createElement("div");
-    this.el.append(this.buttonGroup);
-    this.buttonGroup.classList.add("comfyui-button-group");
+    this.el.classList.add("comfyui-menu", "flex", "items-center", "justify-start");
+    this.rightButtonGroup = document.createElement("div");
+    this.el.append(this.rightButtonGroup);
+    this.rightButtonGroup.classList.add("comfyui-button-group", "right");
+    this.leftButtonGroup = document.createElement("div");
+    this.el.append(this.leftButtonGroup);
+    this.leftButtonGroup.classList.add("comfyui-button-group", "center");
     this.checkboxMenuWrapper = document.createElement("div");
     this.checkboxMenuWrapper.classList.add("jk-checkbox-wrapper");
     this.checkboxMenuWrapper.innerHTML = `
             <sl-dropdown id="jk-checkbox-menu-dropdown" stay-open-on-select="true">
-            <sl-button title="Toggle which images node to show" class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Output Visibility</sl-button>
+            <sl-button title="Toggle which images node to show" class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Node Visibility</sl-button>
             <sl-menu id="jk-checkbox-menu-menu">           
             </sl-menu>
             </sl-dropdown>
@@ -62,7 +67,7 @@ var JKFeedBar = class extends EventTarget {
     this.checkBoxMenuMenu.addEventListener("sl-select", (ev) => {
       const item = ev?.detail?.item;
       this._checkedItems.set(item.value, item.checked);
-      this.dispatchEvent(new Event(FeedBarEvents["check-change"]));
+      this.dispatchEvent(new FeedBarEvent("check-change" /* check-change */, {}));
     });
   }
   get checkedItems() {
@@ -105,12 +110,40 @@ var JKFeedBar = class extends EventTarget {
     const clearFeedButton = new ComfyButton({
       icon: "nuke",
       action: () => {
-        this.dispatchEvent(new Event(FeedBarEvents["feed-clear"]));
+        this.dispatchEvent(new FeedBarEvent("feed-clear" /* feed-clear */, {}));
       },
       tooltip: "Clear the feed",
       content: "Clear Feed"
     });
-    this.buttonGroup.append(clearFeedButton.element);
+    const feedModeButton = new ComfyButton({
+      icon: "image-frame",
+      action: () => {
+        if (this.currentMode !== "feed" /* feed */) {
+          this.currentMode = "feed" /* feed */;
+          feedModeButton.element.classList.add("primary");
+          gridModeButton.element.classList.remove("primary");
+          this.dispatchEvent(new FeedBarEvent("feed-mode" /* feed-mode */, "feed" /* feed */));
+        }
+      },
+      tooltip: "Feed Display Node",
+      content: "Feed"
+    });
+    feedModeButton.element.classList.add("primary");
+    const gridModeButton = new ComfyButton({
+      icon: "view-grid",
+      action: () => {
+        if (this.currentMode !== "grid" /* grid */) {
+          this.currentMode = "grid" /* grid */;
+          gridModeButton.element.classList.add("primary");
+          feedModeButton.element.classList.remove("primary");
+          this.dispatchEvent(new FeedBarEvent("feed-mode" /* feed-mode */, "grid" /* grid */));
+        }
+      },
+      tooltip: "Grid Display Mode",
+      content: "Grid"
+    });
+    this.rightButtonGroup.append(clearFeedButton.element);
+    this.leftButtonGroup.append(feedModeButton.element, gridModeButton.element);
   }
 };
 
@@ -4071,18 +4104,30 @@ var JKImageGallery = class extends EventTarget {
     this.images = [];
     // map of formatted node title => all image outputs we have from that node
     this.imageMap = /* @__PURE__ */ new Map();
+    this.currentMode = "feed" /* feed */;
     this.handleImageClicked = (data) => {
       this.selectImage(data);
     };
     this.clearFeed = (ev) => {
-      if (confirm("are you sure you want to clear the feed?")) {
+      if (confirm("are you sure you want to clear the feed? This cant be undone!")) {
         this.leftPanel.innerHTML = ``;
         this.images = [];
         this.rightPanel.innerHTML = ``;
         this.selectedImage = void 0;
         this.imageMap = /* @__PURE__ */ new Map();
-        this.dispatchEvent(new Event(FeedBarEvents["feed-clear"]));
+        this.dispatchEvent(new Event("feed-clear" /* feed-clear */));
       }
+    };
+    this.handleModeChange = async (newMode) => {
+      console.log(newMode, this.currentMode);
+      if (newMode === "grid" /* grid */) {
+        this.feedPanel.style.display = "none";
+        this.gridPanel.style.display = "flex";
+      } else {
+        this.feedPanel.style.display = "grid";
+        this.gridPanel.style.display = "none";
+      }
+      this.currentMode = newMode;
     };
     this.handleOpenLightbox = (selectedImg, data) => {
       let openAtIndex = 0;
@@ -4123,7 +4168,7 @@ var JKImageGallery = class extends EventTarget {
       });
     };
     this.container.innerHTML = `
-            <sl-split-panel position="15" style="--max: 35%; --min:10%;">
+            <sl-split-panel id="jk-feed-panel" position="15" style="--max: 35%; --min:10%;">
                 <div
                     id="jk-gallery-left-panel"
                     slot="start"
@@ -4135,8 +4180,13 @@ var JKImageGallery = class extends EventTarget {
                 >
                 </div>
             </sl-split-panel>
+            <div id="jk-grid-panel"> 
+
+            </div>
         `;
     this.FeedBar = new JKFeedBar(this.feedBarContainer);
+    this.feedPanel = document.getElementById("jk-feed-panel");
+    this.gridPanel = document.getElementById("jk-grid-panel");
     window.addEventListener("resize", () => {
       this.selectedImage?.resizeHack();
     });
@@ -4150,12 +4200,16 @@ var JKImageGallery = class extends EventTarget {
   get rightPanel() {
     return document.getElementById("jk-gallery-right-panel");
   }
-  async init() {
+  async init(mode) {
     if (!this.initialized) {
       this.initialized = true;
       await this.FeedBar.init();
-      this.FeedBar.addEventListener(FeedBarEvents["feed-clear"], this.clearFeed);
-      this.FeedBar.addEventListener(FeedBarEvents["check-change"], this.updateImageVisibility);
+      this.FeedBar.addEventListener("feed-clear" /* feed-clear */, this.clearFeed);
+      this.FeedBar.addEventListener("check-change" /* check-change */, this.updateImageVisibility);
+      this.FeedBar.addEventListener("feed-mode" /* feed-mode */, (ev) => this.handleModeChange(ev.detail));
+    }
+    if (mode !== this.currentMode) {
+      this.handleModeChange(mode);
     }
   }
   async selectImage(data) {
