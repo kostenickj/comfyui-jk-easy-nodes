@@ -25,7 +25,7 @@ var JKFeedBar = class extends EventTarget {
     this.checkboxMenuWrapper.classList.add("jk-checkbox-wrapper");
     this.checkboxMenuWrapper.innerHTML = `
             <sl-dropdown id="jk-checkbox-menu-dropdown" stay-open-on-select="true">
-            <sl-button class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Outputs</sl-button>
+            <sl-button title="Toggle which images node to show" class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Output Visibility</sl-button>
             <sl-menu id="jk-checkbox-menu-menu">           
             </sl-menu>
             </sl-dropdown>
@@ -3867,9 +3867,6 @@ function biggerPicture(options) {
 }
 
 // src_web/gallery/gallery.ts
-var bp = biggerPicture({
-  target: document.body
-});
 var formattedTitle = (m2) => {
   return `${m2.nodeTitle} - (#${m2.nodeId})`;
 };
@@ -4072,7 +4069,7 @@ var JKImageGallery = class extends EventTarget {
     this.feedBarContainer = feedBarContainer;
     this.initialized = false;
     this.images = [];
-    // node title and # => image
+    // map of formatted node title => all image outputs we have from that node
     this.imageMap = /* @__PURE__ */ new Map();
     this.handleImageClicked = (data) => {
       this.selectImage(data);
@@ -4090,22 +4087,33 @@ var JKImageGallery = class extends EventTarget {
     this.handleOpenLightbox = (selectedImg, data) => {
       let openAtIndex = 0;
       const items = [];
-      this.images.forEach((x2, i6) => {
-        if (x2.data.href === selectedImg.data.href) {
-          openAtIndex = i6;
+      let imageIndex = 0;
+      this.images.forEach((x2) => {
+        const isChecked = this.FeedBar.checkedItems.get(formattedTitle(x2.data));
+        if (isChecked) {
+          if (x2.data.href === selectedImg.data.href) {
+            openAtIndex = imageIndex;
+          }
+          items.push({
+            img: x2.data.href,
+            thumb: x2.data.href,
+            height: x2.img.naturalHeight,
+            width: x2.img.naturalWidth,
+            caption: x2.data.fileName
+          });
+          imageIndex++;
         }
-        items.push({
-          img: x2.data.href,
-          thumb: x2.data.href,
-          height: x2.img.naturalHeight,
-          width: x2.img.naturalWidth,
-          caption: x2.data.fileName
-        });
       });
-      bp.open({
+      this.lightbox.open({
         items,
         intro: "fadeup",
-        position: openAtIndex
+        position: openAtIndex,
+        onUpdate: (container, activeItem) => {
+          const itemData = this.images[activeItem?.["i"]]?.data;
+          if (itemData) {
+            this.selectImage(itemData);
+          }
+        }
       });
     };
     this.updateImageVisibility = () => {
@@ -4132,9 +4140,10 @@ var JKImageGallery = class extends EventTarget {
     window.addEventListener("resize", () => {
       this.selectedImage?.resizeHack();
     });
+    this.lightbox = biggerPicture({
+      target: document.body
+    });
   }
-  //TODO, the image in the right panel is being cutoff when the window gets smaller and i cant figure out why...
-  // TODO add on image click go full screen modal, keep it simple, probably use native dialog?
   get leftPanel() {
     return document.getElementById("jk-gallery-left-panel");
   }

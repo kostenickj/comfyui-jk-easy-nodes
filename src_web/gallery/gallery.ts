@@ -11,10 +11,6 @@ import BiggerPicture, { BiggerPictureInstance } from 'bigger-picture';
 // interface not exported -.-
 type BPItem = BiggerPictureInstance['items'][number];
 
-const bp = BiggerPicture({
-    target: document.body
-});
-
 const formattedTitle = (m: GalleryImageData) => {
     return `${m.nodeTitle} - (#${m.nodeId})`;
 };
@@ -51,6 +47,10 @@ class JKImage {
     }
 
     constructor(private m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, private clickedCallback?: (m: GalleryImageData) => void) {
+
+        // TODO, consider adding a "grid mode" to just view all images in a grid
+        // maybe use this? http://macyjs.com/
+
         this.wrapper = document.createElement('div');
         this.wrapper.classList.add('jk-img-wrapper');
 
@@ -276,13 +276,10 @@ export class JKImageGallery extends EventTarget {
     private images: JKImage[] = [];
 
     private selectedImage?: JKRightPanelImage;
-    // node title and # => image
-
+    // map of formatted node title => all image outputs we have from that node
     imageMap: Map<string, GalleryImageData[]> = new Map<string, GalleryImageData[]>();
     FeedBar: JKFeedBar;
-
-    //TODO, the image in the right panel is being cutoff when the window gets smaller and i cant figure out why...
-    // TODO add on image click go full screen modal, keep it simple, probably use native dialog?
+    lightbox: BiggerPictureInstance;
 
     private get leftPanel() {
         return document.getElementById('jk-gallery-left-panel') as HTMLDivElement;
@@ -311,6 +308,10 @@ export class JKImageGallery extends EventTarget {
         // i suck at css, hence this
         window.addEventListener('resize', () => {
             this.selectedImage?.resizeHack();
+        });
+
+        this.lightbox = BiggerPicture({
+            target: document.body
         });
     }
 
@@ -383,23 +384,36 @@ export class JKImageGallery extends EventTarget {
     private handleOpenLightbox = (selectedImg: JKImage, data: GalleryImageData) => {
         let openAtIndex = 0;
         const items: BPItem[] = [];
-        this.images.forEach((x, i) => {
-            if (x.data.href === selectedImg.data.href) {
-                openAtIndex = i;
+
+        // TODO, parts of this could probably we cached for perf
+        let imageIndex = 0;
+        this.images.forEach((x) => {
+            const isChecked = this.FeedBar.checkedItems.get(formattedTitle(x.data));
+            if (isChecked) {
+                if (x.data.href === selectedImg.data.href) {
+                    openAtIndex = imageIndex;
+                }
+                items.push({
+                    img: x.data.href,
+                    thumb: x.data.href,
+                    height: x.img.naturalHeight,
+                    width: x.img.naturalWidth,
+                    caption: x.data.fileName
+                });
+                imageIndex++;
             }
-            items.push({
-                img: x.data.href,
-                thumb: x.data.href,
-                height: x.img.naturalHeight,
-                width: x.img.naturalWidth,
-                caption: x.data.fileName
-            });
         });
 
-        bp.open({
+        this.lightbox.open({
             items,
             intro: 'fadeup',
-            position: openAtIndex
+            position: openAtIndex,
+            onUpdate: (container, activeItem) => {
+                const itemData = this.images[activeItem?.['i']]?.data;
+                if (itemData) {
+                    this.selectImage(itemData);
+                }
+            }
         });
     };
 

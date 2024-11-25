@@ -16,7 +16,7 @@ var JKFeedBar = class extends EventTarget {
     this.checkboxMenuWrapper.classList.add("jk-checkbox-wrapper");
     this.checkboxMenuWrapper.innerHTML = `
             <sl-dropdown id="jk-checkbox-menu-dropdown" stay-open-on-select="true">
-            <sl-button class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Outputs</sl-button>
+            <sl-button title="Toggle which images node to show" class="checkbox-menu-trigger" size="small" variant="neutral" slot="trigger" caret>Toggle Output Visibility</sl-button>
             <sl-menu id="jk-checkbox-menu-menu">           
             </sl-menu>
             </sl-dropdown>
