@@ -1282,7 +1282,2594 @@ customElements.define("json-viewer", JsonViewer);
 // node_modules/.pnpm/@shoelace-style+shoelace@2.18.0_@types+react@18.3.12/node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg
 var eye_fill_default = "../eye-fill-RBTRTZO3.svg";
 
+// node_modules/.pnpm/bigger-picture@1.1.18/node_modules/bigger-picture/dist/bigger-picture.mjs
+function noop() {
+}
+var identity = (x2) => x2;
+function assign(tar, src) {
+  for (const k2 in src)
+    tar[k2] = src[k2];
+  return tar;
+}
+function run(fn) {
+  return fn();
+}
+function run_all(fns) {
+  fns.forEach(run);
+}
+function is_function(thing) {
+  return typeof thing === "function";
+}
+function not_equal(a3, b3) {
+  return a3 != a3 ? b3 == b3 : a3 !== b3;
+}
+function is_empty(obj) {
+  return Object.keys(obj).length === 0;
+}
+function subscribe(store, ...callbacks) {
+  if (store == null) {
+    return noop;
+  }
+  const unsub = store.subscribe(...callbacks);
+  return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+}
+function component_subscribe(component, store, callback) {
+  component.$$.on_destroy.push(subscribe(store, callback));
+}
+function action_destroyer(action_result) {
+  return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
+}
+var now = () => globalThis.performance.now();
+var raf = (cb) => requestAnimationFrame(cb);
+var tasks = /* @__PURE__ */ new Set();
+function run_tasks(now2) {
+  tasks.forEach((task) => {
+    if (!task.c(now2)) {
+      tasks.delete(task);
+      task.f();
+    }
+  });
+  if (tasks.size !== 0)
+    raf(run_tasks);
+}
+function loop(callback) {
+  let task;
+  if (tasks.size === 0)
+    raf(run_tasks);
+  return {
+    promise: new Promise((fulfill) => {
+      tasks.add(task = { c: callback, f: fulfill });
+    }),
+    abort() {
+      tasks.delete(task);
+    }
+  };
+}
+function append(target, node) {
+  target.appendChild(node);
+}
+function insert(target, node, anchor) {
+  target.insertBefore(node, anchor || null);
+}
+function detach(node) {
+  node.parentNode.removeChild(node);
+}
+function element(name) {
+  return document.createElement(name);
+}
+function text(data) {
+  return document.createTextNode(data);
+}
+function empty() {
+  return text("");
+}
+function listen(node, event, handler, options) {
+  node.addEventListener(event, handler, options);
+  return () => node.removeEventListener(event, handler, options);
+}
+function attr(node, attribute, value) {
+  if (value == null)
+    node.removeAttribute(attribute);
+  else if (node.getAttribute(attribute) !== value)
+    node.setAttribute(attribute, value);
+}
+function set_style(node, key, value, important) {
+  if (value === null) {
+    node.style.removeProperty(key);
+  } else {
+    node.style.setProperty(key, value);
+  }
+}
+function toggle_class(element2, name, toggle) {
+  element2.classList[toggle ? "add" : "remove"](name);
+}
+function custom_event(type, detail, bubbles = false) {
+  const e8 = document.createEvent("CustomEvent");
+  e8.initCustomEvent(type, bubbles, false, detail);
+  return e8;
+}
+var stylesheet;
+var active = 0;
+var current_rules = {};
+function create_rule(node, a3, b3, duration, delay, ease, fn, uid = 0) {
+  const step = 16.666 / duration;
+  let keyframes = "{\n";
+  for (let p3 = 0; p3 <= 1; p3 += step) {
+    const t4 = a3 + (b3 - a3) * ease(p3);
+    keyframes += p3 * 100 + `%{${fn(t4, 1 - t4)}}
+`;
+  }
+  const rule = keyframes + `100% {${fn(b3, 1 - b3)}}
+}`;
+  const name = `_bp_${Math.round(Math.random() * 1e9)}_${uid}`;
+  if (!current_rules[name]) {
+    if (!stylesheet) {
+      const style = element("style");
+      document.head.appendChild(style);
+      stylesheet = style.sheet;
+    }
+    current_rules[name] = true;
+    stylesheet.insertRule(`@keyframes ${name} ${rule}`, stylesheet.cssRules.length);
+  }
+  const animation = node.style.animation || "";
+  node.style.animation = `${animation ? `${animation}, ` : ``}${name} ${duration}ms linear ${delay}ms 1 both`;
+  active += 1;
+  return name;
+}
+function delete_rule(node, name) {
+  node.style.animation = (node.style.animation || "").split(", ").filter(
+    name ? (anim) => anim.indexOf(name) < 0 : (anim) => anim.indexOf("_bp") === -1
+    // remove all Svelte animations
+  ).join(", ");
+  if (name && !--active)
+    clear_rules();
+}
+function clear_rules() {
+  raf(() => {
+    if (active)
+      return;
+    let i6 = stylesheet.cssRules.length;
+    while (i6--)
+      stylesheet.deleteRule(i6);
+    current_rules = {};
+  });
+}
+var current_component;
+function set_current_component(component) {
+  current_component = component;
+}
+var dirty_components = [];
+var binding_callbacks = [];
+var render_callbacks = [];
+var flush_callbacks = [];
+var resolved_promise = Promise.resolve();
+var update_scheduled = false;
+function schedule_update() {
+  if (!update_scheduled) {
+    update_scheduled = true;
+    resolved_promise.then(flush);
+  }
+}
+function add_render_callback(fn) {
+  render_callbacks.push(fn);
+}
+var seen_callbacks = /* @__PURE__ */ new Set();
+var flushidx = 0;
+function flush() {
+  const saved_component = current_component;
+  do {
+    while (flushidx < dirty_components.length) {
+      const component = dirty_components[flushidx];
+      flushidx++;
+      set_current_component(component);
+      update(component.$$);
+    }
+    set_current_component(null);
+    dirty_components.length = 0;
+    flushidx = 0;
+    while (binding_callbacks.length)
+      binding_callbacks.pop()();
+    for (let i6 = 0; i6 < render_callbacks.length; i6 += 1) {
+      const callback = render_callbacks[i6];
+      if (!seen_callbacks.has(callback)) {
+        seen_callbacks.add(callback);
+        callback();
+      }
+    }
+    render_callbacks.length = 0;
+  } while (dirty_components.length);
+  while (flush_callbacks.length) {
+    flush_callbacks.pop()();
+  }
+  update_scheduled = false;
+  seen_callbacks.clear();
+  set_current_component(saved_component);
+}
+function update($$) {
+  if ($$.fragment !== null) {
+    $$.update();
+    run_all($$.before_update);
+    const dirty = $$.dirty;
+    $$.dirty = [-1];
+    $$.fragment && $$.fragment.p($$.ctx, dirty);
+    $$.after_update.forEach(add_render_callback);
+  }
+}
+var promise;
+function wait() {
+  if (!promise) {
+    promise = Promise.resolve();
+    promise.then(() => {
+      promise = null;
+    });
+  }
+  return promise;
+}
+function dispatch(node, direction, kind) {
+  node.dispatchEvent(custom_event(`${direction ? "intro" : "outro"}${kind}`));
+}
+var outroing = /* @__PURE__ */ new Set();
+var outros;
+function group_outros() {
+  outros = {
+    r: 0,
+    c: [],
+    p: outros
+    // parent group
+  };
+}
+function check_outros() {
+  if (!outros.r) {
+    run_all(outros.c);
+  }
+  outros = outros.p;
+}
+function transition_in(block, local) {
+  if (block && block.i) {
+    outroing.delete(block);
+    block.i(local);
+  }
+}
+function transition_out(block, local, detach2, callback) {
+  if (block && block.o) {
+    if (outroing.has(block))
+      return;
+    outroing.add(block);
+    outros.c.push(() => {
+      outroing.delete(block);
+      if (callback) {
+        if (detach2)
+          block.d(1);
+        callback();
+      }
+    });
+    block.o(local);
+  }
+}
+var null_transition = { duration: 0 };
+function create_in_transition(node, fn, params) {
+  let config = fn(node, params);
+  let running = false;
+  let animation_name;
+  let task;
+  let uid = 0;
+  function cleanup() {
+    if (animation_name)
+      delete_rule(node, animation_name);
+  }
+  function go() {
+    const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+    if (css)
+      animation_name = create_rule(node, 0, 1, duration, delay, easing, css, uid++);
+    tick(0, 1);
+    const start_time = now() + delay;
+    const end_time = start_time + duration;
+    if (task)
+      task.abort();
+    running = true;
+    add_render_callback(() => dispatch(node, true, "start"));
+    task = loop((now2) => {
+      if (running) {
+        if (now2 >= end_time) {
+          tick(1, 0);
+          dispatch(node, true, "end");
+          cleanup();
+          return running = false;
+        }
+        if (now2 >= start_time) {
+          const t4 = easing((now2 - start_time) / duration);
+          tick(t4, 1 - t4);
+        }
+      }
+      return running;
+    });
+  }
+  let started = false;
+  return {
+    start() {
+      if (started)
+        return;
+      started = true;
+      delete_rule(node);
+      if (is_function(config)) {
+        config = config();
+        wait().then(go);
+      } else {
+        go();
+      }
+    },
+    invalidate() {
+      started = false;
+    },
+    end() {
+      if (running) {
+        cleanup();
+        running = false;
+      }
+    }
+  };
+}
+function create_out_transition(node, fn, params) {
+  let config = fn(node, params);
+  let running = true;
+  let animation_name;
+  const group = outros;
+  group.r += 1;
+  function go() {
+    const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+    if (css)
+      animation_name = create_rule(node, 1, 0, duration, delay, easing, css);
+    const start_time = now() + delay;
+    const end_time = start_time + duration;
+    add_render_callback(() => dispatch(node, false, "start"));
+    loop((now2) => {
+      if (running) {
+        if (now2 >= end_time) {
+          tick(0, 1);
+          dispatch(node, false, "end");
+          if (!--group.r) {
+            run_all(group.c);
+          }
+          return false;
+        }
+        if (now2 >= start_time) {
+          const t4 = easing((now2 - start_time) / duration);
+          tick(1 - t4, t4);
+        }
+      }
+      return running;
+    });
+  }
+  if (is_function(config)) {
+    wait().then(() => {
+      config = config();
+      go();
+    });
+  } else {
+    go();
+  }
+  return {
+    end(reset) {
+      if (reset && config.tick) {
+        config.tick(1, 0);
+      }
+      if (running) {
+        if (animation_name)
+          delete_rule(node, animation_name);
+        running = false;
+      }
+    }
+  };
+}
+function create_component(block) {
+  block && block.c();
+}
+function mount_component(component, target, anchor, customElement) {
+  const { fragment, on_mount, on_destroy, after_update } = component.$$;
+  fragment && fragment.m(target, anchor);
+  if (!customElement) {
+    add_render_callback(() => {
+      const new_on_destroy = on_mount.map(run).filter(is_function);
+      if (on_destroy) {
+        on_destroy.push(...new_on_destroy);
+      } else {
+        run_all(new_on_destroy);
+      }
+      component.$$.on_mount = [];
+    });
+  }
+  after_update.forEach(add_render_callback);
+}
+function destroy_component(component, detaching) {
+  const $$ = component.$$;
+  if ($$.fragment !== null) {
+    run_all($$.on_destroy);
+    $$.fragment && $$.fragment.d(detaching);
+    $$.on_destroy = $$.fragment = null;
+    $$.ctx = [];
+  }
+}
+function make_dirty(component, i6) {
+  if (component.$$.dirty[0] === -1) {
+    dirty_components.push(component);
+    schedule_update();
+    component.$$.dirty.fill(0);
+  }
+  component.$$.dirty[i6 / 31 | 0] |= 1 << i6 % 31;
+}
+function init(component, options, instance2, create_fragment2, not_equal2, props, append_styles, dirty = [-1]) {
+  const parent_component = current_component;
+  set_current_component(component);
+  const $$ = component.$$ = {
+    fragment: null,
+    ctx: null,
+    // state
+    props,
+    update: noop,
+    not_equal: not_equal2,
+    bound: {},
+    // lifecycle
+    on_mount: [],
+    on_destroy: [],
+    on_disconnect: [],
+    before_update: [],
+    after_update: [],
+    context: new Map(options.context || (parent_component ? parent_component.$$.context : [])),
+    // everything else
+    callbacks: {},
+    dirty,
+    skip_bound: false,
+    root: options.target || parent_component.$$.root
+  };
+  append_styles && append_styles($$.root);
+  let ready = false;
+  $$.ctx = instance2 ? instance2(component, options.props || {}, (i6, ret, ...rest) => {
+    const value = rest.length ? rest[0] : ret;
+    if ($$.ctx && not_equal2($$.ctx[i6], $$.ctx[i6] = value)) {
+      if (!$$.skip_bound && $$.bound[i6])
+        $$.bound[i6](value);
+      if (ready)
+        make_dirty(component, i6);
+    }
+    return ret;
+  }) : [];
+  $$.update();
+  ready = true;
+  run_all($$.before_update);
+  $$.fragment = create_fragment2 ? create_fragment2($$.ctx) : false;
+  if (options.target) {
+    {
+      $$.fragment && $$.fragment.c();
+    }
+    mount_component(component, options.target, options.anchor, options.customElement);
+    flush();
+  }
+  set_current_component(parent_component);
+}
+var SvelteComponent = class {
+  $destroy() {
+    destroy_component(this, 1);
+    this.$destroy = noop;
+  }
+  $on(type, callback) {
+    const callbacks = this.$$.callbacks[type] || (this.$$.callbacks[type] = []);
+    callbacks.push(callback);
+    return () => {
+      const index = callbacks.indexOf(callback);
+      if (index !== -1)
+        callbacks.splice(index, 1);
+    };
+  }
+  $set($$props) {
+    if (this.$$set && !is_empty($$props)) {
+      this.$$.skip_bound = true;
+      this.$$set($$props);
+      this.$$.skip_bound = false;
+    }
+  }
+};
+function cubicOut(t4) {
+  const f3 = t4 - 1;
+  return f3 * f3 * f3 + 1;
+}
+function fly(node, { delay = 0, duration = 400, easing = cubicOut, x: x2 = 0, y: y3 = 0, opacity = 0 } = {}) {
+  const style = getComputedStyle(node);
+  const target_opacity = +style.opacity;
+  const transform = style.transform === "none" ? "" : style.transform;
+  const od = target_opacity * (1 - opacity);
+  return {
+    delay,
+    duration,
+    easing,
+    css: (t4, u3) => `
+			transform: ${transform} translate(${(1 - t4) * x2}px, ${(1 - t4) * y3}px);
+			opacity: ${target_opacity - od * u3}`
+  };
+}
+var subscriber_queue = [];
+function writable(value, start = noop) {
+  let stop;
+  const subscribers = /* @__PURE__ */ new Set();
+  function set(new_value) {
+    if (not_equal(value, new_value)) {
+      value = new_value;
+      if (stop) {
+        const run_queue = !subscriber_queue.length;
+        for (const subscriber of subscribers) {
+          subscriber[1]();
+          subscriber_queue.push(subscriber, value);
+        }
+        if (run_queue) {
+          for (let i6 = 0; i6 < subscriber_queue.length; i6 += 2) {
+            subscriber_queue[i6][0](subscriber_queue[i6 + 1]);
+          }
+          subscriber_queue.length = 0;
+        }
+      }
+    }
+  }
+  function update2(fn) {
+    set(fn(value));
+  }
+  function subscribe2(run2, invalidate = noop) {
+    const subscriber = [run2, invalidate];
+    subscribers.add(subscriber);
+    if (subscribers.size === 1) {
+      stop = start(set) || noop;
+    }
+    run2(value);
+    return () => {
+      subscribers.delete(subscriber);
+      if (subscribers.size === 0) {
+        stop();
+        stop = null;
+      }
+    };
+  }
+  return { set, update: update2, subscribe: subscribe2 };
+}
+function get_interpolator(a3, b3) {
+  if (a3 === b3 || a3 !== a3)
+    return () => a3;
+  const type = typeof a3;
+  if (Array.isArray(a3)) {
+    const arr = b3.map((bi, i6) => {
+      return get_interpolator(a3[i6], bi);
+    });
+    return (t4) => arr.map((fn) => fn(t4));
+  }
+  if (type === "number") {
+    const delta = b3 - a3;
+    return (t4) => a3 + t4 * delta;
+  }
+}
+function tweened(value, defaults = {}) {
+  const store = writable(value);
+  let task;
+  let target_value = value;
+  function set(new_value, opts) {
+    if (value == null) {
+      store.set(value = new_value);
+      return Promise.resolve();
+    }
+    target_value = new_value;
+    let previous_task = task;
+    let started = false;
+    let { delay = 0, duration = 400, easing = identity, interpolate = get_interpolator } = assign(assign({}, defaults), opts);
+    if (duration === 0) {
+      if (previous_task) {
+        previous_task.abort();
+        previous_task = null;
+      }
+      store.set(value = target_value);
+      return Promise.resolve();
+    }
+    const start = now() + delay;
+    let fn;
+    task = loop((now2) => {
+      if (now2 < start)
+        return true;
+      if (!started) {
+        fn = interpolate(value, new_value);
+        if (typeof duration === "function")
+          duration = duration(value, new_value);
+        started = true;
+      }
+      if (previous_task) {
+        previous_task.abort();
+        previous_task = null;
+      }
+      const elapsed = now2 - start;
+      if (elapsed > duration) {
+        store.set(value = new_value);
+        return false;
+      }
+      store.set(value = fn(easing(elapsed / duration)));
+      return true;
+    });
+    return task.promise;
+  }
+  return {
+    set,
+    update: (fn, opts) => set(fn(target_value, value), opts),
+    subscribe: store.subscribe
+  };
+}
+var closing = writable(0);
+var prefersReducedMotion = globalThis.matchMedia?.(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+var defaultTweenOptions = (duration) => ({
+  easing: cubicOut,
+  duration: prefersReducedMotion ? 0 : duration
+});
+var getThumbBackground = (activeItem) => !activeItem.thumb || `url(${activeItem.thumb})`;
+var addAttributes = (node, obj) => {
+  if (!obj) {
+    return;
+  }
+  if (typeof obj === "string") {
+    obj = JSON.parse(obj);
+  }
+  for (const key in obj) {
+    node.setAttribute(key, obj[key]);
+  }
+};
+function create_if_block_1$2(ctx) {
+  let div;
+  let div_outro;
+  let current;
+  return {
+    c() {
+      div = element("div");
+      div.innerHTML = `<span class="bp-bar"></span><span class="bp-o"></span>`;
+      attr(div, "class", "bp-load");
+      set_style(div, "background-image", getThumbBackground(
+        /*activeItem*/
+        ctx[0]
+      ));
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      current = true;
+    },
+    p(ctx2, dirty) {
+      if (dirty & /*activeItem*/
+      1) {
+        set_style(div, "background-image", getThumbBackground(
+          /*activeItem*/
+          ctx2[0]
+        ));
+      }
+    },
+    i(local) {
+      if (current) return;
+      if (div_outro) div_outro.end(1);
+      current = true;
+    },
+    o(local) {
+      if (local) {
+        div_outro = create_out_transition(div, fly, { duration: 480 });
+      }
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div);
+      if (detaching && div_outro) div_outro.end();
+    }
+  };
+}
+function create_if_block$2(ctx) {
+  let div;
+  let div_intro;
+  return {
+    c() {
+      div = element("div");
+      attr(div, "class", "bp-load");
+      set_style(div, "background-image", getThumbBackground(
+        /*activeItem*/
+        ctx[0]
+      ));
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+    },
+    p(ctx2, dirty) {
+      if (dirty & /*activeItem*/
+      1) {
+        set_style(div, "background-image", getThumbBackground(
+          /*activeItem*/
+          ctx2[0]
+        ));
+      }
+    },
+    i(local) {
+      if (!div_intro) {
+        add_render_callback(() => {
+          div_intro = create_in_transition(div, fly, { duration: 480 });
+          div_intro.start();
+        });
+      }
+    },
+    o: noop,
+    d(detaching) {
+      if (detaching) detach(div);
+    }
+  };
+}
+function create_fragment$4(ctx) {
+  let if_block0_anchor;
+  let if_block1_anchor;
+  let if_block0 = !/*loaded*/
+  ctx[1] && create_if_block_1$2(ctx);
+  let if_block1 = (
+    /*$closing*/
+    ctx[2] && create_if_block$2(ctx)
+  );
+  return {
+    c() {
+      if (if_block0) if_block0.c();
+      if_block0_anchor = empty();
+      if (if_block1) if_block1.c();
+      if_block1_anchor = empty();
+    },
+    m(target, anchor) {
+      if (if_block0) if_block0.m(target, anchor);
+      insert(target, if_block0_anchor, anchor);
+      if (if_block1) if_block1.m(target, anchor);
+      insert(target, if_block1_anchor, anchor);
+    },
+    p(ctx2, [dirty]) {
+      if (!/*loaded*/
+      ctx2[1]) {
+        if (if_block0) {
+          if_block0.p(ctx2, dirty);
+          if (dirty & /*loaded*/
+          2) {
+            transition_in(if_block0, 1);
+          }
+        } else {
+          if_block0 = create_if_block_1$2(ctx2);
+          if_block0.c();
+          transition_in(if_block0, 1);
+          if_block0.m(if_block0_anchor.parentNode, if_block0_anchor);
+        }
+      } else if (if_block0) {
+        group_outros();
+        transition_out(if_block0, 1, 1, () => {
+          if_block0 = null;
+        });
+        check_outros();
+      }
+      if (
+        /*$closing*/
+        ctx2[2]
+      ) {
+        if (if_block1) {
+          if_block1.p(ctx2, dirty);
+          if (dirty & /*$closing*/
+          4) {
+            transition_in(if_block1, 1);
+          }
+        } else {
+          if_block1 = create_if_block$2(ctx2);
+          if_block1.c();
+          transition_in(if_block1, 1);
+          if_block1.m(if_block1_anchor.parentNode, if_block1_anchor);
+        }
+      } else if (if_block1) {
+        if_block1.d(1);
+        if_block1 = null;
+      }
+    },
+    i(local) {
+      transition_in(if_block0);
+      transition_in(if_block1);
+    },
+    o(local) {
+      transition_out(if_block0);
+    },
+    d(detaching) {
+      if (if_block0) if_block0.d(detaching);
+      if (detaching) detach(if_block0_anchor);
+      if (if_block1) if_block1.d(detaching);
+      if (detaching) detach(if_block1_anchor);
+    }
+  };
+}
+function instance$4($$self, $$props, $$invalidate) {
+  let $closing;
+  component_subscribe($$self, closing, ($$value) => $$invalidate(2, $closing = $$value));
+  let { activeItem } = $$props;
+  let { loaded } = $$props;
+  $$self.$$set = ($$props2) => {
+    if ("activeItem" in $$props2) $$invalidate(0, activeItem = $$props2.activeItem);
+    if ("loaded" in $$props2) $$invalidate(1, loaded = $$props2.loaded);
+  };
+  return [activeItem, loaded, $closing];
+}
+var Loading = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance$4, create_fragment$4, not_equal, { activeItem: 0, loaded: 1 });
+  }
+};
+function create_if_block_1$1(ctx) {
+  let img;
+  let img_sizes_value;
+  let img_outro;
+  let current;
+  let mounted;
+  let dispose;
+  return {
+    c() {
+      img = element("img");
+      attr(img, "sizes", img_sizes_value = /*opts*/
+      ctx[8].sizes || `${/*sizes*/
+      ctx[1]}px`);
+      attr(
+        img,
+        "alt",
+        /*activeItem*/
+        ctx[7].alt
+      );
+    },
+    m(target, anchor) {
+      insert(target, img, anchor);
+      current = true;
+      if (!mounted) {
+        dispose = [
+          action_destroyer(
+            /*addSrc*/
+            ctx[21].call(null, img)
+          ),
+          listen(
+            img,
+            "error",
+            /*error_handler*/
+            ctx[27]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, dirty) {
+      if (!current || dirty[0] & /*sizes*/
+      2 && img_sizes_value !== (img_sizes_value = /*opts*/
+      ctx2[8].sizes || `${/*sizes*/
+      ctx2[1]}px`)) {
+        attr(img, "sizes", img_sizes_value);
+      }
+    },
+    i(local) {
+      if (current) return;
+      if (img_outro) img_outro.end(1);
+      current = true;
+    },
+    o(local) {
+      img_outro = create_out_transition(img, fly, {});
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(img);
+      if (detaching && img_outro) img_outro.end();
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function create_if_block$1(ctx) {
+  let loading;
+  let current;
+  loading = new Loading({
+    props: {
+      activeItem: (
+        /*activeItem*/
+        ctx[7]
+      ),
+      loaded: (
+        /*loaded*/
+        ctx[2]
+      )
+    }
+  });
+  return {
+    c() {
+      create_component(loading.$$.fragment);
+    },
+    m(target, anchor) {
+      mount_component(loading, target, anchor);
+      current = true;
+    },
+    p(ctx2, dirty) {
+      const loading_changes = {};
+      if (dirty[0] & /*loaded*/
+      4) loading_changes.loaded = /*loaded*/
+      ctx2[2];
+      loading.$set(loading_changes);
+    },
+    i(local) {
+      if (current) return;
+      transition_in(loading.$$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(loading.$$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      destroy_component(loading, detaching);
+    }
+  };
+}
+function create_fragment$3(ctx) {
+  let div1;
+  let div0;
+  let if_block0_anchor;
+  let style_transform = `translate3d(${/*$imageDimensions*/
+  ctx[0][0] / -2 + /*$zoomDragTranslate*/
+  ctx[6][0]}px, ${/*$imageDimensions*/
+  ctx[0][1] / -2 + /*$zoomDragTranslate*/
+  ctx[6][1]}px, 0)`;
+  let current;
+  let mounted;
+  let dispose;
+  let if_block0 = (
+    /*loaded*/
+    ctx[2] && create_if_block_1$1(ctx)
+  );
+  let if_block1 = (
+    /*showLoader*/
+    ctx[3] && create_if_block$1(ctx)
+  );
+  return {
+    c() {
+      div1 = element("div");
+      div0 = element("div");
+      if (if_block0) if_block0.c();
+      if_block0_anchor = empty();
+      if (if_block1) if_block1.c();
+      attr(div0, "class", "bp-img");
+      set_style(
+        div0,
+        "width",
+        /*$imageDimensions*/
+        ctx[0][0] + "px"
+      );
+      set_style(
+        div0,
+        "height",
+        /*$imageDimensions*/
+        ctx[0][1] + "px"
+      );
+      toggle_class(
+        div0,
+        "bp-drag",
+        /*pointerDown*/
+        ctx[4]
+      );
+      toggle_class(
+        div0,
+        "bp-canzoom",
+        /*maxZoom*/
+        ctx[11] > 1 && /*$imageDimensions*/
+        ctx[0][0] < /*naturalWidth*/
+        ctx[12]
+      );
+      set_style(div0, "background-image", getThumbBackground(
+        /*activeItem*/
+        ctx[7]
+      ));
+      set_style(div0, "transform", style_transform);
+      attr(div1, "class", "bp-img-wrap");
+      toggle_class(
+        div1,
+        "bp-close",
+        /*closingWhileZoomed*/
+        ctx[5]
+      );
+    },
+    m(target, anchor) {
+      insert(target, div1, anchor);
+      append(div1, div0);
+      if (if_block0) if_block0.m(div0, null);
+      append(div0, if_block0_anchor);
+      if (if_block1) if_block1.m(div0, null);
+      current = true;
+      if (!mounted) {
+        dispose = [
+          action_destroyer(
+            /*onMount*/
+            ctx[20].call(null, div0)
+          ),
+          listen(
+            div1,
+            "wheel",
+            /*onWheel*/
+            ctx[15]
+          ),
+          listen(
+            div1,
+            "pointerdown",
+            /*onPointerDown*/
+            ctx[16]
+          ),
+          listen(
+            div1,
+            "pointermove",
+            /*onPointerMove*/
+            ctx[17]
+          ),
+          listen(
+            div1,
+            "pointerup",
+            /*onPointerUp*/
+            ctx[19]
+          ),
+          listen(
+            div1,
+            "pointercancel",
+            /*removeEventFromCache*/
+            ctx[18]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, dirty) {
+      if (
+        /*loaded*/
+        ctx2[2]
+      ) {
+        if (if_block0) {
+          if_block0.p(ctx2, dirty);
+          if (dirty[0] & /*loaded*/
+          4) {
+            transition_in(if_block0, 1);
+          }
+        } else {
+          if_block0 = create_if_block_1$1(ctx2);
+          if_block0.c();
+          transition_in(if_block0, 1);
+          if_block0.m(div0, if_block0_anchor);
+        }
+      } else if (if_block0) {
+        group_outros();
+        transition_out(if_block0, 1, 1, () => {
+          if_block0 = null;
+        });
+        check_outros();
+      }
+      if (
+        /*showLoader*/
+        ctx2[3]
+      ) {
+        if (if_block1) {
+          if_block1.p(ctx2, dirty);
+          if (dirty[0] & /*showLoader*/
+          8) {
+            transition_in(if_block1, 1);
+          }
+        } else {
+          if_block1 = create_if_block$1(ctx2);
+          if_block1.c();
+          transition_in(if_block1, 1);
+          if_block1.m(div0, null);
+        }
+      } else if (if_block1) {
+        group_outros();
+        transition_out(if_block1, 1, 1, () => {
+          if_block1 = null;
+        });
+        check_outros();
+      }
+      if (!current || dirty[0] & /*$imageDimensions*/
+      1) {
+        set_style(
+          div0,
+          "width",
+          /*$imageDimensions*/
+          ctx2[0][0] + "px"
+        );
+      }
+      if (!current || dirty[0] & /*$imageDimensions*/
+      1) {
+        set_style(
+          div0,
+          "height",
+          /*$imageDimensions*/
+          ctx2[0][1] + "px"
+        );
+      }
+      if (!current || dirty[0] & /*pointerDown*/
+      16) {
+        toggle_class(
+          div0,
+          "bp-drag",
+          /*pointerDown*/
+          ctx2[4]
+        );
+      }
+      if (!current || dirty[0] & /*maxZoom, $imageDimensions, naturalWidth*/
+      6145) {
+        toggle_class(
+          div0,
+          "bp-canzoom",
+          /*maxZoom*/
+          ctx2[11] > 1 && /*$imageDimensions*/
+          ctx2[0][0] < /*naturalWidth*/
+          ctx2[12]
+        );
+      }
+      if (dirty[0] & /*$imageDimensions, $zoomDragTranslate*/
+      65 && style_transform !== (style_transform = `translate3d(${/*$imageDimensions*/
+      ctx2[0][0] / -2 + /*$zoomDragTranslate*/
+      ctx2[6][0]}px, ${/*$imageDimensions*/
+      ctx2[0][1] / -2 + /*$zoomDragTranslate*/
+      ctx2[6][1]}px, 0)`)) {
+        set_style(div0, "transform", style_transform);
+      }
+      if (!current || dirty[0] & /*closingWhileZoomed*/
+      32) {
+        toggle_class(
+          div1,
+          "bp-close",
+          /*closingWhileZoomed*/
+          ctx2[5]
+        );
+      }
+    },
+    i(local) {
+      if (current) return;
+      transition_in(if_block0);
+      transition_in(if_block1);
+      current = true;
+    },
+    o(local) {
+      transition_out(if_block0);
+      transition_out(if_block1);
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div1);
+      if (if_block0) if_block0.d();
+      if (if_block1) if_block1.d();
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function instance$3($$self, $$props, $$invalidate) {
+  let $zoomed;
+  let $zoomDragTranslate;
+  let $closing;
+  let $imageDimensions;
+  component_subscribe($$self, closing, ($$value) => $$invalidate(26, $closing = $$value));
+  let { props } = $$props;
+  let { smallScreen } = $$props;
+  let { activeItem, opts, prev, next, zoomed, container } = props;
+  component_subscribe($$self, zoomed, (value) => $$invalidate(25, $zoomed = value));
+  let maxZoom = activeItem.maxZoom || opts.maxZoom || 10;
+  let calculatedDimensions = props.calculateDimensions(activeItem);
+  let sizes = calculatedDimensions[0];
+  let loaded, showLoader;
+  let pinchDetails;
+  let bpImg;
+  let prevDiff = 0;
+  let pointerDown, hasDragged;
+  let dragStartX, dragStartY;
+  let dragStartTranslateX, dragStartTranslateY;
+  let closingWhileZoomed;
+  const naturalWidth = +activeItem.width;
+  const dragPositions = [];
+  const pointerCache = /* @__PURE__ */ new Map();
+  const imageDimensions = tweened(calculatedDimensions, defaultTweenOptions(400));
+  component_subscribe($$self, imageDimensions, (value) => $$invalidate(0, $imageDimensions = value));
+  const zoomDragTranslate = tweened([0, 0], defaultTweenOptions(400));
+  component_subscribe($$self, zoomDragTranslate, (value) => $$invalidate(6, $zoomDragTranslate = value));
+  const boundTranslateValues = ([x2, y3], newDimensions = $imageDimensions) => {
+    const maxTranslateX = (newDimensions[0] - container.w) / 2;
+    const maxTranslateY = (newDimensions[1] - container.h) / 2;
+    if (maxTranslateX < 0) {
+      x2 = 0;
+    } else if (x2 > maxTranslateX) {
+      if (smallScreen) {
+        x2 = pointerDown ? maxTranslateX + (x2 - maxTranslateX) / 10 : maxTranslateX;
+        if (x2 > maxTranslateX + 20) {
+          $$invalidate(4, pointerDown = prev());
+        }
+      } else {
+        x2 = maxTranslateX;
+      }
+    } else if (x2 < -maxTranslateX) {
+      if (smallScreen) {
+        x2 = pointerDown ? -maxTranslateX - (-maxTranslateX - x2) / 10 : -maxTranslateX;
+        if (x2 < -maxTranslateX - 20) {
+          $$invalidate(4, pointerDown = next());
+        }
+      } else {
+        x2 = -maxTranslateX;
+      }
+    }
+    if (maxTranslateY < 0) {
+      y3 = 0;
+    } else if (y3 > maxTranslateY) {
+      y3 = maxTranslateY;
+    } else if (y3 < -maxTranslateY) {
+      y3 = -maxTranslateY;
+    }
+    return [x2, y3];
+  };
+  function changeZoom(amt = maxZoom, e8) {
+    if ($closing) {
+      return;
+    }
+    const maxWidth = calculatedDimensions[0] * maxZoom;
+    let newWidth = $imageDimensions[0] + $imageDimensions[0] * amt;
+    let newHeight = $imageDimensions[1] + $imageDimensions[1] * amt;
+    if (amt > 0) {
+      if (newWidth > maxWidth) {
+        newWidth = maxWidth;
+        newHeight = calculatedDimensions[1] * maxZoom;
+      }
+      if (newWidth > naturalWidth) {
+        newWidth = naturalWidth;
+        newHeight = +activeItem.height;
+      }
+    } else if (newWidth < calculatedDimensions[0]) {
+      imageDimensions.set(calculatedDimensions);
+      return zoomDragTranslate.set([0, 0]);
+    }
+    let { x: x2, y: y3, width, height } = bpImg.getBoundingClientRect();
+    const offsetX = e8 ? e8.clientX - x2 - width / 2 : 0;
+    const offsetY = e8 ? e8.clientY - y3 - height / 2 : 0;
+    x2 = -offsetX * (newWidth / width) + offsetX;
+    y3 = -offsetY * (newHeight / height) + offsetY;
+    const newDimensions = [newWidth, newHeight];
+    imageDimensions.set(newDimensions).then(() => {
+      $$invalidate(1, sizes = Math.round(Math.max(sizes, newWidth)));
+    });
+    zoomDragTranslate.set(boundTranslateValues([$zoomDragTranslate[0] + x2, $zoomDragTranslate[1] + y3], newDimensions));
+  }
+  Object.defineProperty(activeItem, "zoom", {
+    configurable: true,
+    get: () => $zoomed,
+    set: (bool) => changeZoom(bool ? maxZoom : -maxZoom)
+  });
+  const onWheel = (e8) => {
+    if (opts.inline && !$zoomed) {
+      return;
+    }
+    e8.preventDefault();
+    changeZoom(e8.deltaY / -300, e8);
+  };
+  const onPointerDown = (e8) => {
+    if (e8.button !== 2) {
+      e8.preventDefault();
+      $$invalidate(4, pointerDown = true);
+      pointerCache.set(e8.pointerId, e8);
+      dragStartX = e8.clientX;
+      dragStartY = e8.clientY;
+      dragStartTranslateX = $zoomDragTranslate[0];
+      dragStartTranslateY = $zoomDragTranslate[1];
+    }
+  };
+  const onPointerMove = (e8) => {
+    if (pointerCache.size > 1) {
+      $$invalidate(4, pointerDown = false);
+      return opts.noPinch?.(container.el) || handlePinch(e8);
+    }
+    if (!pointerDown) {
+      return;
+    }
+    let x2 = e8.clientX;
+    let y3 = e8.clientY;
+    hasDragged = dragPositions.push({ x: x2, y: y3 }) > 2;
+    x2 = x2 - dragStartX;
+    y3 = y3 - dragStartY;
+    if (!$zoomed) {
+      if (y3 < -90) {
+        $$invalidate(4, pointerDown = !opts.noClose && props.close());
+      }
+      if (Math.abs(y3) < 30) {
+        if (x2 > 40) {
+          $$invalidate(4, pointerDown = prev());
+        }
+        if (x2 < -40) {
+          $$invalidate(4, pointerDown = next());
+        }
+      }
+    }
+    if ($zoomed && hasDragged && !$closing) {
+      zoomDragTranslate.set(boundTranslateValues([dragStartTranslateX + x2, dragStartTranslateY + y3]), { duration: 0 });
+    }
+  };
+  const handlePinch = (e8) => {
+    const [p1, p22] = pointerCache.set(e8.pointerId, e8).values();
+    const dx = p1.clientX - p22.clientX;
+    const dy = p1.clientY - p22.clientY;
+    const curDiff = Math.hypot(dx, dy);
+    pinchDetails = pinchDetails || {
+      clientX: (p1.clientX + p22.clientX) / 2,
+      clientY: (p1.clientY + p22.clientY) / 2
+    };
+    changeZoom(((prevDiff || curDiff) - curDiff) / -35, pinchDetails);
+    prevDiff = curDiff;
+  };
+  const removeEventFromCache = (e8) => pointerCache.delete(e8.pointerId);
+  function onPointerUp(e8) {
+    removeEventFromCache(e8);
+    if (pinchDetails) {
+      $$invalidate(4, pointerDown = prevDiff = 0);
+      pinchDetails = pointerCache.size ? pinchDetails : null;
+    }
+    if (!pointerDown) {
+      return;
+    }
+    $$invalidate(4, pointerDown = false);
+    if (e8.target === this && !opts.noClose) {
+      return props.close();
+    }
+    if (hasDragged) {
+      const [posOne, posTwo, posThree] = dragPositions.slice(-3);
+      const xDiff = posTwo.x - posThree.x;
+      const yDiff = posTwo.y - posThree.y;
+      if (Math.hypot(xDiff, yDiff) > 5) {
+        zoomDragTranslate.set(boundTranslateValues([
+          $zoomDragTranslate[0] - (posOne.x - posThree.x) * 5,
+          $zoomDragTranslate[1] - (posOne.y - posThree.y) * 5
+        ]));
+      }
+    } else if (!opts.onImageClick?.(container.el, activeItem)) {
+      changeZoom($zoomed ? -maxZoom : maxZoom, e8);
+    }
+    hasDragged = false;
+    dragPositions.length = 0;
+  }
+  const onMount = (node) => {
+    bpImg = node;
+    props.setResizeFunc(() => {
+      $$invalidate(24, calculatedDimensions = props.calculateDimensions(activeItem));
+      if (opts.inline || !smallScreen) {
+        imageDimensions.set(calculatedDimensions);
+        zoomDragTranslate.set([0, 0]);
+      }
+    });
+    props.loadImage(activeItem).then(() => {
+      $$invalidate(2, loaded = true);
+      props.preloadNext();
+    });
+    setTimeout(
+      () => {
+        $$invalidate(3, showLoader = !loaded);
+      },
+      250
+    );
+  };
+  const addSrc = (node) => {
+    addAttributes(node, activeItem.attr);
+    node.srcset = activeItem.img;
+  };
+  const error_handler = (error) => opts.onError?.(container, activeItem, error);
+  $$self.$$set = ($$props2) => {
+    if ("smallScreen" in $$props2) $$invalidate(23, smallScreen = $$props2.smallScreen);
+  };
+  $$self.$$.update = () => {
+    if ($$self.$$.dirty[0] & /*$imageDimensions, calculatedDimensions*/
+    16777217) {
+      zoomed.set($imageDimensions[0] - 10 > calculatedDimensions[0]);
+    }
+    if ($$self.$$.dirty[0] & /*$closing, $zoomed, calculatedDimensions*/
+    117440512) {
+      if ($closing && $zoomed && !opts.intro) {
+        const closeTweenOpts = defaultTweenOptions(480);
+        zoomDragTranslate.set([0, 0], closeTweenOpts);
+        imageDimensions.set(calculatedDimensions, closeTweenOpts);
+        $$invalidate(5, closingWhileZoomed = true);
+      }
+    }
+  };
+  return [
+    $imageDimensions,
+    sizes,
+    loaded,
+    showLoader,
+    pointerDown,
+    closingWhileZoomed,
+    $zoomDragTranslate,
+    activeItem,
+    opts,
+    zoomed,
+    container,
+    maxZoom,
+    naturalWidth,
+    imageDimensions,
+    zoomDragTranslate,
+    onWheel,
+    onPointerDown,
+    onPointerMove,
+    removeEventFromCache,
+    onPointerUp,
+    onMount,
+    addSrc,
+    props,
+    smallScreen,
+    calculatedDimensions,
+    $zoomed,
+    $closing,
+    error_handler
+  ];
+}
+var Image2 = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance$3, create_fragment$3, not_equal, { props: 22, smallScreen: 23 }, null, [-1, -1]);
+  }
+};
+function create_fragment$2(ctx) {
+  let div;
+  let iframe;
+  let loading;
+  let current;
+  let mounted;
+  let dispose;
+  loading = new Loading({
+    props: {
+      activeItem: (
+        /*activeItem*/
+        ctx[2]
+      ),
+      loaded: (
+        /*loaded*/
+        ctx[0]
+      )
+    }
+  });
+  return {
+    c() {
+      div = element("div");
+      iframe = element("iframe");
+      create_component(loading.$$.fragment);
+      attr(iframe, "allow", "autoplay; fullscreen");
+      attr(
+        iframe,
+        "title",
+        /*activeItem*/
+        ctx[2].title
+      );
+      attr(div, "class", "bp-if");
+      set_style(
+        div,
+        "width",
+        /*dimensions*/
+        ctx[1][0] + "px"
+      );
+      set_style(
+        div,
+        "height",
+        /*dimensions*/
+        ctx[1][1] + "px"
+      );
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      append(div, iframe);
+      mount_component(loading, div, null);
+      current = true;
+      if (!mounted) {
+        dispose = [
+          action_destroyer(
+            /*addSrc*/
+            ctx[3].call(null, iframe)
+          ),
+          listen(
+            iframe,
+            "load",
+            /*load_handler*/
+            ctx[5]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, [dirty]) {
+      const loading_changes = {};
+      if (dirty & /*loaded*/
+      1) loading_changes.loaded = /*loaded*/
+      ctx2[0];
+      loading.$set(loading_changes);
+      if (!current || dirty & /*dimensions*/
+      2) {
+        set_style(
+          div,
+          "width",
+          /*dimensions*/
+          ctx2[1][0] + "px"
+        );
+      }
+      if (!current || dirty & /*dimensions*/
+      2) {
+        set_style(
+          div,
+          "height",
+          /*dimensions*/
+          ctx2[1][1] + "px"
+        );
+      }
+    },
+    i(local) {
+      if (current) return;
+      transition_in(loading.$$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(loading.$$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div);
+      destroy_component(loading);
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function instance$2($$self, $$props, $$invalidate) {
+  let { props } = $$props;
+  let loaded, dimensions;
+  const { activeItem } = props;
+  const setDimensions = () => $$invalidate(1, dimensions = props.calculateDimensions(activeItem));
+  setDimensions();
+  props.setResizeFunc(setDimensions);
+  const addSrc = (node) => {
+    addAttributes(node, activeItem.attr);
+    node.src = activeItem.iframe;
+  };
+  const load_handler = () => $$invalidate(0, loaded = true);
+  return [loaded, dimensions, activeItem, addSrc, props, load_handler];
+}
+var Iframe = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance$2, create_fragment$2, not_equal, { props: 4 });
+  }
+};
+function create_fragment$1(ctx) {
+  let div;
+  let loading;
+  let current;
+  let mounted;
+  let dispose;
+  loading = new Loading({
+    props: {
+      activeItem: (
+        /*activeItem*/
+        ctx[2]
+      ),
+      loaded: (
+        /*loaded*/
+        ctx[0]
+      )
+    }
+  });
+  return {
+    c() {
+      div = element("div");
+      create_component(loading.$$.fragment);
+      attr(div, "class", "bp-vid");
+      set_style(
+        div,
+        "width",
+        /*dimensions*/
+        ctx[1][0] + "px"
+      );
+      set_style(
+        div,
+        "height",
+        /*dimensions*/
+        ctx[1][1] + "px"
+      );
+      set_style(div, "background-image", getThumbBackground(
+        /*activeItem*/
+        ctx[2]
+      ));
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      mount_component(loading, div, null);
+      current = true;
+      if (!mounted) {
+        dispose = action_destroyer(
+          /*onMount*/
+          ctx[3].call(null, div)
+        );
+        mounted = true;
+      }
+    },
+    p(ctx2, [dirty]) {
+      const loading_changes = {};
+      if (dirty & /*loaded*/
+      1) loading_changes.loaded = /*loaded*/
+      ctx2[0];
+      loading.$set(loading_changes);
+      if (!current || dirty & /*dimensions*/
+      2) {
+        set_style(
+          div,
+          "width",
+          /*dimensions*/
+          ctx2[1][0] + "px"
+        );
+      }
+      if (!current || dirty & /*dimensions*/
+      2) {
+        set_style(
+          div,
+          "height",
+          /*dimensions*/
+          ctx2[1][1] + "px"
+        );
+      }
+    },
+    i(local) {
+      if (current) return;
+      transition_in(loading.$$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(loading.$$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div);
+      destroy_component(loading);
+      mounted = false;
+      dispose();
+    }
+  };
+}
+function instance$1($$self, $$props, $$invalidate) {
+  let { props } = $$props;
+  let loaded, dimensions;
+  const { activeItem, opts, container } = props;
+  const setDimensions = () => $$invalidate(1, dimensions = props.calculateDimensions(activeItem));
+  setDimensions();
+  props.setResizeFunc(setDimensions);
+  const onMount = (node) => {
+    let mediaElement;
+    const appendToVideo = (tag, arr) => {
+      if (!Array.isArray(arr)) {
+        arr = JSON.parse(arr);
+      }
+      for (const obj of arr) {
+        if (!mediaElement) {
+          mediaElement = document.createElement(obj.type?.includes("audio") ? "audio" : "video");
+          addAttributes(mediaElement, {
+            controls: true,
+            autoplay: true,
+            playsinline: true,
+            tabindex: "0"
+          });
+          addAttributes(mediaElement, activeItem.attr);
+        }
+        const el = document.createElement(tag);
+        addAttributes(el, obj);
+        if (tag == "source") {
+          el.onError = (error) => opts.onError?.(container, activeItem, error);
+        }
+        mediaElement.append(el);
+      }
+    };
+    appendToVideo("source", activeItem.sources);
+    appendToVideo("track", activeItem.tracks || []);
+    mediaElement.oncanplay = () => $$invalidate(0, loaded = true);
+    node.append(mediaElement);
+  };
+  return [loaded, dimensions, activeItem, onMount, props];
+}
+var Video = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance$1, create_fragment$1, not_equal, { props: 4 });
+  }
+};
+function create_if_block(ctx) {
+  let div2;
+  let div0;
+  let div0_outro;
+  let previous_key = (
+    /*activeItem*/
+    ctx[6].i
+  );
+  let div1;
+  let button;
+  let div1_outro;
+  let current;
+  let mounted;
+  let dispose;
+  let key_block = create_key_block(ctx);
+  let if_block = (
+    /*items*/
+    ctx[0].length > 1 && create_if_block_1(ctx)
+  );
+  return {
+    c() {
+      div2 = element("div");
+      div0 = element("div");
+      key_block.c();
+      div1 = element("div");
+      button = element("button");
+      if (if_block) if_block.c();
+      attr(button, "class", "bp-x");
+      attr(button, "title", "Close");
+      attr(button, "aria-label", "Close");
+      attr(div1, "class", "bp-controls");
+      attr(div2, "class", "bp-wrap");
+      toggle_class(
+        div2,
+        "bp-zoomed",
+        /*$zoomed*/
+        ctx[10]
+      );
+      toggle_class(
+        div2,
+        "bp-inline",
+        /*inline*/
+        ctx[8]
+      );
+      toggle_class(
+        div2,
+        "bp-small",
+        /*smallScreen*/
+        ctx[7]
+      );
+      toggle_class(
+        div2,
+        "bp-noclose",
+        /*opts*/
+        ctx[5].noClose
+      );
+    },
+    m(target, anchor) {
+      insert(target, div2, anchor);
+      append(div2, div0);
+      key_block.m(div2, null);
+      append(div2, div1);
+      append(div1, button);
+      if (if_block) if_block.m(div1, null);
+      current = true;
+      if (!mounted) {
+        dispose = [
+          listen(
+            button,
+            "click",
+            /*close*/
+            ctx[1]
+          ),
+          action_destroyer(
+            /*containerActions*/
+            ctx[14].call(null, div2)
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, dirty) {
+      if (dirty[0] & /*activeItem*/
+      64 && not_equal(previous_key, previous_key = /*activeItem*/
+      ctx2[6].i)) {
+        group_outros();
+        transition_out(key_block, 1, 1, noop);
+        check_outros();
+        key_block = create_key_block(ctx2);
+        key_block.c();
+        transition_in(key_block, 1);
+        key_block.m(div2, div1);
+      } else {
+        key_block.p(ctx2, dirty);
+      }
+      if (
+        /*items*/
+        ctx2[0].length > 1
+      ) {
+        if (if_block) {
+          if_block.p(ctx2, dirty);
+        } else {
+          if_block = create_if_block_1(ctx2);
+          if_block.c();
+          if_block.m(div1, null);
+        }
+      } else if (if_block) {
+        if_block.d(1);
+        if_block = null;
+      }
+      if (!current || dirty[0] & /*$zoomed*/
+      1024) {
+        toggle_class(
+          div2,
+          "bp-zoomed",
+          /*$zoomed*/
+          ctx2[10]
+        );
+      }
+      if (!current || dirty[0] & /*inline*/
+      256) {
+        toggle_class(
+          div2,
+          "bp-inline",
+          /*inline*/
+          ctx2[8]
+        );
+      }
+      if (!current || dirty[0] & /*smallScreen*/
+      128) {
+        toggle_class(
+          div2,
+          "bp-small",
+          /*smallScreen*/
+          ctx2[7]
+        );
+      }
+      if (!current || dirty[0] & /*opts*/
+      32) {
+        toggle_class(
+          div2,
+          "bp-noclose",
+          /*opts*/
+          ctx2[5].noClose
+        );
+      }
+    },
+    i(local) {
+      if (current) return;
+      if (div0_outro) div0_outro.end(1);
+      transition_in(key_block);
+      if (div1_outro) div1_outro.end(1);
+      current = true;
+    },
+    o(local) {
+      if (local) {
+        div0_outro = create_out_transition(div0, fly, { duration: 480 });
+      }
+      transition_out(key_block);
+      if (local) {
+        div1_outro = create_out_transition(div1, fly, {});
+      }
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div2);
+      if (detaching && div0_outro) div0_outro.end();
+      key_block.d(detaching);
+      if (if_block) if_block.d();
+      if (detaching && div1_outro) div1_outro.end();
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function create_else_block(ctx) {
+  let div;
+  let raw_value = (
+    /*activeItem*/
+    (ctx[6].html ?? /*activeItem*/
+    ctx[6].element.outerHTML) + ""
+  );
+  return {
+    c() {
+      div = element("div");
+      attr(div, "class", "bp-html");
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      div.innerHTML = raw_value;
+    },
+    p(ctx2, dirty) {
+      if (dirty[0] & /*activeItem*/
+      64 && raw_value !== (raw_value = /*activeItem*/
+      (ctx2[6].html ?? /*activeItem*/
+      ctx2[6].element.outerHTML) + "")) div.innerHTML = raw_value;
+    },
+    i: noop,
+    o: noop,
+    d(detaching) {
+      if (detaching) detach(div);
+    }
+  };
+}
+function create_if_block_5(ctx) {
+  let iframe;
+  let current;
+  iframe = new Iframe({
+    props: { props: (
+      /*getChildProps*/
+      ctx[13]()
+    ) }
+  });
+  return {
+    c() {
+      create_component(iframe.$$.fragment);
+    },
+    m(target, anchor) {
+      mount_component(iframe, target, anchor);
+      current = true;
+    },
+    p: noop,
+    i(local) {
+      if (current) return;
+      transition_in(iframe.$$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(iframe.$$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      destroy_component(iframe, detaching);
+    }
+  };
+}
+function create_if_block_4(ctx) {
+  let video;
+  let current;
+  video = new Video({
+    props: { props: (
+      /*getChildProps*/
+      ctx[13]()
+    ) }
+  });
+  return {
+    c() {
+      create_component(video.$$.fragment);
+    },
+    m(target, anchor) {
+      mount_component(video, target, anchor);
+      current = true;
+    },
+    p: noop,
+    i(local) {
+      if (current) return;
+      transition_in(video.$$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(video.$$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      destroy_component(video, detaching);
+    }
+  };
+}
+function create_if_block_3(ctx) {
+  let imageitem;
+  let current;
+  imageitem = new Image2({
+    props: {
+      props: (
+        /*getChildProps*/
+        ctx[13]()
+      ),
+      smallScreen: (
+        /*smallScreen*/
+        ctx[7]
+      )
+    }
+  });
+  return {
+    c() {
+      create_component(imageitem.$$.fragment);
+    },
+    m(target, anchor) {
+      mount_component(imageitem, target, anchor);
+      current = true;
+    },
+    p(ctx2, dirty) {
+      const imageitem_changes = {};
+      if (dirty[0] & /*smallScreen*/
+      128) imageitem_changes.smallScreen = /*smallScreen*/
+      ctx2[7];
+      imageitem.$set(imageitem_changes);
+    },
+    i(local) {
+      if (current) return;
+      transition_in(imageitem.$$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(imageitem.$$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      destroy_component(imageitem, detaching);
+    }
+  };
+}
+function create_if_block_2(ctx) {
+  let div;
+  let raw_value = (
+    /*activeItem*/
+    ctx[6].caption + ""
+  );
+  let div_outro;
+  let current;
+  return {
+    c() {
+      div = element("div");
+      attr(div, "class", "bp-cap");
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      div.innerHTML = raw_value;
+      current = true;
+    },
+    p(ctx2, dirty) {
+      if ((!current || dirty[0] & /*activeItem*/
+      64) && raw_value !== (raw_value = /*activeItem*/
+      ctx2[6].caption + "")) div.innerHTML = raw_value;
+    },
+    i(local) {
+      if (current) return;
+      if (div_outro) div_outro.end(1);
+      current = true;
+    },
+    o(local) {
+      div_outro = create_out_transition(div, fly, { duration: 200 });
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div);
+      if (detaching && div_outro) div_outro.end();
+    }
+  };
+}
+function create_key_block(ctx) {
+  let div;
+  let current_block_type_index;
+  let if_block0;
+  let div_intro;
+  let div_outro;
+  let if_block1_anchor;
+  let current;
+  let mounted;
+  let dispose;
+  const if_block_creators = [create_if_block_3, create_if_block_4, create_if_block_5, create_else_block];
+  const if_blocks = [];
+  function select_block_type(ctx2, dirty) {
+    if (
+      /*activeItem*/
+      ctx2[6].img
+    ) return 0;
+    if (
+      /*activeItem*/
+      ctx2[6].sources
+    ) return 1;
+    if (
+      /*activeItem*/
+      ctx2[6].iframe
+    ) return 2;
+    return 3;
+  }
+  current_block_type_index = select_block_type(ctx);
+  if_block0 = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+  let if_block1 = (
+    /*activeItem*/
+    ctx[6].caption && create_if_block_2(ctx)
+  );
+  return {
+    c() {
+      div = element("div");
+      if_block0.c();
+      if (if_block1) if_block1.c();
+      if_block1_anchor = empty();
+      attr(div, "class", "bp-inner");
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      if_blocks[current_block_type_index].m(div, null);
+      if (if_block1) if_block1.m(target, anchor);
+      insert(target, if_block1_anchor, anchor);
+      current = true;
+      if (!mounted) {
+        dispose = [
+          listen(
+            div,
+            "pointerdown",
+            /*pointerdown_handler*/
+            ctx[20]
+          ),
+          listen(
+            div,
+            "pointerup",
+            /*pointerup_handler*/
+            ctx[21]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, dirty) {
+      let previous_block_index = current_block_type_index;
+      current_block_type_index = select_block_type(ctx2);
+      if (current_block_type_index === previous_block_index) {
+        if_blocks[current_block_type_index].p(ctx2, dirty);
+      } else {
+        group_outros();
+        transition_out(if_blocks[previous_block_index], 1, 1, () => {
+          if_blocks[previous_block_index] = null;
+        });
+        check_outros();
+        if_block0 = if_blocks[current_block_type_index];
+        if (!if_block0) {
+          if_block0 = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx2);
+          if_block0.c();
+        } else {
+          if_block0.p(ctx2, dirty);
+        }
+        transition_in(if_block0, 1);
+        if_block0.m(div, null);
+      }
+      if (
+        /*activeItem*/
+        ctx2[6].caption
+      ) {
+        if (if_block1) {
+          if_block1.p(ctx2, dirty);
+          if (dirty[0] & /*activeItem*/
+          64) {
+            transition_in(if_block1, 1);
+          }
+        } else {
+          if_block1 = create_if_block_2(ctx2);
+          if_block1.c();
+          transition_in(if_block1, 1);
+          if_block1.m(if_block1_anchor.parentNode, if_block1_anchor);
+        }
+      } else if (if_block1) {
+        group_outros();
+        transition_out(if_block1, 1, 1, () => {
+          if_block1 = null;
+        });
+        check_outros();
+      }
+    },
+    i(local) {
+      if (current) return;
+      transition_in(if_block0);
+      add_render_callback(() => {
+        if (div_outro) div_outro.end(1);
+        div_intro = create_in_transition(
+          div,
+          /*mediaTransition*/
+          ctx[12],
+          true
+        );
+        div_intro.start();
+      });
+      transition_in(if_block1);
+      current = true;
+    },
+    o(local) {
+      transition_out(if_block0);
+      if (div_intro) div_intro.invalidate();
+      div_outro = create_out_transition(
+        div,
+        /*mediaTransition*/
+        ctx[12],
+        false
+      );
+      transition_out(if_block1);
+      current = false;
+    },
+    d(detaching) {
+      if (detaching) detach(div);
+      if_blocks[current_block_type_index].d();
+      if (detaching && div_outro) div_outro.end();
+      if (if_block1) if_block1.d(detaching);
+      if (detaching) detach(if_block1_anchor);
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function create_if_block_1(ctx) {
+  let div;
+  let raw_value = `${/*position*/
+  ctx[4] + 1} / ${/*items*/
+  ctx[0].length}`;
+  let button0;
+  let button1;
+  let mounted;
+  let dispose;
+  return {
+    c() {
+      div = element("div");
+      button0 = element("button");
+      button1 = element("button");
+      attr(div, "class", "bp-count");
+      attr(button0, "class", "bp-prev");
+      attr(button0, "title", "Previous");
+      attr(button0, "aria-label", "Previous");
+      attr(button1, "class", "bp-next");
+      attr(button1, "title", "Next");
+      attr(button1, "aria-label", "Next");
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      div.innerHTML = raw_value;
+      insert(target, button0, anchor);
+      insert(target, button1, anchor);
+      if (!mounted) {
+        dispose = [
+          listen(
+            button0,
+            "click",
+            /*prev*/
+            ctx[2]
+          ),
+          listen(
+            button1,
+            "click",
+            /*next*/
+            ctx[3]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, dirty) {
+      if (dirty[0] & /*position, items*/
+      17 && raw_value !== (raw_value = `${/*position*/
+      ctx2[4] + 1} / ${/*items*/
+      ctx2[0].length}`)) div.innerHTML = raw_value;
+    },
+    d(detaching) {
+      if (detaching) detach(div);
+      if (detaching) detach(button0);
+      if (detaching) detach(button1);
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function create_fragment(ctx) {
+  let if_block_anchor;
+  let current;
+  let if_block = (
+    /*items*/
+    ctx[0] && create_if_block(ctx)
+  );
+  return {
+    c() {
+      if (if_block) if_block.c();
+      if_block_anchor = empty();
+    },
+    m(target, anchor) {
+      if (if_block) if_block.m(target, anchor);
+      insert(target, if_block_anchor, anchor);
+      current = true;
+    },
+    p(ctx2, dirty) {
+      if (
+        /*items*/
+        ctx2[0]
+      ) {
+        if (if_block) {
+          if_block.p(ctx2, dirty);
+          if (dirty[0] & /*items*/
+          1) {
+            transition_in(if_block, 1);
+          }
+        } else {
+          if_block = create_if_block(ctx2);
+          if_block.c();
+          transition_in(if_block, 1);
+          if_block.m(if_block_anchor.parentNode, if_block_anchor);
+        }
+      } else if (if_block) {
+        group_outros();
+        transition_out(if_block, 1, 1, () => {
+          if_block = null;
+        });
+        check_outros();
+      }
+    },
+    i(local) {
+      if (current) return;
+      transition_in(if_block);
+      current = true;
+    },
+    o(local) {
+      transition_out(if_block);
+      current = false;
+    },
+    d(detaching) {
+      if (if_block) if_block.d(detaching);
+      if (detaching) detach(if_block_anchor);
+    }
+  };
+}
+function instance($$self, $$props, $$invalidate) {
+  let $zoomed;
+  let { items = void 0 } = $$props;
+  let { target = void 0 } = $$props;
+  const html = document.documentElement;
+  let position;
+  let opts;
+  let isOpen;
+  let focusTrigger;
+  let smallScreen;
+  let inline;
+  let movement;
+  let clickedEl;
+  let activeItem;
+  const activeItemIsHtml = () => !activeItem.img && !activeItem.sources && !activeItem.iframe;
+  let resizeFunc;
+  const setResizeFunc = (fn) => resizeFunc = fn;
+  const container = {};
+  const zoomed = writable(0);
+  component_subscribe($$self, zoomed, (value) => $$invalidate(10, $zoomed = value));
+  const open = (options) => {
+    $$invalidate(5, opts = options);
+    $$invalidate(8, inline = opts.inline);
+    if (!inline && html.scrollHeight > html.clientHeight) {
+      html.classList.add("bp-lock");
+    }
+    focusTrigger = document.activeElement;
+    $$invalidate(19, container.w = target.offsetWidth, container);
+    $$invalidate(
+      19,
+      container.h = target === document.body ? globalThis.innerHeight : target.clientHeight,
+      container
+    );
+    $$invalidate(7, smallScreen = container.w < 769);
+    $$invalidate(4, position = opts.position || 0);
+    $$invalidate(0, items = []);
+    for (let i6 = 0; i6 < (opts.items.length || 1); i6++) {
+      let item = opts.items[i6] || opts.items;
+      if ("dataset" in item) {
+        items.push({ element: item, i: i6, ...item.dataset });
+      } else {
+        item.i = i6;
+        items.push(item);
+        item = item.element;
+      }
+      if (opts.el && opts.el === item) {
+        $$invalidate(4, position = i6);
+      }
+    }
+  };
+  const close = () => {
+    opts.onClose?.(container.el, activeItem);
+    closing.set(true);
+    $$invalidate(0, items = null);
+    focusTrigger?.focus({ preventScroll: true });
+  };
+  const prev = () => setPosition(position - 1);
+  const next = () => setPosition(position + 1);
+  const setPosition = (index) => {
+    movement = index - position;
+    $$invalidate(4, position = getNextPosition(index));
+  };
+  const getNextPosition = (index) => (index + items.length) % items.length;
+  const onKeydown = (e8) => {
+    const { key, shiftKey } = e8;
+    if (key === "Escape") {
+      !opts.noClose && close();
+    } else if (key === "ArrowRight") {
+      next();
+    } else if (key === "ArrowLeft") {
+      prev();
+    } else if (key === "Tab") {
+      const { activeElement } = document;
+      if (shiftKey || !activeElement.controls) {
+        e8.preventDefault();
+        const { focusWrap = container.el } = opts;
+        const tabbable = [...focusWrap.querySelectorAll("*")].filter((node) => node.tabIndex >= 0);
+        let index = tabbable.indexOf(activeElement);
+        index += tabbable.length + (shiftKey ? -1 : 1);
+        tabbable[index % tabbable.length].focus();
+      }
+    }
+  };
+  const calculateDimensions = ({ width = 1920, height = 1080 }) => {
+    const { scale = 0.99 } = opts;
+    const ratio = Math.min(1, container.w / width * scale, container.h / height * scale);
+    return [Math.round(width * ratio), Math.round(height * ratio)];
+  };
+  const preloadNext = () => {
+    if (items) {
+      const nextItem = items[getNextPosition(position + 1)];
+      const prevItem = items[getNextPosition(position - 1)];
+      !nextItem.preload && loadImage(nextItem);
+      !prevItem.preload && loadImage(prevItem);
+    }
+  };
+  const loadImage = (item) => {
+    if (item.img) {
+      const image = document.createElement("img");
+      image.sizes = opts.sizes || `${calculateDimensions(item)[0]}px`;
+      image.srcset = item.img;
+      item.preload = true;
+      return image.decode().catch((error) => {
+      });
+    }
+  };
+  const mediaTransition = (node, isEntering) => {
+    if (!isOpen || !items) {
+      $$invalidate(18, isOpen = isEntering);
+      return opts.intro ? fly(node, { y: isEntering ? 10 : -10 }) : scaleIn(node);
+    }
+    return fly(node, {
+      x: (movement > 0 ? 20 : -20) * (isEntering ? 1 : -1),
+      duration: 250
+    });
+  };
+  const scaleIn = (node) => {
+    let dimensions;
+    if (activeItemIsHtml()) {
+      const bpItem = node.firstChild.firstChild;
+      dimensions = [bpItem.clientWidth, bpItem.clientHeight];
+    } else {
+      dimensions = calculateDimensions(activeItem);
+    }
+    const rect = (activeItem.element || focusTrigger).getBoundingClientRect();
+    const leftOffset = rect.left - (container.w - rect.width) / 2;
+    const centerTop = rect.top - (container.h - rect.height) / 2;
+    const scaleWidth = rect.width / dimensions[0];
+    const scaleHeight = rect.height / dimensions[1];
+    return {
+      duration: 480,
+      easing: cubicOut,
+      css: (t4, u3) => {
+        return `transform:translate3d(${leftOffset * u3}px, ${centerTop * u3}px, 0) scale3d(${scaleWidth + t4 * (1 - scaleWidth)}, ${scaleHeight + t4 * (1 - scaleHeight)}, 1)`;
+      }
+    };
+  };
+  const getChildProps = () => ({
+    activeItem,
+    calculateDimensions,
+    loadImage,
+    preloadNext,
+    opts,
+    prev,
+    next,
+    close,
+    setResizeFunc,
+    zoomed,
+    container
+  });
+  const containerActions = (node) => {
+    $$invalidate(19, container.el = node, container);
+    let roActive;
+    opts.onOpen?.(container.el, activeItem);
+    if (!inline) {
+      globalThis.addEventListener("keydown", onKeydown);
+    }
+    const ro = new ResizeObserver((entries) => {
+      if (roActive) {
+        $$invalidate(19, container.w = entries[0].contentRect.width, container);
+        $$invalidate(19, container.h = entries[0].contentRect.height, container);
+        $$invalidate(7, smallScreen = container.w < 769);
+        if (!activeItemIsHtml()) {
+          resizeFunc?.();
+        }
+        opts.onResize?.(container.el, activeItem);
+      }
+      roActive = true;
+    });
+    ro.observe(node);
+    return {
+      destroy() {
+        ro.disconnect();
+        globalThis.removeEventListener("keydown", onKeydown);
+        closing.set(false);
+        html.classList.remove("bp-lock");
+        opts.onClosed?.();
+      }
+    };
+  };
+  const pointerdown_handler = (e8) => $$invalidate(9, clickedEl = e8.target);
+  const pointerup_handler = function(e8) {
+    if (e8.button !== 2 && e8.target === this && clickedEl === this) {
+      !opts.noClose && close();
+    }
+  };
+  $$self.$$set = ($$props2) => {
+    if ("items" in $$props2) $$invalidate(0, items = $$props2.items);
+    if ("target" in $$props2) $$invalidate(15, target = $$props2.target);
+  };
+  $$self.$$.update = () => {
+    if ($$self.$$.dirty[0] & /*items, position, isOpen, opts, container, activeItem*/
+    786545) {
+      if (items) {
+        $$invalidate(6, activeItem = items[position]);
+        if (isOpen) {
+          opts.onUpdate?.(container.el, activeItem);
+        }
+      }
+    }
+  };
+  return [
+    items,
+    close,
+    prev,
+    next,
+    position,
+    opts,
+    activeItem,
+    smallScreen,
+    inline,
+    clickedEl,
+    $zoomed,
+    zoomed,
+    mediaTransition,
+    getChildProps,
+    containerActions,
+    target,
+    open,
+    setPosition,
+    isOpen,
+    container,
+    pointerdown_handler,
+    pointerup_handler
+  ];
+}
+var Bigger_picture = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(
+      this,
+      options,
+      instance,
+      create_fragment,
+      not_equal,
+      {
+        items: 0,
+        target: 15,
+        open: 16,
+        close: 1,
+        prev: 2,
+        next: 3,
+        setPosition: 17
+      },
+      null,
+      [-1, -1]
+    );
+  }
+  get items() {
+    return this.$$.ctx[0];
+  }
+  get target() {
+    return this.$$.ctx[15];
+  }
+  get open() {
+    return this.$$.ctx[16];
+  }
+  get close() {
+    return this.$$.ctx[1];
+  }
+  get prev() {
+    return this.$$.ctx[2];
+  }
+  get next() {
+    return this.$$.ctx[3];
+  }
+  get setPosition() {
+    return this.$$.ctx[17];
+  }
+};
+function biggerPicture(options) {
+  return new Bigger_picture({
+    ...options,
+    props: options
+  });
+}
+
 // src_web/gallery/gallery.ts
+var bp = biggerPicture({
+  target: document.body
+});
 var formattedTitle = (m2) => {
   return `${m2.nodeTitle} - (#${m2.nodeId})`;
 };
@@ -1349,8 +3936,9 @@ var JKImage = class {
   }
 };
 var JKRightPanelImage = class {
-  constructor(m2) {
-    this.m = m2;
+  constructor(data, onOpenLightboxRequest) {
+    this.data = data;
+    this.onOpenLightboxRequest = onOpenLightboxRequest;
     this.container = document.createElement("div");
     this.container.classList.add("jk-rightpanel-container");
     this.title = document.createElement("div");
@@ -1372,8 +3960,7 @@ var JKRightPanelImage = class {
                 <div class="comfyui-menu"> 
                       <button class="comfyui-button" id="info-expand-all"> Expand All </button>
                     <button class="comfyui-button" id="info-collapse-all"> Collapse All </button>
-                </div>
-          
+                </div>          
             </div>
         `;
     this.infoDialog.appendChild(this.dialogCloseBtn);
@@ -1415,7 +4002,7 @@ var JKRightPanelImage = class {
   }
   async tryLoadMetaData() {
     try {
-      const blob = await fetch(this.m.href).then((r8) => r8.blob());
+      const blob = await fetch(this.data.href).then((r8) => r8.blob());
       const metadata = await window.comfyAPI.pnginfo.getPngMetadata(blob);
       this.promptMetadata = JSON.parse(metadata?.prompt);
       const seed = findKeyValueRecursive(this.promptMetadata, "seed");
@@ -1455,18 +4042,21 @@ var JKRightPanelImage = class {
     this.container.appendChild(this.title);
     this.title.innerHTML = `
         <div>
-            ${this.m.nodeTitle} - (#${this.m.nodeId})
+            ${this.data.nodeTitle} - (#${this.data.nodeId})
         </div>
          <div>
-            filename: ${this.m.fileName}
+            filename: ${this.data.fileName}
         </div>
         <div id="seed"> </div>
         <div id="right-panel-btn-group" class="comfyui-menu">
             
         </div>
         `;
-    this.img = await new JKImage(this.m, false, true).init();
+    this.img = await new JKImage(this.data, false, true).init();
     this.container.appendChild(this.img.getEl());
+    this.img.opacityOverlay?.addEventListener("click", (ev) => {
+      this.onOpenLightboxRequest(this.img, this.data);
+    });
     this.container.appendChild(this.infoDialog);
     this.tryLoadMetaData();
     setTimeout(() => {
@@ -1497,6 +4087,27 @@ var JKImageGallery = class extends EventTarget {
         this.dispatchEvent(new Event(FeedBarEvents["feed-clear"]));
       }
     };
+    this.handleOpenLightbox = (selectedImg, data) => {
+      let openAtIndex = 0;
+      const items = [];
+      this.images.forEach((x2, i6) => {
+        if (x2.data.href === selectedImg.data.href) {
+          openAtIndex = i6;
+        }
+        items.push({
+          img: x2.data.href,
+          thumb: x2.data.href,
+          height: x2.img.naturalHeight,
+          width: x2.img.naturalWidth,
+          caption: x2.data.fileName
+        });
+      });
+      bp.open({
+        items,
+        intro: "fadeup",
+        position: openAtIndex
+      });
+    };
     this.updateImageVisibility = () => {
       this.images.forEach((i6) => {
         const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i6.data));
@@ -1519,7 +4130,6 @@ var JKImageGallery = class extends EventTarget {
         `;
     this.FeedBar = new JKFeedBar(this.feedBarContainer);
     window.addEventListener("resize", () => {
-      console.log("resized");
       this.selectedImage?.resizeHack();
     });
   }
@@ -1540,7 +4150,7 @@ var JKImageGallery = class extends EventTarget {
     }
   }
   async selectImage(data) {
-    this.selectedImage = await new JKRightPanelImage(data).init();
+    this.selectedImage = await new JKRightPanelImage(data, this.handleOpenLightbox).init();
     this.rightPanel.replaceChildren(this.selectedImage.getEl());
   }
   async addImage(data, updateFeedBar) {

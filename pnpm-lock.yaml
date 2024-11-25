@@ -19,6 +19,9 @@ importers:
       '@shoelace-style/shoelace':
         specifier: ^2.18.0
         version: 2.18.0(@types/react@18.3.12)
+      bigger-picture:
+        specifier: ^1.1.18
+        version: 1.1.18
     devDependencies:
       '@types/node':
         specifier: ^22.9.1
@@ -343,6 +346,9 @@ packages:
   array-union@2.1.0:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
+
+  bigger-picture@1.1.18:
+    resolution: {integrity: sha512-MertCM7gFaEVQjJ6UA3wL+MsdHG81VhLrcd8+axQC2rjcTX6jt4JB0LnNayR8KcV3gukOs/NGJGdzoaUchh0mQ==}
 
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
@@ -969,6 +975,8 @@ snapshots:
       picomatch: 2.3.1
 
   array-union@2.1.0: {}
+
+  bigger-picture@1.1.18: {}
 
   binary-extensions@2.3.0: {}
 

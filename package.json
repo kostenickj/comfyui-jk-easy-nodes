@@ -20,7 +20,8 @@
     },
     "dependencies": {
         "@alenaksu/json-viewer": "^2.1.2",
-        "@shoelace-style/shoelace": "^2.18.0"
+        "@shoelace-style/shoelace": "^2.18.0",
+        "bigger-picture": "^1.1.18"
     },
     "pnpm": {
         "patchedDependencies": {

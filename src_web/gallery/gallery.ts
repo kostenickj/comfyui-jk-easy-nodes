@@ -6,6 +6,15 @@ import type { JsonViewer } from '../../node_modules/@alenaksu/json-viewer/dist/J
 //@ts-ignore
 import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/eye-fill.svg';
 
+import BiggerPicture, { BiggerPictureInstance } from 'bigger-picture';
+
+// interface not exported -.-
+type BPItem = BiggerPictureInstance['items'][number];
+
+const bp = BiggerPicture({
+    target: document.body
+});
+
 const formattedTitle = (m: GalleryImageData) => {
     return `${m.nodeTitle} - (#${m.nodeId})`;
 };
@@ -113,7 +122,7 @@ class JKRightPanelImage {
 
     currentSearch?: Generator<any>;
 
-    constructor(private m: GalleryImageData) {
+    constructor(private data: GalleryImageData, private onOpenLightboxRequest: (selectedImg: JKImage, data: GalleryImageData) => void) {
         this.container = document.createElement('div');
         this.container.classList.add('jk-rightpanel-container');
 
@@ -138,8 +147,7 @@ class JKRightPanelImage {
                 <div class="comfyui-menu"> 
                       <button class="comfyui-button" id="info-expand-all"> Expand All </button>
                     <button class="comfyui-button" id="info-collapse-all"> Collapse All </button>
-                </div>
-          
+                </div>          
             </div>
         `;
 
@@ -185,7 +193,7 @@ class JKRightPanelImage {
 
     private async tryLoadMetaData() {
         try {
-            const blob = await fetch(this.m.href).then((r) => r.blob());
+            const blob = await fetch(this.data.href).then((r) => r.blob());
             //@ts-ignore
             const metadata = await window.comfyAPI.pnginfo.getPngMetadata(blob);
             this.promptMetadata = JSON.parse(metadata?.prompt);
@@ -233,10 +241,10 @@ class JKRightPanelImage {
         this.container.appendChild(this.title);
         this.title.innerHTML = `
         <div>
-            ${this.m.nodeTitle} - (#${this.m.nodeId})
+            ${this.data.nodeTitle} - (#${this.data.nodeId})
         </div>
          <div>
-            filename: ${this.m.fileName}
+            filename: ${this.data.fileName}
         </div>
         <div id="seed"> </div>
         <div id="right-panel-btn-group" class="comfyui-menu">
@@ -244,8 +252,11 @@ class JKRightPanelImage {
         </div>
         `;
 
-        this.img = await new JKImage(this.m, false, true).init();
+        this.img = await new JKImage(this.data, false, true).init();
         this.container.appendChild(this.img.getEl());
+        this.img.opacityOverlay?.addEventListener('click', (ev) => {
+            this.onOpenLightboxRequest(this.img, this.data);
+        });
 
         this.container.appendChild(this.infoDialog);
 
@@ -299,7 +310,6 @@ export class JKImageGallery extends EventTarget {
 
         // i suck at css, hence this
         window.addEventListener('resize', () => {
-            console.log('resized');
             this.selectedImage?.resizeHack();
         });
     }
@@ -314,7 +324,7 @@ export class JKImageGallery extends EventTarget {
     }
 
     private async selectImage(data: GalleryImageData) {
-        this.selectedImage = await new JKRightPanelImage(data).init();
+        this.selectedImage = await new JKRightPanelImage(data, this.handleOpenLightbox).init();
 
         this.rightPanel.replaceChildren(this.selectedImage.getEl());
     }
@@ -368,6 +378,29 @@ export class JKImageGallery extends EventTarget {
             this.imageMap = new Map<string, GalleryImageData[]>();
             this.dispatchEvent(new Event(FeedBarEvents['feed-clear']));
         }
+    };
+
+    private handleOpenLightbox = (selectedImg: JKImage, data: GalleryImageData) => {
+        let openAtIndex = 0;
+        const items: BPItem[] = [];
+        this.images.forEach((x, i) => {
+            if (x.data.href === selectedImg.data.href) {
+                openAtIndex = i;
+            }
+            items.push({
+                img: x.data.href,
+                thumb: x.data.href,
+                height: x.img.naturalHeight,
+                width: x.img.naturalWidth,
+                caption: x.data.fileName
+            });
+        });
+
+        bp.open({
+            items,
+            intro: 'fadeup',
+            position: openAtIndex
+        });
     };
 
     private updateImageVisibility = () => {
