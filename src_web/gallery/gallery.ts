@@ -292,11 +292,12 @@ export class JKImageGallery extends EventTarget {
     private get shuffle() {
         if (!this._shuffle) {
             this._shuffle = new Shuffle(document.getElementById('jk-grid-inner')!, {
-                columnWidth: (containerWidth) => 0.025 * containerWidth,
+                columnWidth: 15
                 //itemSelector: '.jk-img-wrapper',
                 //columnWidth: 250
                 //useTransforms: true
             });
+            this._shuffle.layout();
         }
         return this._shuffle;
     }
@@ -364,25 +365,6 @@ export class JKImageGallery extends EventTarget {
         this.selectImage(data);
     };
 
-    public async addImage(data: GalleryImageData, updateFeedBar: boolean) {
-        const nodeTitle = formattedTitle(data);
-
-        let isNewNode = false;
-        if (!this.imageMap.has(nodeTitle)) {
-            this.imageMap.set(nodeTitle, []);
-            isNewNode = true;
-        }
-
-        this.imageMap.get(nodeTitle)!.unshift(data);
-
-        const img = await new JKImage(data, true, false, this.handleImageClicked).init();
-        this.images.unshift(img);
-        this.leftPanel.prepend(img.getEl());
-        if (updateFeedBar && isNewNode) {
-            this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
-        }
-    }
-
     public async addImages(imgs: GalleryImageData[]) {
         if (!imgs) return;
         //promise.all was not executing in order so they were appearing in random order on page reload
@@ -408,43 +390,49 @@ export class JKImageGallery extends EventTarget {
         }
     };
 
+    public async addImage(data: GalleryImageData, updateFeedBar: boolean) {
+        const nodeTitle = formattedTitle(data);
+
+        let isNewNode = false;
+        if (!this.imageMap.has(nodeTitle)) {
+            this.imageMap.set(nodeTitle, []);
+            isNewNode = true;
+        }
+
+        this.imageMap.get(nodeTitle)!.unshift(data);
+
+        const img = await new JKImage(data, true, false, this.handleImageClicked).init();
+        this.images.unshift(img);
+        this.leftPanel.prepend(img.getEl());
+        if (updateFeedBar && isNewNode) {
+            this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
+        }
+
+        const fig = document.createElement('figure');
+        fig.className = 'jk-grid-img-wrap';
+        fig.innerHTML = `
+            <img class="jk-grid-img" src="${data.href}"> </img>  
+        `;
+        this.shuffle.element.appendChild(fig);
+        this.shuffle.add([fig]);
+        if (this.currentMode === EFeedMode.grid) {
+            setTimeout(()=>{
+                this.shuffle.update({ force: true, recalculateSizes: true });
+            }, 1)
+        }
+    }
+
     handleModeChange = async (newMode: EFeedMode) => {
         if (newMode === EFeedMode.grid) {
             this.feedPanel.style.display = 'none';
             this.gridPanel.style.display = 'flex';
-
-            this.gridPanel.innerHTML = ``;
-
-            // TODO, use jkimage for these so they have lightbox
-
-            // todo get rid of macy and switch to this
-            //https://github.com/Vestride/Shuffle
-
-            const els = [];
-
-            this.images.forEach((i) => {
-                //const newImg = new JKImage(i.data, true, true);
-                //newImg.init();
-                //newImg.getEl().style.height = i.img.naturalHeight + 'px'
-                const div = document.createElement('div');
-                div.classList.add('jk-grid-img-wrap');
-                div.innerHTML = `
-                    <img class="jk-grid-img" src="${i.data.href}"> </img>
-                `
-                els.push(div);
-                this.shuffle.element.appendChild(div);
-            });
-            this.shuffle.add(els as any)
-            setTimeout(() => {
-                this.shuffle.layout();
-                this.shuffle.update({ force: true, recalculateSizes: true })
-                
-            }, 10);
+            setTimeout(()=>{
+                this.shuffle.update({ force: true, recalculateSizes: true });
+            }, 1)
        
         } else {
             this.feedPanel.style.display = 'grid';
             this.gridPanel.style.display = 'none';
-            this.shuffle.destroy();
         }
 
         this.currentMode = newMode;

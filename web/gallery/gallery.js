@@ -5506,26 +5506,12 @@ var JKImageGallery = class extends EventTarget {
       if (newMode === "grid" /* grid */) {
         this.feedPanel.style.display = "none";
         this.gridPanel.style.display = "flex";
-        this.gridPanel.innerHTML = ``;
-        const els = [];
-        this.images.forEach((i6) => {
-          const div = document.createElement("div");
-          div.classList.add("jk-grid-img-wrap");
-          div.innerHTML = `
-                    <img class="jk-grid-img" src="${i6.data.href}"> </img>
-                `;
-          els.push(div);
-          this.shuffle.element.appendChild(div);
-        });
-        this.shuffle.add(els);
         setTimeout(() => {
-          this.shuffle.layout();
           this.shuffle.update({ force: true, recalculateSizes: true });
-        }, 10);
+        }, 1);
       } else {
         this.feedPanel.style.display = "grid";
         this.gridPanel.style.display = "none";
-        this.shuffle.destroy();
       }
       this.currentMode = newMode;
     };
@@ -5597,11 +5583,12 @@ var JKImageGallery = class extends EventTarget {
   get shuffle() {
     if (!this._shuffle) {
       this._shuffle = new Shuffle(document.getElementById("jk-grid-inner"), {
-        columnWidth: (containerWidth) => 0.025 * containerWidth
+        columnWidth: 15
         //itemSelector: '.jk-img-wrapper',
         //columnWidth: 250
         //useTransforms: true
       });
+      this._shuffle.layout();
     }
     return this._shuffle;
   }
@@ -5627,6 +5614,16 @@ var JKImageGallery = class extends EventTarget {
     this.selectedImage = await new JKRightPanelImage(data, this.handleOpenLightbox).init();
     this.rightPanel.replaceChildren(this.selectedImage.getEl());
   }
+  async addImages(imgs) {
+    if (!imgs) return;
+    for (const i6 of imgs) {
+      await this.addImage(i6, false);
+    }
+    if (!this.selectedImage && imgs.length) {
+      this.selectImage(imgs[0]);
+    }
+    this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], true);
+  }
   async addImage(data, updateFeedBar) {
     const nodeTitle = formattedTitle(data);
     let isNewNode = false;
@@ -5641,16 +5638,18 @@ var JKImageGallery = class extends EventTarget {
     if (updateFeedBar && isNewNode) {
       this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
     }
-  }
-  async addImages(imgs) {
-    if (!imgs) return;
-    for (const i6 of imgs) {
-      await this.addImage(i6, false);
+    const fig = document.createElement("figure");
+    fig.className = "jk-grid-img-wrap";
+    fig.innerHTML = `
+            <img class="jk-grid-img" src="${data.href}"> </img>  
+        `;
+    this.shuffle.element.appendChild(fig);
+    this.shuffle.add([fig]);
+    if (this.currentMode === "grid" /* grid */) {
+      setTimeout(() => {
+        this.shuffle.update({ force: true, recalculateSizes: true });
+      }, 1);
     }
-    if (!this.selectedImage && imgs.length) {
-      this.selectImage(imgs[0]);
-    }
-    this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], true);
   }
 };
 export {
