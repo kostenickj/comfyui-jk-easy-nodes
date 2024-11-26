@@ -9,7 +9,7 @@ import eye from '../../node_modules/@shoelace-style/shoelace/dist/assets/icons/e
 import BiggerPicture, { BiggerPictureInstance } from 'bigger-picture';
 import type { SlSplitPanel } from '@shoelace-style/shoelace';
 
-import Macy from 'macy';
+import Shuffle from 'shufflejs';
 
 // interface not exported -.-
 type BPItem = BiggerPictureInstance['items'][number];
@@ -287,24 +287,18 @@ export class JKImageGallery extends EventTarget {
     gridPanel: HTMLDivElement;
     currentMode: EFeedMode = EFeedMode.feed;
 
-    private _macy?: Macy;
+    private _shuffle?: Shuffle;
 
-    private get macy() {
-        if (!this._macy) {
-            this._macy = new Macy({
-                container: '#jk-grid-inner',
-                trueOrder: true,
-                margin: 24,
-                columns: 6,
-                breakAt: {
-                    1200: 5,
-                    940: 3,
-                    520: 2,
-                    400: 1
-                }
+    private get shuffle() {
+        if (!this._shuffle) {
+            this._shuffle = new Shuffle(document.getElementById('jk-grid-inner')!, {
+                columnWidth: (containerWidth) => 0.025 * containerWidth,
+                //itemSelector: '.jk-img-wrapper',
+                //columnWidth: 250
+                //useTransforms: true
             });
         }
-        return this._macy;
+        return this._shuffle;
     }
 
     private get leftPanel() {
@@ -422,17 +416,35 @@ export class JKImageGallery extends EventTarget {
             this.gridPanel.innerHTML = ``;
 
             // TODO, use jkimage for these so they have lightbox
-            this.images.forEach((i) => {
-                const newImg = new JKImage(i.data, true, true);
-                newImg.init();
-                this.gridPanel.appendChild(newImg.getEl());
-            });
 
-            this.macy?.reInit();
+            // todo get rid of macy and switch to this
+            //https://github.com/Vestride/Shuffle
+
+            const els = [];
+
+            this.images.forEach((i) => {
+                //const newImg = new JKImage(i.data, true, true);
+                //newImg.init();
+                //newImg.getEl().style.height = i.img.naturalHeight + 'px'
+                const div = document.createElement('div');
+                div.classList.add('jk-grid-img-wrap');
+                div.innerHTML = `
+                    <img class="jk-grid-img" src="${i.data.href}"> </img>
+                `
+                els.push(div);
+                this.shuffle.element.appendChild(div);
+            });
+            this.shuffle.add(els as any)
+            setTimeout(() => {
+                this.shuffle.layout();
+                this.shuffle.update({ force: true, recalculateSizes: true })
+                
+            }, 10);
+       
         } else {
             this.feedPanel.style.display = 'grid';
             this.gridPanel.style.display = 'none';
-            this._macy?.remove();
+            this.shuffle.destroy();
         }
 
         this.currentMode = newMode;

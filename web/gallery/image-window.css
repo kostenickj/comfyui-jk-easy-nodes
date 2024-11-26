@@ -822,6 +822,11 @@ body {
   overflow-y: auto;
   flex-direction: column;
 }
+#jk-image-gallery #jk-grid-panel .jk-grid-img-wrap {
+  max-width: 100%;
+  height: 256px;
+  display: flex;
+}
 #jk-image-gallery sl-split-panel .jk-img-wrapper,
 #jk-image-gallery #jk-grid-panel .jk-img-wrapper {
   max-width: 100%;

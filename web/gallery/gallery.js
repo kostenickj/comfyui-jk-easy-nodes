@@ -1,329 +1,11 @@
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
-var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
+var __privateAdd = (obj, member, value2) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value2);
+var __privateSet = (obj, member, value2, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value2) : member.set(obj, value2), value2);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
-
-// node_modules/.pnpm/macy@2.5.1/node_modules/macy/dist/macy.js
-var require_macy = __commonJS({
-  "node_modules/.pnpm/macy@2.5.1/node_modules/macy/dist/macy.js"(exports, module) {
-    !function(t4, n6) {
-      "object" == typeof exports && "undefined" != typeof module ? module.exports = n6() : "function" == typeof define && define.amd ? define(n6) : t4.Macy = n6();
-    }(exports, function() {
-      "use strict";
-      function t4(t5, n7) {
-        var e9 = void 0;
-        return function() {
-          e9 && clearTimeout(e9), e9 = setTimeout(t5, n7);
-        };
-      }
-      function n6(t5, n7) {
-        for (var e9 = t5.length, r9 = e9, o7 = []; e9--; ) o7.push(n7(t5[r9 - e9 - 1]));
-        return o7;
-      }
-      function e8(t5, n7) {
-        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
-        if (window.Promise) return A2(t5, n7, e9);
-        t5.recalculate(true, true);
-      }
-      function r8(t5) {
-        for (var n7 = t5.options, e9 = t5.responsiveOptions, r9 = t5.keys, o7 = t5.docWidth, i7 = void 0, s4 = 0; s4 < r9.length; s4++) {
-          var a4 = parseInt(r9[s4], 10);
-          o7 >= a4 && (i7 = n7.breakAt[a4], O(i7, e9));
-        }
-        return e9;
-      }
-      function o6(t5) {
-        for (var n7 = t5.options, e9 = t5.responsiveOptions, r9 = t5.keys, o7 = t5.docWidth, i7 = void 0, s4 = r9.length - 1; s4 >= 0; s4--) {
-          var a4 = parseInt(r9[s4], 10);
-          o7 <= a4 && (i7 = n7.breakAt[a4], O(i7, e9));
-        }
-        return e9;
-      }
-      function i6(t5) {
-        var n7 = t5.useContainerForBreakpoints ? t5.container.clientWidth : window.innerWidth, e9 = { columns: t5.columns };
-        b3(t5.margin) ? e9.margin = { x: t5.margin.x, y: t5.margin.y } : e9.margin = { x: t5.margin, y: t5.margin };
-        var i7 = Object.keys(t5.breakAt);
-        return t5.mobileFirst ? r8({ options: t5, responsiveOptions: e9, keys: i7, docWidth: n7 }) : o6({ options: t5, responsiveOptions: e9, keys: i7, docWidth: n7 });
-      }
-      function s3(t5) {
-        return i6(t5).columns;
-      }
-      function a3(t5) {
-        return i6(t5).margin;
-      }
-      function c4(t5) {
-        var n7 = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1], e9 = s3(t5), r9 = a3(t5).x, o7 = 100 / e9;
-        if (!n7) return o7;
-        if (1 === e9) return "100%";
-        var i7 = "px";
-        if ("string" == typeof r9) {
-          var c5 = parseFloat(r9);
-          i7 = r9.replace(c5, ""), r9 = c5;
-        }
-        return r9 = (e9 - 1) * r9 / e9, "%" === i7 ? o7 - r9 + "%" : "calc(" + o7 + "% - " + r9 + i7 + ")";
-      }
-      function u3(t5, n7) {
-        var e9 = s3(t5.options), r9 = 0, o7 = void 0, i7 = void 0;
-        if (1 === ++n7) return 0;
-        i7 = a3(t5.options).x;
-        var u4 = "px";
-        if ("string" == typeof i7) {
-          var l4 = parseFloat(i7, 10);
-          u4 = i7.replace(l4, ""), i7 = l4;
-        }
-        return o7 = (i7 - (e9 - 1) * i7 / e9) * (n7 - 1), r9 += c4(t5.options, false) * (n7 - 1), "%" === u4 ? r9 + o7 + "%" : "calc(" + r9 + "% + " + o7 + u4 + ")";
-      }
-      function l3(t5) {
-        var n7 = 0, e9 = t5.container, r9 = t5.rows;
-        v2(r9, function(t6) {
-          n7 = t6 > n7 ? t6 : n7;
-        }), e9.style.height = n7 + "px";
-      }
-      function p3(t5, n7) {
-        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], r9 = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], o7 = s3(t5.options), i7 = a3(t5.options).y;
-        M2(t5, o7, e9), v2(n7, function(n8) {
-          var e10 = 0, o8 = parseInt(n8.offsetHeight, 10);
-          isNaN(o8) || (t5.rows.forEach(function(n9, r10) {
-            n9 < t5.rows[e10] && (e10 = r10);
-          }), n8.style.position = "absolute", n8.style.top = t5.rows[e10] + "px", n8.style.left = "" + t5.cols[e10], t5.rows[e10] += isNaN(o8) ? 0 : o8 + i7, r9 && (n8.dataset.macyComplete = 1));
-        }), r9 && (t5.tmpRows = null), l3(t5);
-      }
-      function f3(t5, n7) {
-        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2], r9 = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], o7 = s3(t5.options), i7 = a3(t5.options).y;
-        M2(t5, o7, e9), v2(n7, function(n8) {
-          t5.lastcol === o7 && (t5.lastcol = 0);
-          var e10 = C2(n8, "height");
-          e10 = parseInt(n8.offsetHeight, 10), isNaN(e10) || (n8.style.position = "absolute", n8.style.top = t5.rows[t5.lastcol] + "px", n8.style.left = "" + t5.cols[t5.lastcol], t5.rows[t5.lastcol] += isNaN(e10) ? 0 : e10 + i7, t5.lastcol += 1, r9 && (n8.dataset.macyComplete = 1));
-        }), r9 && (t5.tmpRows = null), l3(t5);
-      }
-      var h3 = function t5(n7, e9) {
-        if (!(this instanceof t5)) return new t5(n7, e9);
-        if (n7 && n7.nodeName) return n7;
-        if (n7 = n7.replace(/^\s*/, "").replace(/\s*$/, ""), e9) return this.byCss(n7, e9);
-        for (var r9 in this.selectors) if (e9 = r9.split("/"), new RegExp(e9[1], e9[2]).test(n7)) return this.selectors[r9](n7);
-        return this.byCss(n7);
-      };
-      h3.prototype.byCss = function(t5, n7) {
-        return (n7 || document).querySelectorAll(t5);
-      }, h3.prototype.selectors = {}, h3.prototype.selectors[/^\.[\w\-]+$/] = function(t5) {
-        return document.getElementsByClassName(t5.substring(1));
-      }, h3.prototype.selectors[/^\w+$/] = function(t5) {
-        return document.getElementsByTagName(t5);
-      }, h3.prototype.selectors[/^\#[\w\-]+$/] = function(t5) {
-        return document.getElementById(t5.substring(1));
-      };
-      var v2 = function(t5, n7) {
-        for (var e9 = t5.length, r9 = e9; e9--; ) n7(t5[r9 - e9 - 1]);
-      }, m2 = function() {
-        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-        this.running = false, this.events = [], this.add(t5);
-      };
-      m2.prototype.run = function() {
-        if (!this.running && this.events.length > 0) {
-          var t5 = this.events.shift();
-          this.running = true, t5(), this.running = false, this.run();
-        }
-      }, m2.prototype.add = function() {
-        var t5 = this, n7 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-        return !!n7 && (Array.isArray(n7) ? v2(n7, function(n8) {
-          return t5.add(n8);
-        }) : (this.events.push(n7), void this.run()));
-      }, m2.prototype.clear = function() {
-        this.events = [];
-      };
-      var d3 = function(t5) {
-        var n7 = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-        return this.instance = t5, this.data = n7, this;
-      }, y3 = function() {
-        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-        this.events = {}, this.instance = t5;
-      };
-      y3.prototype.on = function() {
-        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0], n7 = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
-        return !(!t5 || !n7) && (Array.isArray(this.events[t5]) || (this.events[t5] = []), this.events[t5].push(n7));
-      }, y3.prototype.emit = function() {
-        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0], n7 = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-        if (!t5 || !Array.isArray(this.events[t5])) return false;
-        var e9 = new d3(this.instance, n7);
-        v2(this.events[t5], function(t6) {
-          return t6(e9);
-        });
-      };
-      var g2 = function(t5) {
-        return !("naturalHeight" in t5 && t5.naturalHeight + t5.naturalWidth === 0) || t5.width + t5.height !== 0;
-      }, E2 = function(t5, n7) {
-        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
-        return new Promise(function(t6, e10) {
-          if (n7.complete) return g2(n7) ? t6(n7) : e10(n7);
-          n7.addEventListener("load", function() {
-            return g2(n7) ? t6(n7) : e10(n7);
-          }), n7.addEventListener("error", function() {
-            return e10(n7);
-          });
-        }).then(function(n8) {
-          e9 && t5.emit(t5.constants.EVENT_IMAGE_LOAD, { img: n8 });
-        }).catch(function(n8) {
-          return t5.emit(t5.constants.EVENT_IMAGE_ERROR, { img: n8 });
-        });
-      }, w2 = function(t5, e9) {
-        var r9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
-        return n6(e9, function(n7) {
-          return E2(t5, n7, r9);
-        });
-      }, A2 = function(t5, n7) {
-        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
-        return Promise.all(w2(t5, n7, e9)).then(function() {
-          t5.emit(t5.constants.EVENT_IMAGE_COMPLETE);
-        });
-      }, I2 = function(n7) {
-        return t4(function() {
-          n7.emit(n7.constants.EVENT_RESIZE), n7.queue.add(function() {
-            return n7.recalculate(true, true);
-          });
-        }, 100);
-      }, N2 = function(t5) {
-        if (t5.container = h3(t5.options.container), t5.container instanceof h3 || !t5.container) return !!t5.options.debug && console.error("Error: Container not found");
-        t5.container.length && (t5.container = t5.container[0]), t5.options.container = t5.container, t5.container.style.position = "relative";
-      }, T2 = function(t5) {
-        t5.queue = new m2(), t5.events = new y3(t5), t5.rows = [], t5.resizer = I2(t5);
-      }, L2 = function(t5) {
-        var n7 = h3("img", t5.container);
-        window.addEventListener("resize", t5.resizer), t5.on(t5.constants.EVENT_IMAGE_LOAD, function() {
-          return t5.recalculate(false, false);
-        }), t5.on(t5.constants.EVENT_IMAGE_COMPLETE, function() {
-          return t5.recalculate(true, true);
-        }), t5.options.useOwnImageLoader || e8(t5, n7, !t5.options.waitForImages), t5.emit(t5.constants.EVENT_INITIALIZED);
-      }, _2 = function(t5) {
-        N2(t5), T2(t5), L2(t5);
-      }, b3 = function(t5) {
-        return t5 === Object(t5) && "[object Array]" !== Object.prototype.toString.call(t5);
-      }, O = function(t5, n7) {
-        b3(t5) || (n7.columns = t5), b3(t5) && t5.columns && (n7.columns = t5.columns), b3(t5) && t5.margin && !b3(t5.margin) && (n7.margin = { x: t5.margin, y: t5.margin }), b3(t5) && t5.margin && b3(t5.margin) && t5.margin.x && (n7.margin.x = t5.margin.x), b3(t5) && t5.margin && b3(t5.margin) && t5.margin.y && (n7.margin.y = t5.margin.y);
-      }, C2 = function(t5, n7) {
-        return window.getComputedStyle(t5, null).getPropertyValue(n7);
-      }, M2 = function(t5, n7) {
-        var e9 = arguments.length > 2 && void 0 !== arguments[2] && arguments[2];
-        if (t5.lastcol || (t5.lastcol = 0), t5.rows.length < 1 && (e9 = true), e9) {
-          t5.rows = [], t5.cols = [], t5.lastcol = 0;
-          for (var r9 = n7 - 1; r9 >= 0; r9--) t5.rows[r9] = 0, t5.cols[r9] = u3(t5, r9);
-        } else if (t5.tmpRows) {
-          t5.rows = [];
-          for (var r9 = n7 - 1; r9 >= 0; r9--) t5.rows[r9] = t5.tmpRows[r9];
-        } else {
-          t5.tmpRows = [];
-          for (var r9 = n7 - 1; r9 >= 0; r9--) t5.tmpRows[r9] = t5.rows[r9];
-        }
-      }, V2 = function(t5) {
-        var n7 = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], e9 = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], r9 = n7 ? t5.container.children : h3(':scope > *:not([data-macy-complete="1"])', t5.container);
-        r9 = Array.from(r9).filter(function(t6) {
-          return null !== t6.offsetParent;
-        });
-        var o7 = c4(t5.options);
-        return v2(r9, function(t6) {
-          n7 && (t6.dataset.macyComplete = 0), t6.style.width = o7;
-        }), t5.options.trueOrder ? (f3(t5, r9, n7, e9), t5.emit(t5.constants.EVENT_RECALCULATED)) : (p3(t5, r9, n7, e9), t5.emit(t5.constants.EVENT_RECALCULATED));
-      }, R2 = function() {
-        return !!window.Promise;
-      }, x2 = Object.assign || function(t5) {
-        for (var n7 = 1; n7 < arguments.length; n7++) {
-          var e9 = arguments[n7];
-          for (var r9 in e9) Object.prototype.hasOwnProperty.call(e9, r9) && (t5[r9] = e9[r9]);
-        }
-        return t5;
-      };
-      Array.from || (Array.from = function(t5) {
-        for (var n7 = 0, e9 = []; n7 < t5.length; ) e9.push(t5[n7++]);
-        return e9;
-      });
-      var k2 = { columns: 4, margin: 2, trueOrder: false, waitForImages: false, useImageLoader: true, breakAt: {}, useOwnImageLoader: false, onInit: false, cancelLegacy: false, useContainerForBreakpoints: false };
-      !function() {
-        try {
-          document.createElement("a").querySelector(":scope *");
-        } catch (t5) {
-          !function() {
-            function t6(t7) {
-              return function(e10) {
-                if (e10 && n7.test(e10)) {
-                  var r10 = this.getAttribute("id");
-                  r10 || (this.id = "q" + Math.floor(9e6 * Math.random()) + 1e6), arguments[0] = e10.replace(n7, "#" + this.id);
-                  var o7 = t7.apply(this, arguments);
-                  return null === r10 ? this.removeAttribute("id") : r10 || (this.id = r10), o7;
-                }
-                return t7.apply(this, arguments);
-              };
-            }
-            var n7 = /:scope\b/gi, e9 = t6(Element.prototype.querySelector);
-            Element.prototype.querySelector = function(t7) {
-              return e9.apply(this, arguments);
-            };
-            var r9 = t6(Element.prototype.querySelectorAll);
-            Element.prototype.querySelectorAll = function(t7) {
-              return r9.apply(this, arguments);
-            };
-          }();
-        }
-      }();
-      var q = function t5() {
-        var n7 = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : k2;
-        if (!(this instanceof t5)) return new t5(n7);
-        this.options = {}, x2(this.options, k2, n7), this.options.cancelLegacy && !R2() || _2(this);
-      };
-      return q.init = function(t5) {
-        return console.warn("Depreciated: Macy.init will be removed in v3.0.0 opt to use Macy directly like so Macy({ /*options here*/ }) "), new q(t5);
-      }, q.prototype.recalculateOnImageLoad = function() {
-        var t5 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];
-        return e8(this, h3("img", this.container), !t5);
-      }, q.prototype.runOnImageLoad = function(t5) {
-        var n7 = arguments.length > 1 && void 0 !== arguments[1] && arguments[1], r9 = h3("img", this.container);
-        return this.on(this.constants.EVENT_IMAGE_COMPLETE, t5), n7 && this.on(this.constants.EVENT_IMAGE_LOAD, t5), e8(this, r9, n7);
-      }, q.prototype.recalculate = function() {
-        var t5 = this, n7 = arguments.length > 0 && void 0 !== arguments[0] && arguments[0], e9 = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];
-        return e9 && this.queue.clear(), this.queue.add(function() {
-          return V2(t5, n7, e9);
-        });
-      }, q.prototype.remove = function() {
-        window.removeEventListener("resize", this.resizer), v2(this.container.children, function(t5) {
-          t5.removeAttribute("data-macy-complete"), t5.removeAttribute("style");
-        }), this.container.removeAttribute("style");
-      }, q.prototype.reInit = function() {
-        this.recalculate(true, true), this.emit(this.constants.EVENT_INITIALIZED), window.addEventListener("resize", this.resizer), this.container.style.position = "relative";
-      }, q.prototype.on = function(t5, n7) {
-        this.events.on(t5, n7);
-      }, q.prototype.emit = function(t5, n7) {
-        this.events.emit(t5, n7);
-      }, q.constants = { EVENT_INITIALIZED: "macy.initialized", EVENT_RECALCULATED: "macy.recalculated", EVENT_IMAGE_LOAD: "macy.image.load", EVENT_IMAGE_ERROR: "macy.image.error", EVENT_IMAGE_COMPLETE: "macy.images.complete", EVENT_RESIZE: "macy.resize" }, q.prototype.constants = q.constants, q;
-    });
-  }
-});
 
 // src_web/gallery/feedBar.ts
 var FeedBarEvent = class extends CustomEvent {
@@ -478,11 +160,11 @@ var findKeyValueRecursive = (obj, target) => {
       }
       return null;
     }
-    for (const [key, value] of Object.entries(current)) {
+    for (const [key, value2] of Object.entries(current)) {
       if (key === target) {
-        return { [key]: value };
+        return { [key]: value2 };
       }
-      const result = recurse(value);
+      const result = recurse(value2);
       if (result) return result;
     }
     return null;
@@ -1139,24 +821,24 @@ function n5(n6, r8, t4) {
 }
 
 // node_modules/.pnpm/@alenaksu+json-viewer@2.1.2_patch_hash=h6d5ny7gzeg2cflvjmbgs5cxte/node_modules/@alenaksu/json-viewer/dist/chunk-6HJCMUMX.js
-var __defProp2 = Object.defineProperty;
-var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc2(target, key) : target;
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
   for (var i6 = decorators.length - 1, decorator; i6 >= 0; i6--)
     if (decorator = decorators[i6])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp2(target, key, result);
+  if (kind && result) __defProp(target, key, result);
   return result;
 };
-function isRegex(value) {
-  return value instanceof RegExp;
+function isRegex(value2) {
+  return value2 instanceof RegExp;
 }
-function getType(value) {
-  return value === null ? "null" : Array.isArray(value) ? "array" : value.constructor.name.toLowerCase();
+function getType(value2) {
+  return value2 === null ? "null" : Array.isArray(value2) ? "array" : value2.constructor.name.toLowerCase();
 }
-function isPrimitive(value) {
-  return value !== Object(value);
+function isPrimitive(value2) {
+  return value2 !== Object(value2);
 }
 function generateNodePreview(node, { nodeCount = 3, maxLength = 15 } = {}) {
   const isArray = Array.isArray(node);
@@ -1199,8 +881,8 @@ function* deepTraverse(obj) {
       yield [node, path, parents];
     }
     if (!isPrimitive(node)) {
-      for (const [key, value] of Object.entries(node)) {
-        stack.push([value, `${path}${path ? "." : ""}${key}`, [...parents, path]]);
+      for (const [key, value2] of Object.entries(node)) {
+        stack.push([value2, `${path}${path ? "." : ""}${key}`, [...parents, path]]);
       }
     }
   }
@@ -1228,14 +910,14 @@ function checkGlob(str, glob) {
   return globIndex === globaParts.length;
 }
 var JSONConverter = {
-  fromAttribute: (value) => {
-    return value && value.trim() ? JSON.parse(value) : void 0;
+  fromAttribute: (value2) => {
+    return value2 && value2.trim() ? JSON.parse(value2) : void 0;
   },
-  toAttribute: (value) => {
-    return JSON.stringify(value);
+  toAttribute: (value2) => {
+    return JSON.stringify(value2);
   }
 };
-var isDefined = (value) => value !== void 0;
+var isDefined = (value2) => value2 !== void 0;
 var isMatchingPath = (path, criteria) => isRegex(criteria) ? !!path.match(criteria) : checkGlob(path, criteria);
 var getValueByPath = (json, path) => path.split(".").reduce((acc, key) => acc[key], json);
 var toggleNode = (path, expanded) => (state2) => ({
@@ -1442,8 +1124,8 @@ var JsonViewer = (_a = class extends r4 {
     this.addEventListener("focusin", __privateGet(this, _handleFocusIn));
     this.addEventListener("focusout", __privateGet(this, _handleFocusOut));
   }
-  static customRenderer(value, _path) {
-    return JSON.stringify(value);
+  static customRenderer(value2, _path) {
+    return JSON.stringify(value2);
   }
   async setState(stateFn) {
     const currentState = this.state;
@@ -1538,11 +1220,11 @@ var JsonViewer = (_a = class extends r4 {
             </ul>
         `;
   }
-  renderValue(value, path = "") {
-    if (isPrimitive(value)) {
-      return this.renderPrimitive(value, path);
+  renderValue(value2, path = "") {
+    if (isPrimitive(value2)) {
+      return this.renderPrimitive(value2, path);
     }
-    return this.renderObject(value, path);
+    return this.renderObject(value2, path);
   }
   renderNodePreview(node) {
     return x`<span part="preview" class="preview"> ${generateNodePreview(node)} </span>`;
@@ -1718,17 +1400,17 @@ function listen(node, event, handler, options) {
   node.addEventListener(event, handler, options);
   return () => node.removeEventListener(event, handler, options);
 }
-function attr(node, attribute, value) {
-  if (value == null)
+function attr(node, attribute, value2) {
+  if (value2 == null)
     node.removeAttribute(attribute);
-  else if (node.getAttribute(attribute) !== value)
-    node.setAttribute(attribute, value);
+  else if (node.getAttribute(attribute) !== value2)
+    node.setAttribute(attribute, value2);
 }
-function set_style(node, key, value, important) {
-  if (value === null) {
+function set_style(node, key, value2, important) {
+  if (value2 === null) {
     node.style.removeProperty(key);
   } else {
-    node.style.setProperty(key, value);
+    node.style.setProperty(key, value2);
   }
 }
 function toggle_class(element2, name, toggle) {
@@ -2075,10 +1757,10 @@ function init(component, options, instance2, create_fragment2, not_equal2, props
   append_styles && append_styles($$.root);
   let ready = false;
   $$.ctx = instance2 ? instance2(component, options.props || {}, (i6, ret, ...rest) => {
-    const value = rest.length ? rest[0] : ret;
-    if ($$.ctx && not_equal2($$.ctx[i6], $$.ctx[i6] = value)) {
+    const value2 = rest.length ? rest[0] : ret;
+    if ($$.ctx && not_equal2($$.ctx[i6], $$.ctx[i6] = value2)) {
       if (!$$.skip_bound && $$.bound[i6])
-        $$.bound[i6](value);
+        $$.bound[i6](value2);
       if (ready)
         make_dirty(component, i6);
     }
@@ -2138,17 +1820,17 @@ function fly(node, { delay = 0, duration = 400, easing = cubicOut, x: x2 = 0, y:
   };
 }
 var subscriber_queue = [];
-function writable(value, start = noop) {
+function writable(value2, start = noop) {
   let stop;
   const subscribers = /* @__PURE__ */ new Set();
   function set(new_value) {
-    if (not_equal(value, new_value)) {
-      value = new_value;
+    if (not_equal(value2, new_value)) {
+      value2 = new_value;
       if (stop) {
         const run_queue = !subscriber_queue.length;
         for (const subscriber of subscribers) {
           subscriber[1]();
-          subscriber_queue.push(subscriber, value);
+          subscriber_queue.push(subscriber, value2);
         }
         if (run_queue) {
           for (let i6 = 0; i6 < subscriber_queue.length; i6 += 2) {
@@ -2160,7 +1842,7 @@ function writable(value, start = noop) {
     }
   }
   function update2(fn) {
-    set(fn(value));
+    set(fn(value2));
   }
   function subscribe2(run2, invalidate = noop) {
     const subscriber = [run2, invalidate];
@@ -2168,7 +1850,7 @@ function writable(value, start = noop) {
     if (subscribers.size === 1) {
       stop = start(set) || noop;
     }
-    run2(value);
+    run2(value2);
     return () => {
       subscribers.delete(subscriber);
       if (subscribers.size === 0) {
@@ -2194,25 +1876,25 @@ function get_interpolator(a3, b3) {
     return (t4) => a3 + t4 * delta;
   }
 }
-function tweened(value, defaults = {}) {
-  const store = writable(value);
+function tweened(value2, defaults2 = {}) {
+  const store = writable(value2);
   let task;
-  let target_value = value;
+  let target_value = value2;
   function set(new_value, opts) {
-    if (value == null) {
-      store.set(value = new_value);
+    if (value2 == null) {
+      store.set(value2 = new_value);
       return Promise.resolve();
     }
     target_value = new_value;
     let previous_task = task;
     let started = false;
-    let { delay = 0, duration = 400, easing = identity, interpolate = get_interpolator } = assign(assign({}, defaults), opts);
+    let { delay = 0, duration = 400, easing = identity, interpolate = get_interpolator } = assign(assign({}, defaults2), opts);
     if (duration === 0) {
       if (previous_task) {
         previous_task.abort();
         previous_task = null;
       }
-      store.set(value = target_value);
+      store.set(value2 = target_value);
       return Promise.resolve();
     }
     const start = now() + delay;
@@ -2221,9 +1903,9 @@ function tweened(value, defaults = {}) {
       if (now2 < start)
         return true;
       if (!started) {
-        fn = interpolate(value, new_value);
+        fn = interpolate(value2, new_value);
         if (typeof duration === "function")
-          duration = duration(value, new_value);
+          duration = duration(value2, new_value);
         started = true;
       }
       if (previous_task) {
@@ -2232,17 +1914,17 @@ function tweened(value, defaults = {}) {
       }
       const elapsed = now2 - start;
       if (elapsed > duration) {
-        store.set(value = new_value);
+        store.set(value2 = new_value);
         return false;
       }
-      store.set(value = fn(easing(elapsed / duration)));
+      store.set(value2 = fn(easing(elapsed / duration)));
       return true;
     });
     return task.promise;
   }
   return {
     set,
-    update: (fn, opts) => set(fn(target_value, value), opts),
+    update: (fn, opts) => set(fn(target_value, value2), opts),
     subscribe: store.subscribe
   };
 }
@@ -2799,7 +2481,7 @@ function instance$3($$self, $$props, $$invalidate) {
   let { props } = $$props;
   let { smallScreen } = $$props;
   let { activeItem, opts, prev, next, zoomed, container } = props;
-  component_subscribe($$self, zoomed, (value) => $$invalidate(25, $zoomed = value));
+  component_subscribe($$self, zoomed, (value2) => $$invalidate(25, $zoomed = value2));
   let maxZoom = activeItem.maxZoom || opts.maxZoom || 10;
   let calculatedDimensions = props.calculateDimensions(activeItem);
   let sizes = calculatedDimensions[0];
@@ -2815,9 +2497,9 @@ function instance$3($$self, $$props, $$invalidate) {
   const dragPositions = [];
   const pointerCache = /* @__PURE__ */ new Map();
   const imageDimensions = tweened(calculatedDimensions, defaultTweenOptions(400));
-  component_subscribe($$self, imageDimensions, (value) => $$invalidate(0, $imageDimensions = value));
+  component_subscribe($$self, imageDimensions, (value2) => $$invalidate(0, $imageDimensions = value2));
   const zoomDragTranslate = tweened([0, 0], defaultTweenOptions(400));
-  component_subscribe($$self, zoomDragTranslate, (value) => $$invalidate(6, $zoomDragTranslate = value));
+  component_subscribe($$self, zoomDragTranslate, (value2) => $$invalidate(6, $zoomDragTranslate = value2));
   const boundTranslateValues = ([x2, y3], newDimensions = $imageDimensions) => {
     const maxTranslateX = (newDimensions[0] - container.w) / 2;
     const maxTranslateY = (newDimensions[1] - container.h) / 2;
@@ -3959,7 +3641,7 @@ function instance($$self, $$props, $$invalidate) {
   const setResizeFunc = (fn) => resizeFunc = fn;
   const container = {};
   const zoomed = writable(0);
-  component_subscribe($$self, zoomed, (value) => $$invalidate(10, $zoomed = value));
+  component_subscribe($$self, zoomed, (value2) => $$invalidate(10, $zoomed = value2));
   const open = (options) => {
     $$invalidate(5, opts = options);
     $$invalidate(8, inline = opts.inline);
@@ -4217,8 +3899,1388 @@ function biggerPicture(options) {
   });
 }
 
+// node_modules/.pnpm/shufflejs@6.1.1/node_modules/shufflejs/dist/shuffle.esm.js
+var tinyEmitterExports = {};
+var tinyEmitter = {
+  get exports() {
+    return tinyEmitterExports;
+  },
+  set exports(v2) {
+    tinyEmitterExports = v2;
+  }
+};
+function E2() {
+}
+E2.prototype = {
+  on: function(name, callback, ctx) {
+    var e8 = this.e || (this.e = {});
+    (e8[name] || (e8[name] = [])).push({
+      fn: callback,
+      ctx
+    });
+    return this;
+  },
+  once: function(name, callback, ctx) {
+    var self = this;
+    function listener() {
+      self.off(name, listener);
+      callback.apply(ctx, arguments);
+    }
+    listener._ = callback;
+    return this.on(name, listener, ctx);
+  },
+  emit: function(name) {
+    var data = [].slice.call(arguments, 1);
+    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+    var i6 = 0;
+    var len = evtArr.length;
+    for (i6; i6 < len; i6++) {
+      evtArr[i6].fn.apply(evtArr[i6].ctx, data);
+    }
+    return this;
+  },
+  off: function(name, callback) {
+    var e8 = this.e || (this.e = {});
+    var evts = e8[name];
+    var liveEvents = [];
+    if (evts && callback) {
+      for (var i6 = 0, len = evts.length; i6 < len; i6++) {
+        if (evts[i6].fn !== callback && evts[i6].fn._ !== callback)
+          liveEvents.push(evts[i6]);
+      }
+    }
+    liveEvents.length ? e8[name] = liveEvents : delete e8[name];
+    return this;
+  }
+};
+tinyEmitter.exports = E2;
+tinyEmitterExports.TinyEmitter = E2;
+var arrayParallel = function parallel(fns, context, callback) {
+  if (!callback) {
+    if (typeof context === "function") {
+      callback = context;
+      context = null;
+    } else {
+      callback = noop2;
+    }
+  }
+  var pending = fns && fns.length;
+  if (!pending) return callback(null, []);
+  var finished = false;
+  var results = new Array(pending);
+  fns.forEach(context ? function(fn, i6) {
+    fn.call(context, maybeDone(i6));
+  } : function(fn, i6) {
+    fn(maybeDone(i6));
+  });
+  function maybeDone(i6) {
+    return function(err, result) {
+      if (finished) return;
+      if (err) {
+        callback(err, results);
+        finished = true;
+        return;
+      }
+      results[i6] = result;
+      if (!--pending) callback(null, results);
+    };
+  }
+};
+function noop2() {
+}
+function getNumber(value2) {
+  return parseFloat(value2) || 0;
+}
+var Point = class {
+  /**
+   * Represents a coordinate pair.
+   * @param {number} [x=0] X.
+   * @param {number} [y=0] Y.
+   */
+  constructor(x2, y3) {
+    this.x = getNumber(x2);
+    this.y = getNumber(y3);
+  }
+  /**
+   * Whether two points are equal.
+   * @param {Point} a Point A.
+   * @param {Point} b Point B.
+   * @return {boolean}
+   */
+  static equals(a3, b3) {
+    return a3.x === b3.x && a3.y === b3.y;
+  }
+};
+var Point$1 = Point;
+var Rect = class {
+  /**
+   * Class for representing rectangular regions.
+   * https://github.com/google/closure-library/blob/master/closure/goog/math/rect.js
+   * @param {number} x Left.
+   * @param {number} y Top.
+   * @param {number} w Width.
+   * @param {number} h Height.
+   * @param {number} id Identifier
+   * @constructor
+   */
+  constructor(x2, y3, w2, h3, id2) {
+    this.id = id2;
+    this.left = x2;
+    this.top = y3;
+    this.width = w2;
+    this.height = h3;
+  }
+  /**
+   * Returns whether two rectangles intersect.
+   * @param {Rect} a A Rectangle.
+   * @param {Rect} b A Rectangle.
+   * @return {boolean} Whether a and b intersect.
+   */
+  static intersects(a3, b3) {
+    return a3.left < b3.left + b3.width && b3.left < a3.left + a3.width && a3.top < b3.top + b3.height && b3.top < a3.top + a3.height;
+  }
+};
+var Classes = {
+  BASE: "shuffle",
+  SHUFFLE_ITEM: "shuffle-item",
+  VISIBLE: "shuffle-item--visible",
+  HIDDEN: "shuffle-item--hidden"
+};
+var id$1 = 0;
+var ShuffleItem = class _ShuffleItem {
+  constructor(element2, isRTL) {
+    id$1 += 1;
+    this.id = id$1;
+    this.element = element2;
+    this.isRTL = isRTL;
+    this.isVisible = true;
+    this.isHidden = false;
+  }
+  show() {
+    this.isVisible = true;
+    this.element.classList.remove(Classes.HIDDEN);
+    this.element.classList.add(Classes.VISIBLE);
+    this.element.removeAttribute("aria-hidden");
+  }
+  hide() {
+    this.isVisible = false;
+    this.element.classList.remove(Classes.VISIBLE);
+    this.element.classList.add(Classes.HIDDEN);
+    this.element.setAttribute("aria-hidden", true);
+  }
+  init() {
+    this.addClasses([Classes.SHUFFLE_ITEM, Classes.VISIBLE]);
+    this.applyCss(_ShuffleItem.Css.INITIAL);
+    this.applyCss(this.isRTL ? _ShuffleItem.Css.DIRECTION.rtl : _ShuffleItem.Css.DIRECTION.ltr);
+    this.scale = _ShuffleItem.Scale.VISIBLE;
+    this.point = new Point$1();
+  }
+  addClasses(classes) {
+    classes.forEach((className) => {
+      this.element.classList.add(className);
+    });
+  }
+  removeClasses(classes) {
+    classes.forEach((className) => {
+      this.element.classList.remove(className);
+    });
+  }
+  applyCss(obj) {
+    Object.keys(obj).forEach((key) => {
+      this.element.style[key] = obj[key];
+    });
+  }
+  dispose() {
+    this.removeClasses([Classes.HIDDEN, Classes.VISIBLE, Classes.SHUFFLE_ITEM]);
+    this.element.removeAttribute("style");
+    this.element = null;
+  }
+};
+ShuffleItem.Css = {
+  INITIAL: {
+    position: "absolute",
+    top: 0,
+    visibility: "visible",
+    willChange: "transform"
+  },
+  DIRECTION: {
+    ltr: {
+      left: 0
+    },
+    rtl: {
+      right: 0
+    }
+  },
+  VISIBLE: {
+    before: {
+      opacity: 1,
+      visibility: "visible"
+    },
+    after: {
+      transitionDelay: ""
+    }
+  },
+  HIDDEN: {
+    before: {
+      opacity: 0
+    },
+    after: {
+      visibility: "hidden",
+      transitionDelay: ""
+    }
+  }
+};
+ShuffleItem.Scale = {
+  VISIBLE: 1,
+  HIDDEN: 1e-3
+};
+var ShuffleItem$1 = ShuffleItem;
+var value = null;
+var testComputedSize = () => {
+  if (value !== null) {
+    return value;
+  }
+  const element2 = document.body || document.documentElement;
+  const e8 = document.createElement("div");
+  e8.style.cssText = "width:10px;padding:2px;box-sizing:border-box;";
+  element2.appendChild(e8);
+  const {
+    width
+  } = window.getComputedStyle(e8, null);
+  value = Math.round(getNumber(width)) === 10;
+  element2.removeChild(e8);
+  return value;
+};
+function getNumberStyle(element2, style) {
+  let styles = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : window.getComputedStyle(element2, null);
+  let value2 = getNumber(styles[style]);
+  if (!testComputedSize() && style === "width") {
+    value2 += getNumber(styles.paddingLeft) + getNumber(styles.paddingRight) + getNumber(styles.borderLeftWidth) + getNumber(styles.borderRightWidth);
+  } else if (!testComputedSize() && style === "height") {
+    value2 += getNumber(styles.paddingTop) + getNumber(styles.paddingBottom) + getNumber(styles.borderTopWidth) + getNumber(styles.borderBottomWidth);
+  }
+  return value2;
+}
+function randomize(array) {
+  let n6 = array.length;
+  while (n6) {
+    n6 -= 1;
+    const i6 = Math.floor(Math.random() * (n6 + 1));
+    const temp = array[i6];
+    array[i6] = array[n6];
+    array[n6] = temp;
+  }
+  return array;
+}
+var defaults = {
+  // Use array.reverse() to reverse the results
+  reverse: false,
+  // Sorting function
+  by: null,
+  // Custom sort function
+  compare: null,
+  // If true, this will skip the sorting and return a randomized order in the array
+  randomize: false,
+  // Determines which property of each item in the array is passed to the
+  // sorting method.
+  key: "element"
+};
+function sorter(arr, options) {
+  const opts = {
+    ...defaults,
+    ...options
+  };
+  const original = Array.from(arr);
+  let revert = false;
+  if (!arr.length) {
+    return [];
+  }
+  if (opts.randomize) {
+    return randomize(arr);
+  }
+  if (typeof opts.by === "function") {
+    arr.sort((a3, b3) => {
+      if (revert) {
+        return 0;
+      }
+      const valA = opts.by(a3[opts.key]);
+      const valB = opts.by(b3[opts.key]);
+      if (valA === void 0 && valB === void 0) {
+        revert = true;
+        return 0;
+      }
+      if (valA < valB || valA === "sortFirst" || valB === "sortLast") {
+        return -1;
+      }
+      if (valA > valB || valA === "sortLast" || valB === "sortFirst") {
+        return 1;
+      }
+      return 0;
+    });
+  } else if (typeof opts.compare === "function") {
+    arr.sort(opts.compare);
+  }
+  if (revert) {
+    return original;
+  }
+  if (opts.reverse) {
+    arr.reverse();
+  }
+  return arr;
+}
+var transitions = {};
+var eventName = "transitionend";
+var count = 0;
+function uniqueId() {
+  count += 1;
+  return eventName + count;
+}
+function cancelTransitionEnd(id2) {
+  if (transitions[id2]) {
+    transitions[id2].element.removeEventListener(eventName, transitions[id2].listener);
+    transitions[id2] = null;
+    return true;
+  }
+  return false;
+}
+function onTransitionEnd(element2, callback) {
+  const id2 = uniqueId();
+  const listener = (evt) => {
+    if (evt.currentTarget === evt.target) {
+      cancelTransitionEnd(id2);
+      callback(evt);
+    }
+  };
+  element2.addEventListener(eventName, listener);
+  transitions[id2] = {
+    element: element2,
+    listener
+  };
+  return id2;
+}
+function arrayMax(array) {
+  return Math.max(...array);
+}
+function arrayMin(array) {
+  return Math.min(...array);
+}
+function getColumnSpan(itemWidth, columnWidth, columns, threshold) {
+  let columnSpan = itemWidth / columnWidth;
+  if (Math.abs(Math.round(columnSpan) - columnSpan) < threshold) {
+    columnSpan = Math.round(columnSpan);
+  }
+  return Math.min(Math.ceil(columnSpan), columns);
+}
+function getAvailablePositions(positions, columnSpan, columns) {
+  if (columnSpan === 1) {
+    return positions;
+  }
+  const available = [];
+  for (let i6 = 0; i6 <= columns - columnSpan; i6++) {
+    available.push(arrayMax(positions.slice(i6, i6 + columnSpan)));
+  }
+  return available;
+}
+function getShortColumn(positions, buffer) {
+  const minPosition = arrayMin(positions);
+  for (let i6 = 0, len = positions.length; i6 < len; i6++) {
+    if (positions[i6] >= minPosition - buffer && positions[i6] <= minPosition + buffer) {
+      return i6;
+    }
+  }
+  return 0;
+}
+function getItemPosition(_ref) {
+  let {
+    itemSize,
+    positions,
+    gridSize,
+    total,
+    threshold,
+    buffer
+  } = _ref;
+  const span = getColumnSpan(itemSize.width, gridSize, total, threshold);
+  const setY = getAvailablePositions(positions, span, total);
+  const shortColumnIndex = getShortColumn(setY, buffer);
+  const point = new Point$1(gridSize * shortColumnIndex, setY[shortColumnIndex]);
+  const setHeight = setY[shortColumnIndex] + itemSize.height;
+  for (let i6 = 0; i6 < span; i6++) {
+    positions[shortColumnIndex + i6] = setHeight;
+  }
+  return point;
+}
+function getCenteredPositions(itemRects, containerWidth) {
+  const rowMap = {};
+  itemRects.forEach((itemRect) => {
+    if (rowMap[itemRect.top]) {
+      rowMap[itemRect.top].push(itemRect);
+    } else {
+      rowMap[itemRect.top] = [itemRect];
+    }
+  });
+  let rects = [];
+  const rows = [];
+  const centeredRows = [];
+  Object.keys(rowMap).forEach((key) => {
+    const itemRects2 = rowMap[key];
+    rows.push(itemRects2);
+    const lastItem = itemRects2[itemRects2.length - 1];
+    const end = lastItem.left + lastItem.width;
+    const offset = Math.round((containerWidth - end) / 2);
+    let finalRects = itemRects2;
+    let canMove = false;
+    if (offset > 0) {
+      const newRects = [];
+      canMove = itemRects2.every((r8) => {
+        const newRect = new Rect(r8.left + offset, r8.top, r8.width, r8.height, r8.id);
+        const noOverlap = !rects.some((r9) => Rect.intersects(newRect, r9));
+        newRects.push(newRect);
+        return noOverlap;
+      });
+      if (canMove) {
+        finalRects = newRects;
+      }
+    }
+    if (!canMove) {
+      let intersectingRect;
+      const hasOverlap = itemRects2.some((itemRect) => rects.some((r8) => {
+        const intersects = Rect.intersects(itemRect, r8);
+        if (intersects) {
+          intersectingRect = r8;
+        }
+        return intersects;
+      }));
+      if (hasOverlap) {
+        const rowIndex = centeredRows.findIndex((items) => items.includes(intersectingRect));
+        centeredRows.splice(rowIndex, 1, rows[rowIndex]);
+      }
+    }
+    rects = rects.concat(finalRects);
+    centeredRows.push(finalRects);
+  });
+  return centeredRows.flat().sort((a3, b3) => a3.id - b3.id).map((itemRect) => new Point$1(itemRect.left, itemRect.top));
+}
+function hyphenate(str) {
+  return str.replace(/([A-Z])/g, (str2, m1) => `-${m1.toLowerCase()}`);
+}
+function arrayUnique(x2) {
+  return Array.from(new Set(x2));
+}
+var id = 0;
+var Shuffle = class _Shuffle extends tinyEmitterExports {
+  /**
+   * Categorize, sort, and filter a responsive grid of items.
+   *
+   * @param {Element} element An element which is the parent container for the grid items.
+   * @param {Object} [options=Shuffle.options] Options object.
+   * @constructor
+   */
+  constructor(element2) {
+    let options = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+    super();
+    this.options = {
+      ..._Shuffle.options,
+      ...options
+    };
+    this.lastSort = {};
+    this.group = _Shuffle.ALL_ITEMS;
+    this.lastFilter = _Shuffle.ALL_ITEMS;
+    this.isEnabled = true;
+    this.isDestroyed = false;
+    this.isInitialized = false;
+    this._transitions = [];
+    this.isTransitioning = false;
+    this._queue = [];
+    const el = this._getElementOption(element2);
+    if (!el) {
+      throw new TypeError("Shuffle needs to be initialized with an element.");
+    }
+    this.element = el;
+    this.id = `shuffle_${id}`;
+    id += 1;
+    this._init();
+    this.isInitialized = true;
+  }
+  _init() {
+    this.items = this._getItems();
+    this.sortedItems = this.items;
+    this.options.sizer = this._getElementOption(this.options.sizer);
+    this.element.classList.add(_Shuffle.Classes.BASE);
+    this._initItems(this.items);
+    if (document.readyState !== "complete") {
+      const layout = this.layout.bind(this);
+      window.addEventListener("load", function onLoad() {
+        window.removeEventListener("load", onLoad);
+        layout();
+      });
+    }
+    const containerCss = window.getComputedStyle(this.element, null);
+    const containerWidth = _Shuffle.getSize(this.element).width;
+    this._validateStyles(containerCss);
+    this._setColumns(containerWidth);
+    this.filter(this.options.group, this.options.initialSort);
+    this._rafId = null;
+    if ("ResizeObserver" in window) {
+      this._resizeObserver = new ResizeObserver(this._handleResizeCallback.bind(this));
+      this._resizeObserver.observe(this.element);
+    }
+    this.element.offsetWidth;
+    this.setItemTransitions(this.items);
+    this.element.style.transition = `height ${this.options.speed}ms ${this.options.easing}`;
+  }
+  /**
+   * Retrieve an element from an option.
+   * @param {string|jQuery|Element} option The option to check.
+   * @return {?Element} The plain element or null.
+   * @private
+   */
+  _getElementOption(option) {
+    if (typeof option === "string") {
+      return this.element.querySelector(option);
+    }
+    if (option && option.nodeType && option.nodeType === 1) {
+      return option;
+    }
+    if (option && option.jquery) {
+      return option[0];
+    }
+    return null;
+  }
+  /**
+   * Ensures the shuffle container has the css styles it needs applied to it.
+   * @param {Object} styles Key value pairs for position and overflow.
+   * @private
+   */
+  _validateStyles(styles) {
+    if (styles.position === "static") {
+      this.element.style.position = "relative";
+    }
+    if (styles.overflow !== "hidden") {
+      this.element.style.overflow = "hidden";
+    }
+  }
+  /**
+   * Filter the elements by a category.
+   * @param {string|string[]|function(Element):boolean} [category] Category to
+   *     filter by. If it's given, the last category will be used to filter the items.
+   * @param {Array} [collection] Optionally filter a collection. Defaults to
+   *     all the items.
+   * @return {{visible: ShuffleItem[], hidden: ShuffleItem[]}}
+   * @private
+   */
+  _filter() {
+    let category = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this.lastFilter;
+    let collection = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.items;
+    const set = this._getFilteredSets(category, collection);
+    this._toggleFilterClasses(set);
+    this.lastFilter = category;
+    if (typeof category === "string") {
+      this.group = category;
+    }
+    return set;
+  }
+  /**
+   * Returns an object containing the visible and hidden elements.
+   * @param {string|string[]|function(Element):boolean} category Category or function to filter by.
+   * @param {ShuffleItem[]} items A collection of items to filter.
+   * @return {{visible: ShuffleItem[], hidden: ShuffleItem[]}}
+   * @private
+   */
+  _getFilteredSets(category, items) {
+    let visible = [];
+    const hidden = [];
+    if (category === _Shuffle.ALL_ITEMS) {
+      visible = items;
+    } else {
+      items.forEach((item) => {
+        if (this._doesPassFilter(category, item.element)) {
+          visible.push(item);
+        } else {
+          hidden.push(item);
+        }
+      });
+    }
+    return {
+      visible,
+      hidden
+    };
+  }
+  /**
+   * Test an item to see if it passes a category.
+   * @param {string|string[]|function():boolean} category Category or function to filter by.
+   * @param {Element} element An element to test.
+   * @return {boolean} Whether it passes the category/filter.
+   * @private
+   */
+  _doesPassFilter(category, element2) {
+    if (typeof category === "function") {
+      return category.call(element2, element2, this);
+    }
+    const attr2 = element2.dataset[_Shuffle.FILTER_ATTRIBUTE_KEY];
+    const keys = this.options.delimiter ? attr2.split(this.options.delimiter) : JSON.parse(attr2);
+    function testCategory(category2) {
+      return keys.includes(category2);
+    }
+    if (Array.isArray(category)) {
+      if (this.options.filterMode === _Shuffle.FilterMode.ANY) {
+        return category.some(testCategory);
+      }
+      return category.every(testCategory);
+    }
+    return keys.includes(category);
+  }
+  /**
+   * Toggles the visible and hidden class names.
+   * @param {{visible, hidden}} Object with visible and hidden arrays.
+   * @private
+   */
+  _toggleFilterClasses(_ref) {
+    let {
+      visible,
+      hidden
+    } = _ref;
+    visible.forEach((item) => {
+      item.show();
+    });
+    hidden.forEach((item) => {
+      item.hide();
+    });
+  }
+  /**
+   * Set the initial css for each item
+   * @param {ShuffleItem[]} items Set to initialize.
+   * @private
+   */
+  _initItems(items) {
+    items.forEach((item) => {
+      item.init();
+    });
+  }
+  /**
+   * Remove element reference and styles.
+   * @param {ShuffleItem[]} items Set to dispose.
+   * @private
+   */
+  _disposeItems(items) {
+    items.forEach((item) => {
+      item.dispose();
+    });
+  }
+  /**
+   * Updates the visible item count.
+   * @private
+   */
+  _updateItemCount() {
+    this.visibleItems = this._getFilteredItems().length;
+  }
+  /**
+   * Sets css transform transition on a group of elements. This is not executed
+   * at the same time as `item.init` so that transitions don't occur upon
+   * initialization of a new Shuffle instance.
+   * @param {ShuffleItem[]} items Shuffle items to set transitions on.
+   * @protected
+   */
+  setItemTransitions(items) {
+    const {
+      speed,
+      easing
+    } = this.options;
+    const positionProps = this.options.useTransforms ? ["transform"] : ["top", "left"];
+    const cssProps = Object.keys(ShuffleItem$1.Css.HIDDEN.before).map((k2) => hyphenate(k2));
+    const properties = positionProps.concat(cssProps).join();
+    items.forEach((item) => {
+      item.element.style.transitionDuration = `${speed}ms`;
+      item.element.style.transitionTimingFunction = easing;
+      item.element.style.transitionProperty = properties;
+    });
+  }
+  _getItems() {
+    return Array.from(this.element.children).filter((el) => el.matches(this.options.itemSelector)).map((el) => new ShuffleItem$1(el, this.options.isRTL));
+  }
+  /**
+   * Combine the current items array with a new one and sort it by DOM order.
+   * @param {ShuffleItem[]} items Items to track.
+   * @return {ShuffleItem[]}
+   */
+  _mergeNewItems(items) {
+    const children = Array.from(this.element.children);
+    return sorter(this.items.concat(items), {
+      by(element2) {
+        return children.indexOf(element2);
+      }
+    });
+  }
+  _getFilteredItems() {
+    return this.items.filter((item) => item.isVisible);
+  }
+  _getConcealedItems() {
+    return this.items.filter((item) => !item.isVisible);
+  }
+  /**
+   * Returns the column size, based on column width and sizer options.
+   * @param {number} containerWidth Size of the parent container.
+   * @param {number} gutterSize Size of the gutters.
+   * @return {number}
+   * @private
+   */
+  _getColumnSize(containerWidth, gutterSize) {
+    let size;
+    if (typeof this.options.columnWidth === "function") {
+      size = this.options.columnWidth(containerWidth);
+    } else if (this.options.sizer) {
+      size = _Shuffle.getSize(this.options.sizer).width;
+    } else if (this.options.columnWidth) {
+      size = this.options.columnWidth;
+    } else if (this.items.length > 0) {
+      size = _Shuffle.getSize(this.items[0].element, true).width;
+    } else {
+      size = containerWidth;
+    }
+    if (size === 0) {
+      size = containerWidth;
+    }
+    return size + gutterSize;
+  }
+  /**
+   * Returns the gutter size, based on gutter width and sizer options.
+   * @param {number} containerWidth Size of the parent container.
+   * @return {number}
+   * @private
+   */
+  _getGutterSize(containerWidth) {
+    let size;
+    if (typeof this.options.gutterWidth === "function") {
+      size = this.options.gutterWidth(containerWidth);
+    } else if (this.options.sizer) {
+      size = getNumberStyle(this.options.sizer, "marginLeft");
+    } else {
+      size = this.options.gutterWidth;
+    }
+    return size;
+  }
+  /**
+   * Calculate the number of columns to be used. Gets css if using sizer element.
+   * @param {number} [containerWidth] Optionally specify a container width if
+   *    it's already available.
+   */
+  _setColumns() {
+    let containerWidth = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : _Shuffle.getSize(this.element).width;
+    const gutter = this._getGutterSize(containerWidth);
+    const columnWidth = this._getColumnSize(containerWidth, gutter);
+    let calculatedColumns = (containerWidth + gutter) / columnWidth;
+    if (Math.abs(Math.round(calculatedColumns) - calculatedColumns) < this.options.columnThreshold) {
+      calculatedColumns = Math.round(calculatedColumns);
+    }
+    this.cols = Math.max(Math.floor(calculatedColumns || 0), 1);
+    this.containerWidth = containerWidth;
+    this.colWidth = columnWidth;
+  }
+  /**
+   * Adjust the height of the grid
+   */
+  _setContainerSize() {
+    this.element.style.height = `${this._getContainerSize()}px`;
+  }
+  /**
+   * Based on the column heights, it returns the biggest one.
+   * @return {number}
+   * @private
+   */
+  _getContainerSize() {
+    return arrayMax(this.positions);
+  }
+  /**
+   * Get the clamped stagger amount.
+   * @param {number} index Index of the item to be staggered.
+   * @return {number}
+   */
+  _getStaggerAmount(index) {
+    return Math.min(index * this.options.staggerAmount, this.options.staggerAmountMax);
+  }
+  /**
+   * Emit an event from this instance.
+   * @param {string} name Event name.
+   * @param {Object} [data={}] Optional object data.
+   */
+  _dispatch(name) {
+    let data = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+    if (this.isDestroyed) {
+      return;
+    }
+    data.shuffle = this;
+    this.emit(name, data);
+  }
+  /**
+   * Zeros out the y columns array, which is used to determine item placement.
+   * @private
+   */
+  _resetCols() {
+    let i6 = this.cols;
+    this.positions = [];
+    while (i6) {
+      i6 -= 1;
+      this.positions.push(0);
+    }
+  }
+  /**
+   * Loops through each item that should be shown and calculates the x, y position.
+   * @param {ShuffleItem[]} items Array of items that will be shown/layed
+   *     out in order in their array.
+   */
+  _layout(items) {
+    const itemPositions = this._getNextPositions(items);
+    let count2 = 0;
+    items.forEach((item, i6) => {
+      function callback() {
+        item.applyCss(ShuffleItem$1.Css.VISIBLE.after);
+      }
+      if (Point$1.equals(item.point, itemPositions[i6]) && !item.isHidden) {
+        item.applyCss(ShuffleItem$1.Css.VISIBLE.before);
+        callback();
+        return;
+      }
+      item.point = itemPositions[i6];
+      item.scale = ShuffleItem$1.Scale.VISIBLE;
+      item.isHidden = false;
+      const styles = this.getStylesForTransition(item, ShuffleItem$1.Css.VISIBLE.before);
+      styles.transitionDelay = `${this._getStaggerAmount(count2)}ms`;
+      this._queue.push({
+        item,
+        styles,
+        callback
+      });
+      count2 += 1;
+    });
+  }
+  /**
+   * Return an array of Point instances representing the future positions of
+   * each item.
+   * @param {ShuffleItem[]} items Array of sorted shuffle items.
+   * @return {Point[]}
+   * @private
+   */
+  _getNextPositions(items) {
+    if (this.options.isCentered) {
+      const itemsData = items.map((item, i6) => {
+        const itemSize = _Shuffle.getSize(item.element, true);
+        const point = this._getItemPosition(itemSize);
+        return new Rect(point.x, point.y, itemSize.width, itemSize.height, i6);
+      });
+      return this.getTransformedPositions(itemsData, this.containerWidth);
+    }
+    return items.map((item) => this._getItemPosition(_Shuffle.getSize(item.element, true)));
+  }
+  /**
+   * Determine the location of the next item, based on its size.
+   * @param {{width: number, height: number}} itemSize Object with width and height.
+   * @return {Point}
+   * @private
+   */
+  _getItemPosition(itemSize) {
+    return getItemPosition({
+      itemSize,
+      positions: this.positions,
+      gridSize: this.colWidth,
+      total: this.cols,
+      threshold: this.options.columnThreshold,
+      buffer: this.options.buffer
+    });
+  }
+  /**
+   * Mutate positions before they're applied.
+   * @param {Rect[]} itemRects Item data objects.
+   * @param {number} containerWidth Width of the containing element.
+   * @return {Point[]}
+   * @protected
+   */
+  getTransformedPositions(itemRects, containerWidth) {
+    return getCenteredPositions(itemRects, containerWidth);
+  }
+  /**
+   * Hides the elements that don't match our filter.
+   * @param {ShuffleItem[]} collection Collection to shrink.
+   * @private
+   */
+  _shrink() {
+    let collection = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this._getConcealedItems();
+    let count2 = 0;
+    collection.forEach((item) => {
+      function callback() {
+        item.applyCss(ShuffleItem$1.Css.HIDDEN.after);
+      }
+      if (item.isHidden) {
+        item.applyCss(ShuffleItem$1.Css.HIDDEN.before);
+        callback();
+        return;
+      }
+      item.scale = ShuffleItem$1.Scale.HIDDEN;
+      item.isHidden = true;
+      const styles = this.getStylesForTransition(item, ShuffleItem$1.Css.HIDDEN.before);
+      styles.transitionDelay = `${this._getStaggerAmount(count2)}ms`;
+      this._queue.push({
+        item,
+        styles,
+        callback
+      });
+      count2 += 1;
+    });
+  }
+  /**
+   * Resize handler.
+   * @param {ResizeObserverEntry[]} entries
+   */
+  _handleResizeCallback(entries) {
+    if (!this.isEnabled || this.isDestroyed) {
+      return;
+    }
+    for (const entry of entries) {
+      if (Math.round(entry.contentRect.width) !== Math.round(this.containerWidth)) {
+        cancelAnimationFrame(this._rafId);
+        this._rafId = requestAnimationFrame(this.update.bind(this));
+      }
+    }
+  }
+  /**
+   * Returns styles which will be applied to the an item for a transition.
+   * @param {ShuffleItem} item Item to get styles for. Should have updated
+   *   scale and point properties.
+   * @param {Object} styleObject Extra styles that will be used in the transition.
+   * @return {!Object} Transforms for transitions, left/top for animate.
+   * @protected
+   */
+  getStylesForTransition(item, styleObject) {
+    const styles = {
+      ...styleObject
+    };
+    if (this.options.useTransforms) {
+      const sign = this.options.isRTL ? "-" : "";
+      const x2 = this.options.roundTransforms ? Math.round(item.point.x) : item.point.x;
+      const y3 = this.options.roundTransforms ? Math.round(item.point.y) : item.point.y;
+      styles.transform = `translate(${sign}${x2}px, ${y3}px) scale(${item.scale})`;
+    } else {
+      if (this.options.isRTL) {
+        styles.right = `${item.point.x}px`;
+      } else {
+        styles.left = `${item.point.x}px`;
+      }
+      styles.top = `${item.point.y}px`;
+    }
+    return styles;
+  }
+  /**
+   * Listen for the transition end on an element and execute the itemCallback
+   * when it finishes.
+   * @param {Element} element Element to listen on.
+   * @param {function} itemCallback Callback for the item.
+   * @param {function} done Callback to notify `parallel` that this one is done.
+   */
+  _whenTransitionDone(element2, itemCallback, done) {
+    const id2 = onTransitionEnd(element2, (evt) => {
+      itemCallback();
+      done(null, evt);
+    });
+    this._transitions.push(id2);
+  }
+  /**
+   * Return a function which will set CSS styles and call the `done` function
+   * when (if) the transition finishes.
+   * @param {Object} opts Transition object.
+   * @return {function} A function to be called with a `done` function.
+   */
+  _getTransitionFunction(opts) {
+    return (done) => {
+      opts.item.applyCss(opts.styles);
+      this._whenTransitionDone(opts.item.element, opts.callback, done);
+    };
+  }
+  /**
+   * Execute the styles gathered in the style queue. This applies styles to elements,
+   * triggering transitions.
+   * @private
+   */
+  _processQueue() {
+    if (this.isTransitioning) {
+      this._cancelMovement();
+    }
+    const hasSpeed = this.options.speed > 0;
+    const hasQueue = this._queue.length > 0;
+    if (hasQueue && hasSpeed && this.isInitialized) {
+      this._startTransitions(this._queue);
+    } else if (hasQueue) {
+      this._styleImmediately(this._queue);
+      this._dispatch(_Shuffle.EventType.LAYOUT);
+    } else {
+      this._dispatch(_Shuffle.EventType.LAYOUT);
+    }
+    this._queue.length = 0;
+  }
+  /**
+   * Wait for each transition to finish, the emit the layout event.
+   * @param {Object[]} transitions Array of transition objects.
+   */
+  _startTransitions(transitions2) {
+    this.isTransitioning = true;
+    const callbacks = transitions2.map((obj) => this._getTransitionFunction(obj));
+    arrayParallel(callbacks, this._movementFinished.bind(this));
+  }
+  _cancelMovement() {
+    this._transitions.forEach(cancelTransitionEnd);
+    this._transitions.length = 0;
+    this.isTransitioning = false;
+  }
+  /**
+   * Apply styles without a transition.
+   * @param {Object[]} objects Array of transition objects.
+   * @private
+   */
+  _styleImmediately(objects) {
+    if (objects.length) {
+      const elements = objects.map((obj) => obj.item.element);
+      _Shuffle._skipTransitions(elements, () => {
+        objects.forEach((obj) => {
+          obj.item.applyCss(obj.styles);
+          obj.callback();
+        });
+      });
+    }
+  }
+  _movementFinished() {
+    this._transitions.length = 0;
+    this.isTransitioning = false;
+    this._dispatch(_Shuffle.EventType.LAYOUT);
+  }
+  /**
+   * The magic. This is what makes the plugin 'shuffle'
+   * @param {string|string[]|function(Element):boolean} [category] Category to filter by.
+   *     Can be a function, string, or array of strings.
+   * @param {SortOptions} [sortOptions] A sort object which can sort the visible set
+   */
+  filter(category, sortOptions) {
+    if (!this.isEnabled) {
+      return;
+    }
+    if (!category || category && category.length === 0) {
+      category = _Shuffle.ALL_ITEMS;
+    }
+    this._filter(category);
+    this._shrink();
+    this._updateItemCount();
+    this.sort(sortOptions);
+  }
+  /**
+   * Gets the visible elements, sorts them, and passes them to layout.
+   * @param {SortOptions} [sortOptions] The options object to pass to `sorter`.
+   */
+  sort() {
+    let sortOptions = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this.lastSort;
+    if (!this.isEnabled) {
+      return;
+    }
+    this._resetCols();
+    const items = sorter(this._getFilteredItems(), sortOptions);
+    this.sortedItems = items;
+    this._layout(items);
+    this._processQueue();
+    this._setContainerSize();
+    this.lastSort = sortOptions;
+  }
+  /**
+   * Reposition everything.
+   * @param {object} options options object
+   * @param {boolean} [options.recalculateSizes=true] Whether to calculate column, gutter, and container widths again.
+   * @param {boolean} [options.force=false] By default, `update` does nothing if the instance is disabled. Setting this
+   *    to true forces the update to happen regardless.
+   */
+  update() {
+    let {
+      recalculateSizes = true,
+      force = false
+    } = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+    if (this.isEnabled || force) {
+      if (recalculateSizes) {
+        this._setColumns();
+      }
+      this.sort();
+    }
+  }
+  /**
+   * Use this instead of `update()` if you don't need the columns and gutters updated
+   * Maybe an image inside `shuffle` loaded (and now has a height), which means calculations
+   * could be off.
+   */
+  layout() {
+    this.update({
+      recalculateSizes: true
+    });
+  }
+  /**
+   * New items have been appended to shuffle. Mix them in with the current
+   * filter or sort status.
+   * @param {Element[]} newItems Collection of new items.
+   */
+  add(newItems) {
+    const items = arrayUnique(newItems).map((el) => new ShuffleItem$1(el, this.options.isRTL));
+    this._initItems(items);
+    this._resetCols();
+    const allItems = this._mergeNewItems(items);
+    const sortedItems = sorter(allItems, this.lastSort);
+    const allSortedItemsSet = this._filter(this.lastFilter, sortedItems);
+    const isNewItem = (item) => items.includes(item);
+    const applyHiddenState = (item) => {
+      item.scale = ShuffleItem$1.Scale.HIDDEN;
+      item.isHidden = true;
+      item.applyCss(ShuffleItem$1.Css.HIDDEN.before);
+      item.applyCss(ShuffleItem$1.Css.HIDDEN.after);
+    };
+    const itemPositions = this._getNextPositions(allSortedItemsSet.visible);
+    allSortedItemsSet.visible.forEach((item, i6) => {
+      if (isNewItem(item)) {
+        item.point = itemPositions[i6];
+        applyHiddenState(item);
+        item.applyCss(this.getStylesForTransition(item, {}));
+      }
+    });
+    allSortedItemsSet.hidden.forEach((item) => {
+      if (isNewItem(item)) {
+        applyHiddenState(item);
+      }
+    });
+    this.element.offsetWidth;
+    this.setItemTransitions(items);
+    this.items = this._mergeNewItems(items);
+    this.filter(this.lastFilter);
+  }
+  /**
+   * Disables shuffle from updating dimensions and layout on resize
+   */
+  disable() {
+    this.isEnabled = false;
+  }
+  /**
+   * Enables shuffle again
+   * @param {boolean} [isUpdateLayout=true] if undefined, shuffle will update columns and gutters
+   */
+  enable() {
+    let isUpdateLayout = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : true;
+    this.isEnabled = true;
+    if (isUpdateLayout) {
+      this.update();
+    }
+  }
+  /**
+   * Remove 1 or more shuffle items.
+   * @param {Element[]} elements An array containing one or more
+   *     elements in shuffle
+   * @return {Shuffle} The shuffle instance.
+   */
+  remove(elements) {
+    if (!elements.length) {
+      return;
+    }
+    const collection = arrayUnique(elements);
+    const oldItems = collection.map((element2) => this.getItemByElement(element2)).filter((item) => !!item);
+    const handleLayout = () => {
+      this._disposeItems(oldItems);
+      collection.forEach((element2) => {
+        element2.parentNode.removeChild(element2);
+      });
+      this._dispatch(_Shuffle.EventType.REMOVED, {
+        collection
+      });
+    };
+    this._toggleFilterClasses({
+      visible: [],
+      hidden: oldItems
+    });
+    this._shrink(oldItems);
+    this.sort();
+    this.items = this.items.filter((item) => !oldItems.includes(item));
+    this._updateItemCount();
+    this.once(_Shuffle.EventType.LAYOUT, handleLayout);
+  }
+  /**
+   * Retrieve a shuffle item by its element.
+   * @param {Element} element Element to look for.
+   * @return {?ShuffleItem} A shuffle item or undefined if it's not found.
+   */
+  getItemByElement(element2) {
+    return this.items.find((item) => item.element === element2);
+  }
+  /**
+   * Dump the elements currently stored and reinitialize all child elements which
+   * match the `itemSelector`.
+   */
+  resetItems() {
+    this._disposeItems(this.items);
+    this.isInitialized = false;
+    this.items = this._getItems();
+    this._initItems(this.items);
+    this.once(_Shuffle.EventType.LAYOUT, () => {
+      this.setItemTransitions(this.items);
+      this.isInitialized = true;
+    });
+    this.filter(this.lastFilter);
+  }
+  /**
+   * Destroys shuffle, removes events, styles, and classes
+   */
+  destroy() {
+    this._cancelMovement();
+    if (this._resizeObserver) {
+      this._resizeObserver.unobserve(this.element);
+      this._resizeObserver = null;
+    }
+    this.element.classList.remove("shuffle");
+    this.element.removeAttribute("style");
+    this._disposeItems(this.items);
+    this.items.length = 0;
+    this.sortedItems.length = 0;
+    this._transitions.length = 0;
+    this.options.sizer = null;
+    this.element = null;
+    this.isDestroyed = true;
+    this.isEnabled = false;
+  }
+  /**
+   * Returns the outer width of an element, optionally including its margins.
+   *
+   * There are a few different methods for getting the width of an element, none of
+   * which work perfectly for all Shuffle's use cases.
+   *
+   * 1. getBoundingClientRect() `left` and `right` properties.
+   *   - Accounts for transform scaled elements, making it useless for Shuffle
+   *   elements which have shrunk.
+   * 2. The `offsetWidth` property.
+   *   - This value stays the same regardless of the elements transform property,
+   *   however, it does not return subpixel values.
+   * 3. getComputedStyle()
+   *   - This works great Chrome, Firefox, Safari, but IE<=11 does not include
+   *   padding and border when box-sizing: border-box is set, requiring a feature
+   *   test and extra work to add the padding back for IE and other browsers which
+   *   follow the W3C spec here.
+   *
+   * @param {Element} element The element.
+   * @param {boolean} [includeMargins=false] Whether to include margins.
+   * @return {{width: number, height: number}} The width and height.
+   */
+  static getSize(element2) {
+    let includeMargins = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+    const styles = window.getComputedStyle(element2, null);
+    let width = getNumberStyle(element2, "width", styles);
+    let height = getNumberStyle(element2, "height", styles);
+    if (includeMargins) {
+      const marginLeft = getNumberStyle(element2, "marginLeft", styles);
+      const marginRight = getNumberStyle(element2, "marginRight", styles);
+      const marginTop = getNumberStyle(element2, "marginTop", styles);
+      const marginBottom = getNumberStyle(element2, "marginBottom", styles);
+      width += marginLeft + marginRight;
+      height += marginTop + marginBottom;
+    }
+    return {
+      width,
+      height
+    };
+  }
+  /**
+   * Change a property or execute a function which will not have a transition
+   * @param {Element[]} elements DOM elements that won't be transitioned.
+   * @param {function} callback A function which will be called while transition
+   *     is set to 0ms.
+   * @private
+   */
+  static _skipTransitions(elements, callback) {
+    const zero = "0ms";
+    const data = elements.map((element2) => {
+      const {
+        style
+      } = element2;
+      const duration = style.transitionDuration;
+      const delay = style.transitionDelay;
+      style.transitionDuration = zero;
+      style.transitionDelay = zero;
+      return {
+        duration,
+        delay
+      };
+    });
+    callback();
+    elements[0].offsetWidth;
+    elements.forEach((element2, i6) => {
+      element2.style.transitionDuration = data[i6].duration;
+      element2.style.transitionDelay = data[i6].delay;
+    });
+  }
+};
+Shuffle.ShuffleItem = ShuffleItem$1;
+Shuffle.ALL_ITEMS = "all";
+Shuffle.FILTER_ATTRIBUTE_KEY = "groups";
+Shuffle.EventType = {
+  LAYOUT: "shuffle:layout",
+  REMOVED: "shuffle:removed"
+};
+Shuffle.Classes = Classes;
+Shuffle.FilterMode = {
+  ANY: "any",
+  ALL: "all"
+};
+Shuffle.options = {
+  // Initial filter group.
+  group: Shuffle.ALL_ITEMS,
+  // Transition/animation speed (milliseconds).
+  speed: 250,
+  // CSS easing function to use.
+  easing: "cubic-bezier(0.4, 0.0, 0.2, 1)",
+  // e.g. '.picture-item'.
+  itemSelector: "*",
+  // Element or selector string. Use an element to determine the size of columns
+  // and gutters.
+  sizer: null,
+  // A static number or function that tells the plugin how wide the gutters
+  // between columns are (in pixels).
+  gutterWidth: 0,
+  // A static number or function that returns a number which tells the plugin
+  // how wide the columns are (in pixels).
+  columnWidth: 0,
+  // If your group is not json, and is comma delimited, you could set delimiter
+  // to ','.
+  delimiter: null,
+  // Useful for percentage based heights when they might not always be exactly
+  // the same (in pixels).
+  buffer: 0,
+  // Reading the width of elements isn't precise enough and can cause columns to
+  // jump between values.
+  columnThreshold: 0.01,
+  // Shuffle can be initialized with a sort object. It is the same object
+  // given to the sort method.
+  initialSort: null,
+  // Transition delay offset for each item in milliseconds.
+  staggerAmount: 15,
+  // Maximum stagger delay in milliseconds.
+  staggerAmountMax: 150,
+  // Whether to use transforms or absolute positioning.
+  useTransforms: true,
+  // Affects using an array with filter. e.g. `filter(['one', 'two'])`. With "any",
+  // the element passes the test if any of its groups are in the array. With "all",
+  // the element only passes if all groups are in the array.
+  // Note, this has no effect if you supply a custom filter function.
+  filterMode: Shuffle.FilterMode.ANY,
+  // Attempt to center grid items in each row.
+  isCentered: false,
+  // Attempt to align grid items to right.
+  isRTL: false,
+  // Whether to round pixel values used in translate(x, y). This usually avoids
+  // blurriness.
+  roundTransforms: true
+};
+Shuffle.Point = Point$1;
+Shuffle.Rect = Rect;
+Shuffle.__sorter = sorter;
+Shuffle.__getColumnSpan = getColumnSpan;
+Shuffle.__getAvailablePositions = getAvailablePositions;
+Shuffle.__getShortColumn = getShortColumn;
+Shuffle.__getCenteredPositions = getCenteredPositions;
+
 // src_web/gallery/gallery.ts
-var import_macy = __toESM(require_macy());
 var formattedTitle = (m2) => {
   return `${m2.nodeTitle} - (#${m2.nodeId})`;
 };
@@ -4445,16 +5507,25 @@ var JKImageGallery = class extends EventTarget {
         this.feedPanel.style.display = "none";
         this.gridPanel.style.display = "flex";
         this.gridPanel.innerHTML = ``;
+        const els = [];
         this.images.forEach((i6) => {
-          const newImg = new JKImage(i6.data, true, true);
-          newImg.init();
-          this.gridPanel.appendChild(newImg.getEl());
+          const div = document.createElement("div");
+          div.classList.add("jk-grid-img-wrap");
+          div.innerHTML = `
+                    <img class="jk-grid-img" src="${i6.data.href}"> </img>
+                `;
+          els.push(div);
+          this.shuffle.element.appendChild(div);
         });
-        this.macy?.reInit();
+        this.shuffle.add(els);
+        setTimeout(() => {
+          this.shuffle.layout();
+          this.shuffle.update({ force: true, recalculateSizes: true });
+        }, 10);
       } else {
         this.feedPanel.style.display = "grid";
         this.gridPanel.style.display = "none";
-        this._macy?.remove();
+        this.shuffle.destroy();
       }
       this.currentMode = newMode;
     };
@@ -4523,22 +5594,16 @@ var JKImageGallery = class extends EventTarget {
       target: document.body
     });
   }
-  get macy() {
-    if (!this._macy) {
-      this._macy = new import_macy.default({
-        container: "#jk-grid-inner",
-        trueOrder: true,
-        margin: 24,
-        columns: 6,
-        breakAt: {
-          1200: 5,
-          940: 3,
-          520: 2,
-          400: 1
-        }
+  get shuffle() {
+    if (!this._shuffle) {
+      this._shuffle = new Shuffle(document.getElementById("jk-grid-inner"), {
+        columnWidth: (containerWidth) => 0.025 * containerWidth
+        //itemSelector: '.jk-img-wrapper',
+        //columnWidth: 250
+        //useTransforms: true
       });
     }
-    return this._macy;
+    return this._shuffle;
   }
   get leftPanel() {
     return document.getElementById("jk-gallery-left-panel");
