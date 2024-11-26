@@ -14,7 +14,7 @@ import Shuffle from 'shufflejs';
 // interface not exported -.-
 type BPItem = BiggerPictureInstance['items'][number];
 
-const formattedTitle = (m: GalleryImageData) => {
+const getFormattedTitle = (m: GalleryImageData) => {
     return `${m.nodeTitle} - (#${m.nodeId})`;
 };
 
@@ -27,12 +27,14 @@ export interface GalleryImageData {
     fileName: string;
     execTimeMs: number;
 }
-class JKImage {
-    img!: HTMLImageElement;
-    wrapper: HTMLDivElement;
-    spinner: HTMLDivElement;
-    info?: HTMLDivElement;
-    opacityOverlay?: HTMLDivElement;
+
+abstract class BaseGalleryImage {
+    public img!: HTMLImageElement;
+    public readonly wrapper: HTMLDivElement;
+    public readonly spinner: HTMLDivElement;
+    public readonly info?: HTMLDivElement;
+    public readonly opacityOverlay?: HTMLDivElement;
+    public readonly formattedTitle: string;
 
     public get data() {
         return this.m;
@@ -49,9 +51,30 @@ class JKImage {
         });
     }
 
-    constructor(private m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, private clickedCallback?: (m: GalleryImageData) => void) {
+    public async init() {
+        this.img = await this.loadImage(this.m.href);
+        this.img.src = this.m.href;
+        this.img.classList.add('jk-img');
+        this.wrapper.appendChild(this.img);
+        this.wrapper.removeChild(this.spinner);
+        return this;
+    }
+
+    public getEl() {
+        return this.wrapper;
+    }
+
+    public setVisibilty(shouldBevisible: boolean) {
+        this.getEl().style.display = shouldBevisible ? 'block' : 'none';
+    }
+
+    constructor(protected m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, protected clickedCallback?: (m: GalleryImageData) => void) {
+        this.formattedTitle = getFormattedTitle(m);
         this.wrapper = document.createElement('div');
         this.wrapper.classList.add('jk-img-wrapper');
+        this.wrapper.onclick = (ev) => {
+            this.clickedCallback?.(this.m);
+        };
 
         if (showOpacityOverlay) {
             this.opacityOverlay = document.createElement('div');
@@ -66,11 +89,11 @@ class JKImage {
 
         if (showInfo) {
             this.info = document.createElement('div');
-            this.info.textContent = `${m.nodeTitle} - (#${m.nodeId})`;
+            this.info.textContent = this.formattedTitle;
             this.info.innerHTML = `
                 <div class="jk-img-info-title">
                     <sl-badge variant="neutral">
-                            ${m.nodeTitle} - (#${m.nodeId})
+                            ${this.formattedTitle}
                     </sl-badge>
                 </div>
                   <div class="jk-img-info-time">
@@ -83,30 +106,23 @@ class JKImage {
             this.wrapper.append(this.info);
         }
     }
+}
 
-    public async init() {
-        this.img = await this.loadImage(this.m.href);
-        this.img.src = this.m.href;
-        this.img.onclick = (ev) => {
-            this.clickedCallback?.(this.m);
-        };
-        this.img.classList.add('jk-img');
-        this.wrapper.appendChild(this.img);
-        this.wrapper.removeChild(this.spinner);
-        return this;
-    }
-
-    public getEl() {
-        return this.wrapper;
-    }
-
-    public setVisibilty(shouldBevisible: boolean) {
-        this.getEl().style.display = shouldBevisible ? 'block' : 'none';
+class FeedPanelImage extends BaseGalleryImage {
+    constructor(m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, clickedCallback?: (m: GalleryImageData) => void) {
+        super(m, showInfo, showOpacityOverlay, clickedCallback);
     }
 }
 
-class JKRightPanelImage {
-    img!: JKImage;
+class GridPanelImage extends BaseGalleryImage {
+    constructor(m: GalleryImageData, showInfo: boolean, showOpacityOverlay: boolean, clickedCallback?: (m: GalleryImageData) => void) {
+        super(m, showInfo, showOpacityOverlay, clickedCallback);
+        this.wrapper.dataset['groups'] = `["${this.formattedTitle}"]`;
+    }
+}
+
+class RightPanel {
+    img!: FeedPanelImage;
     container: HTMLDivElement;
     info: HTMLDivElement;
 
@@ -125,7 +141,7 @@ class JKRightPanelImage {
 
     currentSearch?: Generator<any>;
 
-    constructor(private data: GalleryImageData, private onOpenLightboxRequest: (selectedImg: JKImage, data: GalleryImageData) => void) {
+    constructor(private data: GalleryImageData, private onOpenLightboxRequest: (data: GalleryImageData) => void) {
         this.container = document.createElement('div');
         this.container.classList.add('jk-rightpanel-container');
 
@@ -255,10 +271,10 @@ class JKRightPanelImage {
         </div>
         `;
 
-        this.img = await new JKImage(this.data, false, true).init();
+        this.img = await new FeedPanelImage(this.data, false, true).init();
         this.container.appendChild(this.img.getEl());
         this.img.opacityOverlay?.addEventListener('click', (ev) => {
-            this.onOpenLightboxRequest(this.img, this.data);
+            this.onOpenLightboxRequest(this.data);
         });
 
         this.container.appendChild(this.infoDialog);
@@ -276,9 +292,10 @@ class JKRightPanelImage {
 
 export class JKImageGallery extends EventTarget {
     private initialized = false;
-    private images: JKImage[] = [];
+    private feedPanelImages: FeedPanelImage[] = [];
+    private gridPanelImages: GridPanelImage[] = [];
 
-    private selectedImage?: JKRightPanelImage;
+    private selectedImage?: RightPanel;
     // map of formatted node title => all image outputs we have from that node
     imageMap: Map<string, GalleryImageData[]> = new Map<string, GalleryImageData[]>();
     FeedBar: JKFeedBar;
@@ -292,10 +309,7 @@ export class JKImageGallery extends EventTarget {
     private get shuffle() {
         if (!this._shuffle) {
             this._shuffle = new Shuffle(document.getElementById('jk-grid-inner')!, {
-                columnWidth: 15
-                //itemSelector: '.jk-img-wrapper',
-                //columnWidth: 250
-                //useTransforms: true
+             //   columnWidth: 16
             });
             this._shuffle.layout();
         }
@@ -356,13 +370,19 @@ export class JKImageGallery extends EventTarget {
     }
 
     private async selectImage(data: GalleryImageData) {
-        this.selectedImage = await new JKRightPanelImage(data, this.handleOpenLightbox).init();
+        this.selectedImage = await new RightPanel(data, this.handleOpenLightbox).init();
 
         this.rightPanel.replaceChildren(this.selectedImage.getEl());
     }
 
     private handleImageClicked = (data: GalleryImageData) => {
-        this.selectImage(data);
+        if(this.currentMode === EFeedMode.feed)
+        {
+            this.selectImage(data);
+        }
+        else{
+            this.handleOpenLightbox(data)
+        }
     };
 
     public async addImages(imgs: GalleryImageData[]) {
@@ -382,7 +402,7 @@ export class JKImageGallery extends EventTarget {
     public clearFeed = (ev: any) => {
         if (confirm('are you sure you want to clear the feed? This cant be undone!')) {
             this.leftPanel.innerHTML = ``;
-            this.images = [];
+            this.feedPanelImages = [];
             this.rightPanel.innerHTML = ``;
             this.selectedImage = undefined;
             this.imageMap = new Map<string, GalleryImageData[]>();
@@ -391,7 +411,7 @@ export class JKImageGallery extends EventTarget {
     };
 
     public async addImage(data: GalleryImageData, updateFeedBar: boolean) {
-        const nodeTitle = formattedTitle(data);
+        const nodeTitle = getFormattedTitle(data);
 
         let isNewNode = false;
         if (!this.imageMap.has(nodeTitle)) {
@@ -401,21 +421,18 @@ export class JKImageGallery extends EventTarget {
 
         this.imageMap.get(nodeTitle)!.unshift(data);
 
-        const img = await new JKImage(data, true, false, this.handleImageClicked).init();
-        this.images.unshift(img);
-        this.leftPanel.prepend(img.getEl());
+        const feedPanelImage = await new FeedPanelImage(data, true, false, this.handleImageClicked).init();
+        this.feedPanelImages.unshift(feedPanelImage);
+        this.leftPanel.prepend(feedPanelImage.getEl());
         if (updateFeedBar && isNewNode) {
             this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
         }
 
-        const fig = document.createElement('figure');
-        fig.dataset['groups'] = `["${nodeTitle}"]`;
-        fig.className = 'jk-grid-img-wrap';
-        fig.innerHTML = `
-            <img class="jk-grid-img" src="${data.href}"> </img>  
-        `;
-        this.shuffle.element.appendChild(fig);
-        this.shuffle.add([fig]);
+        const gridPanelImage = await new GridPanelImage(data, true, true, this.handleImageClicked).init();
+        this.gridPanelImages.push(gridPanelImage);
+
+        this.shuffle.element.appendChild(gridPanelImage.getEl());
+        this.shuffle.add([gridPanelImage.getEl()]);
         if (this.currentMode === EFeedMode.grid) {
             setTimeout(() => {
                 this.shuffle.update({ force: true, recalculateSizes: true });
@@ -438,16 +455,16 @@ export class JKImageGallery extends EventTarget {
         this.currentMode = newMode;
     };
 
-    private handleOpenLightbox = (selectedImg: JKImage, data: GalleryImageData) => {
+    private handleOpenLightbox = (data: GalleryImageData) => {
         let openAtIndex = 0;
         const items: BPItem[] = [];
 
         // TODO, parts of this could probably we cached for perf, will def run into issues if someone gets thousands of images in a session
         let imageIndex = 0;
-        this.images.forEach((x) => {
-            const isChecked = this.FeedBar.checkedItems.get(formattedTitle(x.data));
+        this.feedPanelImages.forEach((x) => {
+            const isChecked = this.FeedBar.checkedItems.get(x.formattedTitle);
             if (isChecked) {
-                if (x.data.href === selectedImg.data.href) {
+                if (x.data.href === data.href) {
                     openAtIndex = imageIndex;
                 }
                 items.push({
@@ -466,7 +483,7 @@ export class JKImageGallery extends EventTarget {
             intro: 'fadeup',
             position: openAtIndex,
             onUpdate: (container, activeItem) => {
-                const itemData = this.images[activeItem?.['i']]?.data;
+                const itemData = this.feedPanelImages[activeItem?.['i']]?.data;
                 if (itemData) {
                     this.selectImage(itemData);
                 }
@@ -481,10 +498,10 @@ export class JKImageGallery extends EventTarget {
                 showfilter.push(k);
             }
         }
-        this.shuffle.filter(showfilter);
+        this.shuffle.filter(showfilter.length ? showfilter : ['none']);
 
-        this.images.forEach((i) => {
-            const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i.data));
+        this.feedPanelImages.forEach((i) => {
+            const isChecked = this.FeedBar.checkedItems.get(i.formattedTitle);
             i.setVisibilty(!!isChecked);
         });
     };

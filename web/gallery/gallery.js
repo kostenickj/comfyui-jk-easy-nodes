@@ -5281,15 +5281,19 @@ Shuffle.__getShortColumn = getShortColumn;
 Shuffle.__getCenteredPositions = getCenteredPositions;
 
 // src_web/gallery/gallery.ts
-var formattedTitle = (m2) => {
+var getFormattedTitle = (m2) => {
   return `${m2.nodeTitle} - (#${m2.nodeId})`;
 };
-var JKImage = class {
+var BaseGalleryImage = class {
   constructor(m2, showInfo, showOpacityOverlay, clickedCallback) {
     this.m = m2;
     this.clickedCallback = clickedCallback;
+    this.formattedTitle = getFormattedTitle(m2);
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("jk-img-wrapper");
+    this.wrapper.onclick = (ev) => {
+      this.clickedCallback?.(this.m);
+    };
     if (showOpacityOverlay) {
       this.opacityOverlay = document.createElement("div");
       this.opacityOverlay.innerHTML = `<sl-icon src="${eye_fill_default}"></sl-icon>`;
@@ -5301,11 +5305,11 @@ var JKImage = class {
     this.wrapper.append(this.spinner);
     if (showInfo) {
       this.info = document.createElement("div");
-      this.info.textContent = `${m2.nodeTitle} - (#${m2.nodeId})`;
+      this.info.textContent = this.formattedTitle;
       this.info.innerHTML = `
                 <div class="jk-img-info-title">
                     <sl-badge variant="neutral">
-                            ${m2.nodeTitle} - (#${m2.nodeId})
+                            ${this.formattedTitle}
                     </sl-badge>
                 </div>
                   <div class="jk-img-info-time">
@@ -5334,9 +5338,6 @@ var JKImage = class {
   async init() {
     this.img = await this.loadImage(this.m.href);
     this.img.src = this.m.href;
-    this.img.onclick = (ev) => {
-      this.clickedCallback?.(this.m);
-    };
     this.img.classList.add("jk-img");
     this.wrapper.appendChild(this.img);
     this.wrapper.removeChild(this.spinner);
@@ -5349,7 +5350,18 @@ var JKImage = class {
     this.getEl().style.display = shouldBevisible ? "block" : "none";
   }
 };
-var JKRightPanelImage = class {
+var FeedPanelImage = class extends BaseGalleryImage {
+  constructor(m2, showInfo, showOpacityOverlay, clickedCallback) {
+    super(m2, showInfo, showOpacityOverlay, clickedCallback);
+  }
+};
+var GridPanelImage = class extends BaseGalleryImage {
+  constructor(m2, showInfo, showOpacityOverlay, clickedCallback) {
+    super(m2, showInfo, showOpacityOverlay, clickedCallback);
+    this.wrapper.dataset["groups"] = `["${this.formattedTitle}"]`;
+  }
+};
+var RightPanel = class {
   constructor(data, onOpenLightboxRequest) {
     this.data = data;
     this.onOpenLightboxRequest = onOpenLightboxRequest;
@@ -5466,10 +5478,10 @@ var JKRightPanelImage = class {
             
         </div>
         `;
-    this.img = await new JKImage(this.data, false, true).init();
+    this.img = await new FeedPanelImage(this.data, false, true).init();
     this.container.appendChild(this.img.getEl());
     this.img.opacityOverlay?.addEventListener("click", (ev) => {
-      this.onOpenLightboxRequest(this.img, this.data);
+      this.onOpenLightboxRequest(this.data);
     });
     this.container.appendChild(this.infoDialog);
     this.tryLoadMetaData();
@@ -5485,17 +5497,22 @@ var JKImageGallery = class extends EventTarget {
     this.container = container;
     this.feedBarContainer = feedBarContainer;
     this.initialized = false;
-    this.images = [];
+    this.feedPanelImages = [];
+    this.gridPanelImages = [];
     // map of formatted node title => all image outputs we have from that node
     this.imageMap = /* @__PURE__ */ new Map();
     this.currentMode = "feed" /* feed */;
     this.handleImageClicked = (data) => {
-      this.selectImage(data);
+      if (this.currentMode === "feed" /* feed */) {
+        this.selectImage(data);
+      } else {
+        this.handleOpenLightbox(data);
+      }
     };
     this.clearFeed = (ev) => {
       if (confirm("are you sure you want to clear the feed? This cant be undone!")) {
         this.leftPanel.innerHTML = ``;
-        this.images = [];
+        this.feedPanelImages = [];
         this.rightPanel.innerHTML = ``;
         this.selectedImage = void 0;
         this.imageMap = /* @__PURE__ */ new Map();
@@ -5515,14 +5532,14 @@ var JKImageGallery = class extends EventTarget {
       }
       this.currentMode = newMode;
     };
-    this.handleOpenLightbox = (selectedImg, data) => {
+    this.handleOpenLightbox = (data) => {
       let openAtIndex = 0;
       const items = [];
       let imageIndex = 0;
-      this.images.forEach((x2) => {
-        const isChecked = this.FeedBar.checkedItems.get(formattedTitle(x2.data));
+      this.feedPanelImages.forEach((x2) => {
+        const isChecked = this.FeedBar.checkedItems.get(x2.formattedTitle);
         if (isChecked) {
-          if (x2.data.href === selectedImg.data.href) {
+          if (x2.data.href === data.href) {
             openAtIndex = imageIndex;
           }
           items.push({
@@ -5540,7 +5557,7 @@ var JKImageGallery = class extends EventTarget {
         intro: "fadeup",
         position: openAtIndex,
         onUpdate: (container, activeItem) => {
-          const itemData = this.images[activeItem?.["i"]]?.data;
+          const itemData = this.feedPanelImages[activeItem?.["i"]]?.data;
           if (itemData) {
             this.selectImage(itemData);
           }
@@ -5554,9 +5571,9 @@ var JKImageGallery = class extends EventTarget {
           showfilter.push(k2);
         }
       }
-      this.shuffle.filter(showfilter);
-      this.images.forEach((i6) => {
-        const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i6.data));
+      this.shuffle.filter(showfilter.length ? showfilter : ["none"]);
+      this.feedPanelImages.forEach((i6) => {
+        const isChecked = this.FeedBar.checkedItems.get(i6.formattedTitle);
         i6.setVisibilty(!!isChecked);
       });
     };
@@ -5590,10 +5607,7 @@ var JKImageGallery = class extends EventTarget {
   get shuffle() {
     if (!this._shuffle) {
       this._shuffle = new Shuffle(document.getElementById("jk-grid-inner"), {
-        columnWidth: 15
-        //itemSelector: '.jk-img-wrapper',
-        //columnWidth: 250
-        //useTransforms: true
+        //   columnWidth: 16
       });
       this._shuffle.layout();
     }
@@ -5618,7 +5632,7 @@ var JKImageGallery = class extends EventTarget {
     }
   }
   async selectImage(data) {
-    this.selectedImage = await new JKRightPanelImage(data, this.handleOpenLightbox).init();
+    this.selectedImage = await new RightPanel(data, this.handleOpenLightbox).init();
     this.rightPanel.replaceChildren(this.selectedImage.getEl());
   }
   async addImages(imgs) {
@@ -5632,27 +5646,23 @@ var JKImageGallery = class extends EventTarget {
     this.FeedBar.updateCheckboxOptions([...this.imageMap.keys()], true);
   }
   async addImage(data, updateFeedBar) {
-    const nodeTitle = formattedTitle(data);
+    const nodeTitle = getFormattedTitle(data);
     let isNewNode = false;
     if (!this.imageMap.has(nodeTitle)) {
       this.imageMap.set(nodeTitle, []);
       isNewNode = true;
     }
     this.imageMap.get(nodeTitle).unshift(data);
-    const img = await new JKImage(data, true, false, this.handleImageClicked).init();
-    this.images.unshift(img);
-    this.leftPanel.prepend(img.getEl());
+    const feedPanelImage = await new FeedPanelImage(data, true, false, this.handleImageClicked).init();
+    this.feedPanelImages.unshift(feedPanelImage);
+    this.leftPanel.prepend(feedPanelImage.getEl());
     if (updateFeedBar && isNewNode) {
       this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
     }
-    const fig = document.createElement("figure");
-    fig.dataset["groups"] = `["${nodeTitle}"]`;
-    fig.className = "jk-grid-img-wrap";
-    fig.innerHTML = `
-            <img class="jk-grid-img" src="${data.href}"> </img>  
-        `;
-    this.shuffle.element.appendChild(fig);
-    this.shuffle.add([fig]);
+    const gridPanelImage = await new GridPanelImage(data, true, true, this.handleImageClicked).init();
+    this.gridPanelImages.push(gridPanelImage);
+    this.shuffle.element.appendChild(gridPanelImage.getEl());
+    this.shuffle.add([gridPanelImage.getEl()]);
     if (this.currentMode === "grid" /* grid */) {
       setTimeout(() => {
         this.shuffle.update({ force: true, recalculateSizes: true });

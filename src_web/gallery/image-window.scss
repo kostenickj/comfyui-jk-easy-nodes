@@ -79,18 +79,71 @@ body {
         overflow-y: auto;
         flex-direction: column;
 
-        .jk-grid-img-wrap{
+        --grid-panel-gutter-size:8px;
+        #jk-grid-inner{
+            overflow-y: visible !important;
+        }
+        .jk-img-wrapper {
             max-width: 25%;
-            margin: 0;
-            .jk-grid-img{
+            margin-bottom: var(--grid-panel-gutter-size);
+            padding-left: var(--grid-panel-gutter-size);
+            padding-right: var(--grid-panel-gutter-size);
+
+            .jk-img-hover {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-left: var(--grid-panel-gutter-size);
+                margin-right: var(--grid-panel-gutter-size);
+                margin-bottom: calc(var(--grid-panel-gutter-size) / 2);
+                sl-icon {
+                    opacity: 0;
+                    font-size: 32px;
+                    transition: all 0.3s ease-in-out;
+                    scale: 1;
+                }
+
+                &:hover {
+                    background-color: rgba(1, 1, 1, .5);
+                    transition: all 0.3s ease-in-out;
+
+                    sl-icon {
+                        opacity: 1;
+                        transition: all 0.3s ease-in-out;
+                        color: var(--fg-color);
+                        scale: 1.25;
+                    }
+                }
+
+                cursor: pointer;
+            }
+
+            .jk-img-info-wrapper {
+                margin-left: var(--grid-panel-gutter-size);
+                margin-right: var(--grid-panel-gutter-size);
+                position: absolute;
+                bottom: 0;
+                left: 4px;
+                padding: 4px;
+     
+                overflow: hidden;
+                pointer-events: none;
+                word-break: break-all;
+            }
+
+            .jk-img {
                 width: 100%;
                 height: auto;
             }
         }
     }
 
-    sl-split-panel,
-    #jk-grid-panel {
+    sl-split-panel {
         .jk-img-wrapper {
             max-width: 100%;
             max-height: 100%;
