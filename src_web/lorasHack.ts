@@ -5,8 +5,7 @@ const walkUpListToFindFullLoraPath = (targetNode: HTMLElement, startNode: HTMLEl
     let currentNode = startNode;
 
     while (currentNode !== targetNode && currentNode !== null) {
-        if(currentNode instanceof HTMLLIElement)
-        {
+        if (currentNode instanceof HTMLLIElement) {
             path.unshift(currentNode);
         }
 
@@ -32,29 +31,40 @@ class LoraClickHacker {
 
     handleLoraClicked(ev: MouseEvent) {
         const el = this as unknown as HTMLLIElement;
-        console.log('lora clicked', el.innerText);
+        //console.log('lora clicked', el.innerText);
 
         const path = walkUpListToFindFullLoraPath(document.querySelector('li.p-tree-node[aria-label="loras"]')!, el);
-        console.log(path);
-        const label = path.map(p => p.ariaLabel);
-        // TODO, use this instead!
-        const loraPath = label.join('/');
-        console.log(loraPath);
-        // almost working but its not finding all clicks...
-        // i need to walk up the element tree and find thje full patth to think loras i think :(... or store it during the recursion
+        const label = path.map((p) => p.ariaLabel);
+
+        const loraPath = label.join('/').toLowerCase().replace('.safetensors', '');
         const lorasDict = TextAreaAutoComplete.groups['jk-nodes.loras']!;
 
         const found = Object.values(lorasDict).find((l) => {
             const meta = l.meta;
-            if (meta) {
-                console.log(meta);
-                if ((meta?.ss_sd_model_name as string)?.toLowerCase().match(el.innerText.toLowerCase())) {
-                    return true;
-                }
+            const outputName = meta?.ss_output_name as string | undefined;
+            const modelName = meta?.ss_sd_model_name as string | undefined;
+            if (outputName && outputName.toLowerCase() === el.innerText.toLowerCase()) {
+                console.log('matched output name');
+                return true;
             }
 
-            const lName = l.lora_name?.substring(0, l.lora_name.lastIndexOf('.')) || l.lora_name;
-            if (lName?.toLowerCase()?.match(el.innerText.toLowerCase())) {
+            const baseLname = l?.lora_name?.toLowerCase() ?? '';
+            const noExt = baseLname.substring(0, baseLname.lastIndexOf('.'));
+            const lNamePath = baseLname.replaceAll('//', '/').replaceAll('\\', '/');
+            const lNamePathNoExt = noExt.replaceAll('//', '/').replaceAll('\\', '/');
+            if ([baseLname, noExt, lNamePath, lNamePathNoExt].includes(loraPath)) {
+                console.log('matched lora path');
+                return true;
+            }
+
+            if (modelName && modelName.toLowerCase() === el.innerText.toLowerCase()) {
+                console.log('last resort matched model name');
+                return true;
+            } else if (outputName && outputName.match(el.innerText.toLowerCase())) {
+                console.log('output name match resort match');
+                return true;
+            } else if (baseLname?.toLowerCase()?.match(el.innerText.toLowerCase())) {
+                console.log('REALLY resort match, probably wrong...');
                 return true;
             } else {
                 return false;

@@ -1,6 +1,9 @@
+var __defProp = Object.defineProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
@@ -246,7 +249,9 @@ var _TextAreaAutoComplete = class _TextAreaAutoComplete {
    */
   constructor(el, words = null, separator = null) {
     __privateAdd(this, _TextAreaAutoComplete_instances);
-    this.overrideSeparator = "";
+    __publicField(this, "el");
+    __publicField(this, "overrideWords");
+    __publicField(this, "overrideSeparator", "");
     this.el = el;
     this.helper = new TextAreaCaretHelper(el, () => app.canvas.ds.scale);
     this.dropdown = $el("div.jk-nodes-autocomplete");
@@ -533,17 +538,17 @@ hide_fn = function() {
   this.selected = null;
   this.dropdown.remove();
 };
-_TextAreaAutoComplete.globalSeparator = "";
-_TextAreaAutoComplete.enabled = true;
-_TextAreaAutoComplete.insertOnTab = true;
-_TextAreaAutoComplete.insertOnEnter = true;
-_TextAreaAutoComplete.replacer = void 0;
-_TextAreaAutoComplete.lorasEnabled = false;
-_TextAreaAutoComplete.suggestionCount = 20;
-_TextAreaAutoComplete.groups = {};
-_TextAreaAutoComplete.globalGroups = /* @__PURE__ */ new Set();
-_TextAreaAutoComplete.globalWords = {};
-_TextAreaAutoComplete.globalWordsExclLoras = {};
+__publicField(_TextAreaAutoComplete, "globalSeparator", "");
+__publicField(_TextAreaAutoComplete, "enabled", true);
+__publicField(_TextAreaAutoComplete, "insertOnTab", true);
+__publicField(_TextAreaAutoComplete, "insertOnEnter", true);
+__publicField(_TextAreaAutoComplete, "replacer");
+__publicField(_TextAreaAutoComplete, "lorasEnabled", false);
+__publicField(_TextAreaAutoComplete, "suggestionCount", 20);
+__publicField(_TextAreaAutoComplete, "groups", {});
+__publicField(_TextAreaAutoComplete, "globalGroups", /* @__PURE__ */ new Set());
+__publicField(_TextAreaAutoComplete, "globalWords", {});
+__publicField(_TextAreaAutoComplete, "globalWordsExclLoras", {});
 var TextAreaAutoComplete = _TextAreaAutoComplete;
 export {
   TextAreaAutoComplete

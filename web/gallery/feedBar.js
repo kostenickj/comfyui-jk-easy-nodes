@@ -1,3 +1,7 @@
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+
 // src_web/gallery/feedBar.ts
 var EFeedBarEvents = /* @__PURE__ */ ((EFeedBarEvents2) => {
   EFeedBarEvents2["feed-clear"] = "feed-clear";
@@ -19,8 +23,13 @@ var JKFeedBar = class extends EventTarget {
   constructor(el) {
     super();
     this.el = el;
-    this.currentMode = "feed" /* feed */;
-    this._checkedItems = /* @__PURE__ */ new Map();
+    __publicField(this, "rightButtonGroup");
+    __publicField(this, "leftButtonGroup");
+    __publicField(this, "checkboxMenuWrapper");
+    __publicField(this, "checkboxMenuDropdown");
+    __publicField(this, "checkBoxMenuMenu");
+    __publicField(this, "currentMode", "feed" /* feed */);
+    __publicField(this, "_checkedItems", /* @__PURE__ */ new Map());
     this.el.classList.add("comfyui-menu", "flex", "items-center", "justify-start");
     this.rightButtonGroup = document.createElement("div");
     this.el.append(this.rightButtonGroup);

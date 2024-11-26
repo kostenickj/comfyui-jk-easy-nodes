@@ -1,6 +1,9 @@
+var __defProp = Object.defineProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
+var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
+var __publicField = (obj, key, value2) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value2);
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
 var __privateAdd = (obj, member, value2) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value2);
@@ -17,8 +20,13 @@ var JKFeedBar = class extends EventTarget {
   constructor(el) {
     super();
     this.el = el;
-    this.currentMode = "feed" /* feed */;
-    this._checkedItems = /* @__PURE__ */ new Map();
+    __publicField(this, "rightButtonGroup");
+    __publicField(this, "leftButtonGroup");
+    __publicField(this, "checkboxMenuWrapper");
+    __publicField(this, "checkboxMenuDropdown");
+    __publicField(this, "checkBoxMenuMenu");
+    __publicField(this, "currentMode", "feed" /* feed */);
+    __publicField(this, "_checkedItems", /* @__PURE__ */ new Map());
     this.el.classList.add("comfyui-menu", "flex", "items-center", "justify-start");
     this.rightButtonGroup = document.createElement("div");
     this.el.append(this.rightButtonGroup);
@@ -821,14 +829,14 @@ function n5(n6, r8, t4) {
 }
 
 // node_modules/.pnpm/@alenaksu+json-viewer@2.1.2_patch_hash=h6d5ny7gzeg2cflvjmbgs5cxte/node_modules/@alenaksu/json-viewer/dist/chunk-6HJCMUMX.js
-var __defProp = Object.defineProperty;
+var __defProp2 = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
   var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
   for (var i6 = decorators.length - 1, decorator; i6 >= 0; i6--)
     if (decorator = decorators[i6])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp(target, key, result);
+  if (kind && result) __defProp2(target, key, result);
   return result;
 };
 function isRegex(value2) {
@@ -5288,6 +5296,12 @@ var BaseGalleryImage = class {
   constructor(m2, showInfo, showOpacityOverlay, clickedCallback) {
     this.m = m2;
     this.clickedCallback = clickedCallback;
+    __publicField(this, "img");
+    __publicField(this, "wrapper");
+    __publicField(this, "spinner");
+    __publicField(this, "info");
+    __publicField(this, "opacityOverlay");
+    __publicField(this, "formattedTitle");
     this.formattedTitle = getFormattedTitle(m2);
     this.wrapper = document.createElement("div");
     this.wrapper.classList.add("jk-img-wrapper");
@@ -5365,6 +5379,21 @@ var RightPanel = class {
   constructor(data, onOpenLightboxRequest) {
     this.data = data;
     this.onOpenLightboxRequest = onOpenLightboxRequest;
+    __publicField(this, "img");
+    __publicField(this, "container");
+    __publicField(this, "info");
+    __publicField(this, "promptMetadata");
+    __publicField(this, "promptViewer");
+    __publicField(this, "title");
+    __publicField(this, "seed");
+    __publicField(this, "infoDialog");
+    __publicField(this, "buttonGroup");
+    __publicField(this, "viewPrompInfoButton");
+    __publicField(this, "dialogCloseBtn");
+    __publicField(this, "promptSearch");
+    __publicField(this, "expandAllBtn");
+    __publicField(this, "collapseAllBtn");
+    __publicField(this, "currentSearch");
     this.container = document.createElement("div");
     this.container.classList.add("jk-rightpanel-container");
     this.title = document.createElement("div");
@@ -5496,20 +5525,26 @@ var JKImageGallery = class extends EventTarget {
     super();
     this.container = container;
     this.feedBarContainer = feedBarContainer;
-    this.initialized = false;
-    this.feedPanelImages = [];
-    this.gridPanelImages = [];
+    __publicField(this, "initialized", false);
+    __publicField(this, "feedPanelImages", []);
+    __publicField(this, "gridPanelImages", []);
+    __publicField(this, "selectedImage");
     // map of formatted node title => all image outputs we have from that node
-    this.imageMap = /* @__PURE__ */ new Map();
-    this.currentMode = "feed" /* feed */;
-    this.handleImageClicked = (data) => {
+    __publicField(this, "imageMap", /* @__PURE__ */ new Map());
+    __publicField(this, "FeedBar");
+    __publicField(this, "lightbox");
+    __publicField(this, "feedPanel");
+    __publicField(this, "gridPanel");
+    __publicField(this, "currentMode", "feed" /* feed */);
+    __publicField(this, "_shuffle");
+    __publicField(this, "handleImageClicked", (data) => {
       if (this.currentMode === "feed" /* feed */) {
         this.selectImage(data);
       } else {
         this.handleOpenLightbox(data);
       }
-    };
-    this.clearFeed = (ev) => {
+    });
+    __publicField(this, "clearFeed", (ev) => {
       if (confirm("are you sure you want to clear the feed? This cant be undone!")) {
         this.leftPanel.innerHTML = ``;
         this.feedPanelImages = [];
@@ -5523,8 +5558,8 @@ var JKImageGallery = class extends EventTarget {
         this.FeedBar.updateCheckboxOptions([], true);
         this.dispatchEvent(new Event("feed-clear" /* feed-clear */));
       }
-    };
-    this.handleModeChange = async (newMode) => {
+    });
+    __publicField(this, "handleModeChange", async (newMode) => {
       if (newMode === "grid" /* grid */) {
         this.feedPanel.style.display = "none";
         this.gridPanel.style.display = "flex";
@@ -5536,8 +5571,8 @@ var JKImageGallery = class extends EventTarget {
         this.gridPanel.style.display = "none";
       }
       this.currentMode = newMode;
-    };
-    this.handleOpenLightbox = (data) => {
+    });
+    __publicField(this, "handleOpenLightbox", (data) => {
       let openAtIndex = 0;
       const items = [];
       let imageIndex = 0;
@@ -5568,8 +5603,8 @@ var JKImageGallery = class extends EventTarget {
           }
         }
       });
-    };
-    this.updateImageVisibility = () => {
+    });
+    __publicField(this, "updateImageVisibility", () => {
       const showfilter = [];
       for (const [k2, v2] of this.FeedBar.checkedItems) {
         if (v2) {
@@ -5581,7 +5616,7 @@ var JKImageGallery = class extends EventTarget {
         const isChecked = this.FeedBar.checkedItems.get(i6.formattedTitle);
         i6.setVisibilty(!!isChecked);
       });
-    };
+    });
     this.container.innerHTML = `
             <sl-split-panel id="jk-feed-panel" position="15" style="--max: 35%; --min:10%;">
                 <div

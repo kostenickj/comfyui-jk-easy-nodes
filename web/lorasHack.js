@@ -1,7 +1,10 @@
+var __defProp = Object.defineProperty;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // src_web/lorasHack.ts
 import { TextAreaAutoComplete } from "./common/autocomplete.js";
@@ -24,7 +27,10 @@ var require_lorasHack = __commonJS({
     };
     var LoraClickHacker = class {
       constructor() {
-        this.recurse = (currentEl) => {
+        __publicField(this, "modelLibraryButton");
+        __publicField(this, "lorasListItemExpander");
+        __publicField(this, "lorasButtonExpander");
+        __publicField(this, "recurse", (currentEl) => {
           const children = currentEl.querySelectorAll("li");
           children.forEach((li) => {
             const maybeLoraFile = li.querySelector(".tree-leaf");
@@ -35,8 +41,8 @@ var require_lorasHack = __commonJS({
               this.recurse(li);
             }
           });
-        };
-        this.handleLorasExpanded = (ev) => {
+        });
+        __publicField(this, "handleLorasExpanded", (ev) => {
           setTimeout(() => {
             const isExpanded = this.lorasListItemExpander?.ariaExpanded === "true";
             if (isExpanded) {
@@ -45,36 +51,47 @@ var require_lorasHack = __commonJS({
               }, 1);
             }
           }, 1);
-        };
-        this.attachTopLevelListeners = () => {
+        });
+        __publicField(this, "attachTopLevelListeners", () => {
           this.lorasListItemExpander = document.querySelector('li.p-tree-node[aria-label="loras"]');
           this.lorasButtonExpander = this.lorasListItemExpander?.querySelector("button");
           this.lorasListItemExpander?.removeEventListener("mouseup", this.handleLorasExpanded);
           this.lorasListItemExpander?.addEventListener("mouseup", this.handleLorasExpanded);
           this.lorasButtonExpander?.removeEventListener("mouseup", this.handleLorasExpanded);
           this.lorasButtonExpander?.addEventListener("mouseup", this.handleLorasExpanded);
-        };
+        });
         this.init();
       }
       handleLoraClicked(ev) {
         const el = this;
-        console.log("lora clicked", el.innerText);
         const path = walkUpListToFindFullLoraPath(document.querySelector('li.p-tree-node[aria-label="loras"]'), el);
-        console.log(path);
         const label = path.map((p) => p.ariaLabel);
-        const loraPath = label.join("/");
-        console.log(loraPath);
+        const loraPath = label.join("/").toLowerCase().replace(".safetensors", "");
         const lorasDict = TextAreaAutoComplete.groups["jk-nodes.loras"];
         const found = Object.values(lorasDict).find((l) => {
           const meta = l.meta;
-          if (meta) {
-            console.log(meta);
-            if (meta?.ss_sd_model_name?.toLowerCase().match(el.innerText.toLowerCase())) {
-              return true;
-            }
+          const outputName = meta?.ss_output_name;
+          const modelName = meta?.ss_sd_model_name;
+          if (outputName && outputName.toLowerCase() === el.innerText.toLowerCase()) {
+            console.log("matched output name");
+            return true;
           }
-          const lName = l.lora_name?.substring(0, l.lora_name.lastIndexOf(".")) || l.lora_name;
-          if (lName?.toLowerCase()?.match(el.innerText.toLowerCase())) {
+          const baseLname = l?.lora_name?.toLowerCase() ?? "";
+          const noExt = baseLname.substring(0, baseLname.lastIndexOf("."));
+          const lNamePath = baseLname.replaceAll("//", "/").replaceAll("\\", "/");
+          const lNamePathNoExt = noExt.replaceAll("//", "/").replaceAll("\\", "/");
+          if ([baseLname, noExt, lNamePath, lNamePathNoExt].includes(loraPath)) {
+            console.log("matched lora path");
+            return true;
+          }
+          if (modelName && modelName.toLowerCase() === el.innerText.toLowerCase()) {
+            console.log("last resort matched model name");
+            return true;
+          } else if (outputName && outputName.match(el.innerText.toLowerCase())) {
+            console.log("output name match resort match");
+            return true;
+          } else if (baseLname?.toLowerCase()?.match(el.innerText.toLowerCase())) {
+            console.log("REALLY resort match, probably wrong...");
             return true;
           } else {
             return false;
