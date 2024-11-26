@@ -409,6 +409,7 @@ export class JKImageGallery extends EventTarget {
         }
 
         const fig = document.createElement('figure');
+        fig.dataset['groups'] = `["${nodeTitle}"]`;
         fig.className = 'jk-grid-img-wrap';
         fig.innerHTML = `
             <img class="jk-grid-img" src="${data.href}"> </img>  
@@ -416,9 +417,9 @@ export class JKImageGallery extends EventTarget {
         this.shuffle.element.appendChild(fig);
         this.shuffle.add([fig]);
         if (this.currentMode === EFeedMode.grid) {
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.shuffle.update({ force: true, recalculateSizes: true });
-            }, 1)
+            }, 1);
         }
     }
 
@@ -426,10 +427,9 @@ export class JKImageGallery extends EventTarget {
         if (newMode === EFeedMode.grid) {
             this.feedPanel.style.display = 'none';
             this.gridPanel.style.display = 'flex';
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.shuffle.update({ force: true, recalculateSizes: true });
-            }, 1)
-       
+            }, 1);
         } else {
             this.feedPanel.style.display = 'grid';
             this.gridPanel.style.display = 'none';
@@ -475,6 +475,14 @@ export class JKImageGallery extends EventTarget {
     };
 
     private updateImageVisibility = () => {
+        const showfilter: string[] = [];
+        for (const [k, v] of this.FeedBar.checkedItems) {
+            if (v) {
+                showfilter.push(k);
+            }
+        }
+        this.shuffle.filter(showfilter);
+
         this.images.forEach((i) => {
             const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i.data));
             i.setVisibilty(!!isChecked);

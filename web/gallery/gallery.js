@@ -5548,6 +5548,13 @@ var JKImageGallery = class extends EventTarget {
       });
     };
     this.updateImageVisibility = () => {
+      const showfilter = [];
+      for (const [k2, v2] of this.FeedBar.checkedItems) {
+        if (v2) {
+          showfilter.push(k2);
+        }
+      }
+      this.shuffle.filter(showfilter);
       this.images.forEach((i6) => {
         const isChecked = this.FeedBar.checkedItems.get(formattedTitle(i6.data));
         i6.setVisibilty(!!isChecked);
@@ -5639,6 +5646,7 @@ var JKImageGallery = class extends EventTarget {
       this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
     }
     const fig = document.createElement("figure");
+    fig.dataset["groups"] = `["${nodeTitle}"]`;
     fig.className = "jk-grid-img-wrap";
     fig.innerHTML = `
             <img class="jk-grid-img" src="${data.href}"> </img>  
