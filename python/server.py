@@ -1,4 +1,4 @@
-from typing import Dict, List, TypedDict
+from typing import Dict, List, TypedDict, Any
 from server import PromptServer
 from aiohttp import web
 import os
@@ -32,6 +32,7 @@ class LoraPreference(TypedDict):
     activation_text: str
     preferred_weight: str
     lora_name: str
+    meta: Any
 
 def try_find_lora_file_path(lora_name: str):
     possible_paths = folder_paths.get_folder_paths('loras')
@@ -44,14 +45,18 @@ def try_find_lora_file_path(lora_name: str):
 
 def try_find_lora_config(lora_name: str):
   
+    meta = None
+  
     try:
         file_path = try_find_lora_file_path(lora_name)
 
         if not file_path:
-            return None
+            return (None, None)
         
         file_path_no_ext = os.path.splitext(file_path)[0]
         config_full_path = file_path_no_ext + '.json'
+
+        meta = get_metadata(file_path)
 
         if os.path.isfile(config_full_path):
             p = Path(config_full_path)
@@ -73,13 +78,13 @@ def try_find_lora_config(lora_name: str):
                 if config_json['preferred weight'] != 0:
                     preferred_weight = config_json['preferred weight']
         
-            pref = LoraPreference(activation_text=activation_text, preferred_weight=preferred_weight, lora_name=lora_name)
-            return pref
+            pref = LoraPreference(activation_text=activation_text, preferred_weight=preferred_weight, lora_name=lora_name, meta=meta)
+            return (pref, meta)
 
         else:
-            return None
+            return (None, meta)
     except:
-        return None
+        return (None, meta)
 
 
 class TagFile(TypedDict):
@@ -152,11 +157,11 @@ async def get_loras(request):
     ret: List[LoraPreference] = []
     for lora in loras:
         name = os.path.splitext(lora)[0]
-        maybe_config = try_find_lora_config(lora)
+        (maybe_config, meta) = try_find_lora_config(lora)
         if maybe_config:
             ret.append(maybe_config)
         else:
-            ret.append(LoraPreference(activation_text='', lora_name=name, preferred_weight=1.0))
+            ret.append(LoraPreference(activation_text='', lora_name=name, preferred_weight=1.0, meta=meta))
     return web.json_response(ret)
 
 
