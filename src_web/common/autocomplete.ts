@@ -346,8 +346,8 @@ interface AutoCompleteEntry {
     showValue?: boolean;
     caretOffset?: number;
     activation_text?: string;
-	lora_name?:string;
-	meta?: any;
+    lora_name?: string;
+    meta?: any;
 }
 
 export class TextAreaAutoComplete {
@@ -443,12 +443,9 @@ export class TextAreaAutoComplete {
             switch (e.key) {
                 case 'Enter':
                     if (!e.ctrlKey) {
-                        const isLora = this.selected?.text?.toLowerCase().startsWith('<lora:');
-                        if (TextAreaAutoComplete.insertOnEnter && !isLora) {
+                        if (TextAreaAutoComplete.insertOnEnter) {
                             this.#insertItem();
                             e.preventDefault();
-                        } else if (isLora && typeof this.selected.info === 'function') {
-                            this.selected.info();
                         }
                     }
                     break;

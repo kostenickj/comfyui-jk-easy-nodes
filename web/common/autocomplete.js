@@ -330,12 +330,9 @@ keyPress_fn = function(e) {
     switch (e.key) {
       case "Enter":
         if (!e.ctrlKey) {
-          const isLora = this.selected?.text?.toLowerCase().startsWith("<lora:");
-          if (_TextAreaAutoComplete.insertOnEnter && !isLora) {
+          if (_TextAreaAutoComplete.insertOnEnter) {
             __privateMethod(this, _TextAreaAutoComplete_instances, insertItem_fn).call(this);
             e.preventDefault();
-          } else if (isLora && typeof this.selected.info === "function") {
-            this.selected.info();
           }
         }
         break;
