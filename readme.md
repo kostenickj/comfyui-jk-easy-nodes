@@ -4,7 +4,7 @@
 
 ## Manager
 
-#TODO
+[TODO](https://github.com/ltdrdata/ComfyUI-Manager#how-to-register-your-custom-node-into-comfyui-manager)
 
 ## Manual install
 1. Clone the repository:
@@ -33,11 +33,12 @@ A customized version of the custom autocomplete from pythongosssss' ComfyUI-Cust
    1. either right clicking a lora in the comfy ui sidebar
    2. clicking the info icon inside the autocomplete entry
    3. it will bring up the lora info dialog from ComfyUI-Custom-Scripts with some additional areas where you can set your preferences for the lora
-      1. ![image](todo)
+      1. ![image](https://raw.githubusercontent.com/kostenickj/comfyui-jk-easy-nodes/refs/heads/master/img/LoraPrefs.JPG)
 3. <b>FEATURE</b>: wildcard autocomplete
    - automatically detects installed wildcards in any extensions that support them (i think)
 4. Add custom word files by putting them in the /tags dir of the extension, comes with danbooru.csv by default
    1. supports text or csv
+5. various bug fixes that i encountered
 
 NOTE: it will conflict with the original version if you have it installed, so disable one of them
 
