@@ -31,7 +31,10 @@ class LoraClickHacker {
 
     handleLoraClicked(ev: MouseEvent) {
         const el = this as unknown as HTMLLIElement;
+        ev.preventDefault();
         //console.log('lora clicked', el.innerText);
+
+        // like a million edge cases here, probably didnt catch them all
 
         const path = walkUpListToFindFullLoraPath(document.querySelector('li.p-tree-node[aria-label="loras"]')!, el);
         const label = path.map((p) => p.ariaLabel);
@@ -82,8 +85,8 @@ class LoraClickHacker {
             const maybeLoraFile = li.querySelector('.tree-leaf') as HTMLLIElement;
             if (maybeLoraFile) {
                 // console.log('found lora', maybeLoraFile, maybeLoraFile.innerText);
-                maybeLoraFile.removeEventListener('click', this.handleLoraClicked);
-                maybeLoraFile.addEventListener('click', this.handleLoraClicked);
+                maybeLoraFile.removeEventListener('contextmenu', this.handleLoraClicked);
+                maybeLoraFile.addEventListener('contextmenu', this.handleLoraClicked);
             } else {
                 this.recurse(li);
             }

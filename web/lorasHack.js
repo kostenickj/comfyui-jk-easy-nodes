@@ -35,8 +35,8 @@ var require_lorasHack = __commonJS({
           children.forEach((li) => {
             const maybeLoraFile = li.querySelector(".tree-leaf");
             if (maybeLoraFile) {
-              maybeLoraFile.removeEventListener("click", this.handleLoraClicked);
-              maybeLoraFile.addEventListener("click", this.handleLoraClicked);
+              maybeLoraFile.removeEventListener("contextmenu", this.handleLoraClicked);
+              maybeLoraFile.addEventListener("contextmenu", this.handleLoraClicked);
             } else {
               this.recurse(li);
             }
@@ -64,6 +64,7 @@ var require_lorasHack = __commonJS({
       }
       handleLoraClicked(ev) {
         const el = this;
+        ev.preventDefault();
         const path = walkUpListToFindFullLoraPath(document.querySelector('li.p-tree-node[aria-label="loras"]'), el);
         const label = path.map((p) => p.ariaLabel);
         const loraPath = label.join("/").toLowerCase().replace(".safetensors", "");
