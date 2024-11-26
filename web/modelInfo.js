@@ -149,9 +149,7 @@ var LoraInfoDialog = class extends ModelInfoDialog {
         parent: this.content,
         textContent: `Default Weight: `
       },
-      [
-        weight
-      ]
+      [weight]
     );
     $el(
       "p",
@@ -340,33 +338,36 @@ function addTypeOptions(node, typeName, options) {
     });
   }
 }
-app.registerExtension({
-  name: "jk-nodes.ModelInfo",
-  setup() {
-    app.ui.settings.addSetting({
-      id: `jk-nodes.ModelInfo.NsfwLevel`,
-      name: `Model Info - Image Preview Max NSFW Level`,
-      type: "combo",
-      defaultValue: "PG13",
-      options: Object.keys(NsfwLevel),
-      tooltip: `Hides preview images that are tagged as a higher NSFW level`,
-      onChange(value) {
-        ModelInfoDialog.nsfwLevel = NsfwLevel[value] ?? NsfwLevel.PG;
-      }
-    });
-  },
-  beforeRegisterNodeDef(nodeType) {
-    const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions;
-    nodeType.prototype.getExtraMenuOptions = function(_, options) {
-      if (this.widgets) {
-        for (const type in lookups) {
-          addTypeOptions(this, type, options);
+var alreadyRegisted = app.enabledExtensions.find((x) => x.name === "jk-nodes.ModelInfo");
+if (!alreadyRegisted) {
+  app.registerExtension({
+    name: "jk-nodes.ModelInfo",
+    setup() {
+      app.ui.settings.addSetting({
+        id: `jk-nodes.ModelInfo.NsfwLevel`,
+        name: `Model Info - Image Preview Max NSFW Level`,
+        type: "combo",
+        defaultValue: "PG13",
+        options: Object.keys(NsfwLevel),
+        tooltip: `Hides preview images that are tagged as a higher NSFW level`,
+        onChange(value) {
+          ModelInfoDialog.nsfwLevel = NsfwLevel[value] ?? NsfwLevel.PG;
         }
-      }
-      return getExtraMenuOptions?.apply(this, arguments);
-    };
-  }
-});
+      });
+    },
+    beforeRegisterNodeDef(nodeType) {
+      const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions;
+      nodeType.prototype.getExtraMenuOptions = function(_, options) {
+        if (this.widgets) {
+          for (const type in lookups) {
+            addTypeOptions(this, type, options);
+          }
+        }
+        return getExtraMenuOptions?.apply(this, arguments);
+      };
+    }
+  });
+}
 export {
   LoraInfoDialog
 };

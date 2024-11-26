@@ -157,9 +157,7 @@ var TextAreaCaretHelper = class {
         pasted = false;
       }
       if (!pasted) {
-        console.error(
-          "execCommand unsuccessful; not supported. Adding text manually, no undo support."
-        );
+        console.error("execCommand unsuccessful; not supported. Adding text manually, no undo support.");
         textarea.setRangeText(modifiedText, this.el.selectionStart, this.el.selectionEnd, "end");
       }
       this.el.selectionEnd = this.el.selectionStart = startPos + value.length + offset + (finalOffset ?? 0);
@@ -174,9 +172,7 @@ var TextAreaCaretHelper = class {
         pasted = false;
       }
       if (!pasted) {
-        console.error(
-          "execCommand unsuccessful; not supported. Adding text manually, no undo support."
-        );
+        console.error("execCommand unsuccessful; not supported. Adding text manually, no undo support.");
         this.el.value += value;
       }
     }
@@ -505,11 +501,7 @@ update_fn = function() {
             value += wordInfo.activation_text;
           }
           const shouldAddSeparator = !afterCursor.trim().startsWith(this.separator.trim());
-          this.helper.insertAtCursor(
-            value + (shouldAddSeparator ? this.separator : ""),
-            -before.length,
-            wordInfo.caretOffset
-          );
+          this.helper.insertAtCursor(value + (shouldAddSeparator ? this.separator : ""), -before.length, wordInfo.caretOffset);
           setTimeout(() => {
             __privateMethod(this, _TextAreaAutoComplete_instances, update_fn).call(this);
           }, 150);
@@ -548,13 +540,9 @@ _TextAreaAutoComplete.insertOnEnter = true;
 _TextAreaAutoComplete.replacer = void 0;
 _TextAreaAutoComplete.lorasEnabled = false;
 _TextAreaAutoComplete.suggestionCount = 20;
-/** @type {Record<string, Record<string, AutoCompleteEntry>>} */
 _TextAreaAutoComplete.groups = {};
-/** @type {Set<string>} */
 _TextAreaAutoComplete.globalGroups = /* @__PURE__ */ new Set();
-/** @type {Record<string, AutoCompleteEntry>} */
 _TextAreaAutoComplete.globalWords = {};
-/** @type {Record<string, AutoCompleteEntry>} */
 _TextAreaAutoComplete.globalWordsExclLoras = {};
 var TextAreaAutoComplete = _TextAreaAutoComplete;
 export {
