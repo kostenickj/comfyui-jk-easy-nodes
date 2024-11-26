@@ -5514,8 +5514,13 @@ var JKImageGallery = class extends EventTarget {
         this.leftPanel.innerHTML = ``;
         this.feedPanelImages = [];
         this.rightPanel.innerHTML = ``;
+        this.gridPanel.innerHTML = ``;
         this.selectedImage = void 0;
         this.imageMap = /* @__PURE__ */ new Map();
+        this.feedPanelImages = [];
+        this.gridPanelImages = [];
+        this.shuffle.resetItems();
+        this.FeedBar.updateCheckboxOptions([], true);
         this.dispatchEvent(new Event("feed-clear" /* feed-clear */));
       }
     };
@@ -5660,8 +5665,8 @@ var JKImageGallery = class extends EventTarget {
       this.FeedBar.addCheckboxOptionIfNeeded(nodeTitle, true);
     }
     const gridPanelImage = await new GridPanelImage(data, true, true, this.handleImageClicked).init();
-    this.gridPanelImages.push(gridPanelImage);
-    this.shuffle.element.appendChild(gridPanelImage.getEl());
+    this.gridPanelImages.unshift(gridPanelImage);
+    this.shuffle.element.prepend(gridPanelImage.getEl());
     this.shuffle.add([gridPanelImage.getEl()]);
     if (this.currentMode === "grid" /* grid */) {
       setTimeout(() => {

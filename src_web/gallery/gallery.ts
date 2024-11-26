@@ -404,8 +404,13 @@ export class JKImageGallery extends EventTarget {
             this.leftPanel.innerHTML = ``;
             this.feedPanelImages = [];
             this.rightPanel.innerHTML = ``;
+            this.gridPanel.innerHTML = ``;
             this.selectedImage = undefined;
             this.imageMap = new Map<string, GalleryImageData[]>();
+            this.feedPanelImages = [];
+            this.gridPanelImages = [];
+            this.shuffle.resetItems();
+            this.FeedBar.updateCheckboxOptions([], true);
             this.dispatchEvent(new Event(EFeedBarEvents['feed-clear']));
         }
     };
@@ -429,9 +434,9 @@ export class JKImageGallery extends EventTarget {
         }
 
         const gridPanelImage = await new GridPanelImage(data, true, true, this.handleImageClicked).init();
-        this.gridPanelImages.push(gridPanelImage);
+        this.gridPanelImages.unshift(gridPanelImage);
 
-        this.shuffle.element.appendChild(gridPanelImage.getEl());
+        this.shuffle.element.prepend(gridPanelImage.getEl());
         this.shuffle.add([gridPanelImage.getEl()]);
         if (this.currentMode === EFeedMode.grid) {
             setTimeout(() => {
