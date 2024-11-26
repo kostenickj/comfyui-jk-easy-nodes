@@ -8,7 +8,6 @@ import { api } from '../../../scripts/api.js';
 import { $el } from '../../../scripts/ui.js';
 import { ModelInfoDialog } from './common/modelInfoDialog.js';
 import { TextAreaAutoComplete } from './common/autocomplete.js';
-import { loadLoras } from './autocompleter.js';
 
 const MAX_TAGS = 500;
 const NsfwLevel = {

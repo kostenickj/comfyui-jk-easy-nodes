@@ -7,6 +7,21 @@ var __commonJS = (cb, mod) => function __require() {
 import { TextAreaAutoComplete } from "./common/autocomplete.js";
 var require_lorasHack = __commonJS({
   "src_web/lorasHack.ts"() {
+    var walkUpListToFindFullLoraPath = (targetNode, startNode) => {
+      const path = [];
+      let currentNode = startNode;
+      while (currentNode !== targetNode && currentNode !== null) {
+        if (currentNode instanceof HTMLLIElement) {
+          path.unshift(currentNode);
+        }
+        currentNode = currentNode.parentElement;
+      }
+      if (currentNode === targetNode) {
+        return path;
+      } else {
+        return [];
+      }
+    };
     var LoraClickHacker = class {
       constructor() {
         this.recurse = (currentEl) => {
@@ -44,10 +59,26 @@ var require_lorasHack = __commonJS({
       handleLoraClicked(ev) {
         const el = this;
         console.log("lora clicked", el.innerText);
+        const path = walkUpListToFindFullLoraPath(document.querySelector('li.p-tree-node[aria-label="loras"]'), el);
+        console.log(path);
+        const label = path.map((p) => p.ariaLabel);
+        const loraPath = label.join("/");
+        console.log(loraPath);
         const lorasDict = TextAreaAutoComplete.groups["jk-nodes.loras"];
         const found = Object.values(lorasDict).find((l) => {
+          const meta = l.meta;
+          if (meta) {
+            console.log(meta);
+            if (meta?.ss_sd_model_name?.toLowerCase().match(el.innerText.toLowerCase())) {
+              return true;
+            }
+          }
           const lName = l.lora_name?.substring(0, l.lora_name.lastIndexOf(".")) || l.lora_name;
-          return lName?.toLowerCase()?.match(el.innerText.toLowerCase());
+          if (lName?.toLowerCase()?.match(el.innerText.toLowerCase())) {
+            return true;
+          } else {
+            return false;
+          }
         });
         if (found) {
           found.info?.();

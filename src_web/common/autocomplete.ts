@@ -347,6 +347,7 @@ interface AutoCompleteEntry {
     caretOffset?: number;
     activation_text?: string;
 	lora_name?:string;
+	meta?: any;
 }
 
 export class TextAreaAutoComplete {

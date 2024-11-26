@@ -25,7 +25,8 @@ export const loadLoras = async () => {
 			info: () => new LoraInfoDialog(lora).show("loras", lora),
 			use_replacer: false,
 			activation_text: lora.activation_text,
-			lora_name: lora.lora_name
+			lora_name: lora.lora_name,
+			meta: lora.meta
 		};
 	}
 

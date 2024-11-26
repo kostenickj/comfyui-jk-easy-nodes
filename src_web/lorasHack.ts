@@ -1,5 +1,24 @@
 import { TextAreaAutoComplete } from './common/autocomplete.js';
-import { LoraInfoDialog } from './modelInfo.js';
+
+const walkUpListToFindFullLoraPath = (targetNode: HTMLElement, startNode: HTMLElement) => {
+    const path = [];
+    let currentNode = startNode;
+
+    while (currentNode !== targetNode && currentNode !== null) {
+        if(currentNode instanceof HTMLLIElement)
+        {
+            path.unshift(currentNode);
+        }
+
+        currentNode = currentNode.parentElement! as any;
+    }
+
+    if (currentNode === targetNode) {
+        return path;
+    } else {
+        return [];
+    }
+};
 
 // extremely hacky but it works. dont see another way to do this.
 class LoraClickHacker {
@@ -15,12 +34,31 @@ class LoraClickHacker {
         const el = this as unknown as HTMLLIElement;
         console.log('lora clicked', el.innerText);
 
+        const path = walkUpListToFindFullLoraPath(document.querySelector('li.p-tree-node[aria-label="loras"]')!, el);
+        console.log(path);
+        const label = path.map(p => p.ariaLabel);
+        // TODO, use this instead!
+        const loraPath = label.join('/');
+        console.log(loraPath);
         // almost working but its not finding all clicks...
+        // i need to walk up the element tree and find thje full patth to think loras i think :(... or store it during the recursion
         const lorasDict = TextAreaAutoComplete.groups['jk-nodes.loras']!;
 
         const found = Object.values(lorasDict).find((l) => {
-            const lName = l.lora_name?.substring(0, l.lora_name.lastIndexOf('.')) || l.lora_name
-            return lName?.toLowerCase()?.match(el.innerText.toLowerCase());
+            const meta = l.meta;
+            if (meta) {
+                console.log(meta);
+                if ((meta?.ss_sd_model_name as string)?.toLowerCase().match(el.innerText.toLowerCase())) {
+                    return true;
+                }
+            }
+
+            const lName = l.lora_name?.substring(0, l.lora_name.lastIndexOf('.')) || l.lora_name;
+            if (lName?.toLowerCase()?.match(el.innerText.toLowerCase())) {
+                return true;
+            } else {
+                return false;
+            }
         });
 
         if (found) {
