@@ -86,13 +86,13 @@ class LoraClickHacker {
             }
 
             if (modelName && modelName.toLowerCase() === el.innerText.toLowerCase()) {
-                if (logDebug) console.log('last resort matched model name');
+                if (logDebug) console.log('matched model name. last resort');
                 return true;
             } else if (outputName && outputName.match(el.innerText.toLowerCase())) {
-                if (logDebug) console.log('output name match resort match');
+                if (logDebug) console.log('output name match. actual last resort!');
                 return true;
             } else if (baseLname?.toLowerCase()?.match(el.innerText.toLowerCase())) {
-                if (logDebug) console.log('REALLY resort match, probably wrong...');
+                if (logDebug) console.log('REALLY last resort match, probably wrong...');
                 return true;
             } else {
                 return false;
