@@ -25,22 +25,22 @@ to your ComfyUI `custom_nodes` directory
 
    <details open> 
      <summary> A custom feed window that can be moved to another monitor</summary>
-      ![OpenFeed](https://github.com/user-attachments/assets/221be6de-1a3c-4fa7-aefc-3934e65401c3)
+      ![image](https://github.com/user-attachments/assets/221be6de-1a3c-4fa7-aefc-3934e65401c3)
 
    </details> 
    <details> 
       <summary>Grid mode or single image</summary>
-      ![Modes](https://github.com/user-attachments/assets/ffc2330d-160f-4c49-8140-38325485ade3)
+      ![image](https://github.com/user-attachments/assets/ffc2330d-160f-4c49-8140-38325485ade3)
 
    </details>
    <details> 
       <summary>toggle which nodes you want to see output from</summary>
-      ![VisibilityToggle](https://github.com/user-attachments/assets/81bbe16b-9e68-4a0a-83a4-97ea1de58a0a)
+      ![image](https://github.com/user-attachments/assets/81bbe16b-9e68-4a0a-83a4-97ea1de58a0a)
 
    </details>
      <details> 
       <summary>JSON prompt explorer (<b>.png only</b>)</summary>
-      ![JsonExplorer](https://github.com/user-attachments/assets/bec84c45-9c12-4152-8e1a-64ababcd5e0e)
+      ![image](https://github.com/user-attachments/assets/bec84c45-9c12-4152-8e1a-64ababcd5e0e)
 
    </details>
 
