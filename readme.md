@@ -43,22 +43,20 @@ to your ComfyUI `custom_nodes` directory
 ### Custom Autocomplete (modified from ComfyUI-Custom-Scripts)
 ![image](./img/Autocomplete_basic.png)  
 A customized version of the autocomplete feature from pythongosssss' ComfyUI-Custom-Scripts that includes some bugfixes and the following new features:
-1. <b> Lora Preferences </b>: the ability to automatically insert preferred activation text and weight for a lora
-   - 
+* <b> Lora Preferences </b>: the ability to automatically insert preferred activation text and weight for a lora
 
 https://github.com/user-attachments/assets/56e1f849-a09f-4e97-bf6b-47da6f69cc8d
-
 
    - You can save and edit your preferences by opening the lora info via
      - either right clicking a lora in the comfy ui sidebar
      - clicking the info icon inside the autocomplete entry
    - This will bring up a modified version of lora info dialog from ComfyUI-Custom-Scripts with some additional areas where you can set your preferences for the lora
       1. ![image](https://raw.githubusercontent.com/kostenickj/comfyui-jk-easy-nodes/refs/heads/master/img/LoraPrefs.JPG)
-2. Wildcard autocomplete
+1. Wildcard autocomplete
    - automatically detects installed wildcards in any extensions that support them (i think)
-3. Add custom word files by putting them in the /tags dir of the extension, comes with danbooru.csv by default
+2. Add custom word files by putting them in the /tags dir of the extension, comes with danbooru.csv by default
    1. supports text or csv
-4. various bug fixes that i encountered
+3. various bug fixes that i encountered
 
 NOTE: it will conflict with the original version from pythongosssss if you have it installed, so disable one of them in the settings manager
 
