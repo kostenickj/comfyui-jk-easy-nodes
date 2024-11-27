@@ -47,8 +47,8 @@ A customized version of the autocomplete feature from pythongosssss' ComfyUI-Cus
 
 ![image](./img/PreferenceEditor.gif)
 <details> 
-<video width="320" height="240" controls>
-     <source src="./img/Autocomplete.mp4" type="video/mp4">
+<video controls>
+     <source src="https://github.com/kostenickj/jk-comfyui-helpers/raw/refs/heads/master/img/Autocomplete.mp4" type="video/mp4">
 </video>
 </details> 
    - You can save and edit your preferences by opening the lora info via
