@@ -22,14 +22,23 @@ to your ComfyUI `custom_nodes` directory
 ## Features
 
 ### Custom Feed Window - Great for multi-monitor setups
- * A custom feed window that can be moved to another monitor
-   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/OpenFeed.gif)
- * Grid mode or single image
-   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/Modes.gif)
- * toggle which nodes you want to see output from
-   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/VisibilityToggle.gif)
- * JSON prompt explorer (png only)
-   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/JsonExplorer.gif)
+
+   <details open> 
+     <summary> A custom feed window that can be moved to another monitor</summary>
+      ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/OpenFeed.gif)
+   </details> 
+   <details> 
+      <summary>Grid mode or single image</summary>
+      ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/Modes.gif)
+   </details>
+   <details> 
+      <summary>toggle which nodes you want to see output from</summary>
+      ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/VisibilityToggle.gif)
+   </details>
+     <details> 
+      <summary>JSON prompt explorer (<b>.png only</b>)</summary>
+      ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/JsonExplorer.gif)
+   </details>
 
 ### Custom Autocomplete (modified from ComfyUI-Custom-Scripts)
 ![image](https://github.com/pythongosssss/ComfyUI-Custom-Scripts/assets/125205205/b5971135-414f-4f4e-a6cf-2650dc01085f)  
