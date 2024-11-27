@@ -244,9 +244,6 @@ getCursorPosition_fn = function() {
 };
 var _TextAreaAutoComplete_instances, setup_fn, keyDown_fn, keyPress_fn, keyUp_fn, setSelected_fn, insertItem_fn, getFilteredWords_fn, update_fn, escapeParentheses_fn, hide_fn;
 var _TextAreaAutoComplete = class _TextAreaAutoComplete {
-  /**
-   * @param {HTMLTextAreaElement} el
-   */
   constructor(el, words = null, separator = null) {
     __privateAdd(this, _TextAreaAutoComplete_instances);
     __publicField(this, "el");
@@ -258,6 +255,15 @@ var _TextAreaAutoComplete = class _TextAreaAutoComplete {
     this.overrideWords = words;
     this.overrideSeparator = separator;
     __privateMethod(this, _TextAreaAutoComplete_instances, setup_fn).call(this);
+  }
+  static addEventListener(eventName, callback) {
+    this.eventEmitter.addEventListener(eventName, callback);
+  }
+  static removeEventListener(eventName, callback) {
+    this.eventEmitter.removeEventListener(eventName, callback);
+  }
+  static notifyLoraRefresh() {
+    this.eventEmitter.dispatchEvent(new Event("loras-refreshed"));
   }
   get words() {
     return this.overrideWords ?? _TextAreaAutoComplete.globalWords;
@@ -546,6 +552,7 @@ __publicField(_TextAreaAutoComplete, "groups", {});
 __publicField(_TextAreaAutoComplete, "globalGroups", /* @__PURE__ */ new Set());
 __publicField(_TextAreaAutoComplete, "globalWords", {});
 __publicField(_TextAreaAutoComplete, "globalWordsExclLoras", {});
+__publicField(_TextAreaAutoComplete, "eventEmitter", new EventTarget());
 var TextAreaAutoComplete = _TextAreaAutoComplete;
 export {
   TextAreaAutoComplete

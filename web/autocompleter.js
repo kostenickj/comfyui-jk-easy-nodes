@@ -22,6 +22,7 @@ var loadLoras = async () => {
     };
   }
   TextAreaAutoComplete.updateWords("jk-nodes.loras", words);
+  TextAreaAutoComplete.notifyLoraRefresh();
 };
 function parseCSV(csvText) {
   const rows = [];
@@ -342,7 +343,6 @@ app.registerExtension({
                   onchange: (event) => {
                     const value2 = +event.target.value;
                     TextAreaAutoComplete.suggestionCount = value2;
-                    ;
                     localStorage.setItem(ext_id + ".SuggestionCount", TextAreaAutoComplete.suggestionCount);
                   }
                 })

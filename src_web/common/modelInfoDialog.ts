@@ -2,6 +2,7 @@
 // all i did was modify some stuff to work better with my custom lora prompt node and add a couple of new features
 
 // @ts-nocheck
+// TODO, convert this to actually be typescript
 
 import { $el, ComfyDialog } from "../../../../scripts/ui.js";
 import { api } from "../../../../scripts/api.js";

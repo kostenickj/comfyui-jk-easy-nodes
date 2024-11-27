@@ -2,6 +2,7 @@
 // all i did was modify some stuff add a couple of new features
 
 // @ts-nocheck
+// TODO, convert this to actually be typescript
 
 import { $el } from '../../../../scripts/ui.js';
 
@@ -364,6 +365,19 @@ export class TextAreaAutoComplete {
     static globalWords: Record<string, AutoCompleteEntry> = {};
     static globalWordsExclLoras: Record<string, AutoCompleteEntry> = {};
 
+    private static eventEmitter = new EventTarget();
+
+    static addEventListener(eventName: 'loras-refreshed', callback: () => void) {
+        this.eventEmitter.addEventListener(eventName, callback);
+    }
+    static removeEventListener(eventName: 'loras-refreshed', callback: () => void) {
+        this.eventEmitter.removeEventListener(eventName, callback);
+    }
+
+    static notifyLoraRefresh() {
+        this.eventEmitter.dispatchEvent(new Event('loras-refreshed'));
+    }
+
     el: HTMLTextAreaElement;
 
     overrideWords?: Record<string, AutoCompleteEntry>;
@@ -377,10 +391,7 @@ export class TextAreaAutoComplete {
         return this.overrideSeparator ?? TextAreaAutoComplete.globalSeparator;
     }
 
-    /**
-     * @param {HTMLTextAreaElement} el
-     */
-    constructor(el, words = null, separator = null) {
+    constructor(el: HTMLTextAreaElement, words = null, separator = null) {
         this.el = el;
         this.helper = new TextAreaCaretHelper(el, () => app.canvas.ds.scale);
         this.dropdown = $el('div.jk-nodes-autocomplete');

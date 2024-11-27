@@ -140,7 +140,6 @@ var LoraInfoDialog = class extends ModelInfoDialog {
       },
       onchange: (event) => {
         const value = event.target.value;
-        console.log(value);
       }
     });
     $el(
