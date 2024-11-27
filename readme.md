@@ -45,8 +45,12 @@ to your ComfyUI `custom_nodes` directory
 A customized version of the autocomplete feature from pythongosssss' ComfyUI-Custom-Scripts that includes some bugfixes and the following new features:
 * <b> Lora Preferences </b>: the ability to automatically insert preferred activation text and weight for a lora
 
-https://github.com/user-attachments/assets/56e1f849-a09f-4e97-bf6b-47da6f69cc8d
-
+![image](./img/PreferenceEditor.gif)
+<details> 
+<video width="320" height="240" controls>
+     <source src="./img/Autocomplete.mp4" type="video/mp4">
+</video>
+<details> 
    - You can save and edit your preferences by opening the lora info via
      - either right clicking a lora in the comfy ui sidebar
      - clicking the info icon inside the autocomplete entry
