@@ -123,11 +123,9 @@ class LoraClickHacker {
         setTimeout(() => {
             const isExpanded = this.lorasListItemExpander?.ariaExpanded === 'true';
             if (logDebug) console.log(`loras bar bar is ${isExpanded ? 'expanded' : 'closed'}`);
-            if (isExpanded) {
-                setTimeout(() => {
-                    this.recurse(this.lorasListItemExpander!);
-                }, 1);
-            }
+            setTimeout(() => {
+                this.recurse(this.lorasListItemExpander!);
+            }, 1);
         }, 1);
     };
 
