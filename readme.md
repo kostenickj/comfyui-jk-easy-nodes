@@ -1,4 +1,5 @@
-# jk-easy-nodes
+# jk-comfyui-helpers
+This repo contains a collection of helpers and nodes for ComfyUI
 
 # Installation
 
@@ -8,25 +9,31 @@
 
 ## Manual install
 1. Clone the repository:
-`git clone https://github.com/kostenickj/comfyui-jk-easy-nodes.git`  
+`git clone https://github.com/kostenickj/jk-comfyui-helpers.git`  
 to your ComfyUI `custom_nodes` directory
 
 - For uninstallation:
   - Delete the cloned repo in `custom_nodes`
 
 ## Manual Update
-1. Navigate to the cloned repo e.g. `custom_nodes/comfyui-jk-easy-nodes`
+1. Navigate to the cloned repo e.g. `custom_nodes/jk-comfyui-helpers`
 2. `git pull`
 
-# Features
+## Features
 
-## Custom Feed Window
-A custom feed window that can be moved to another monitor
-1. Grid mode or single image
+### Custom Feed Window - Great for multi-monitor setups
+ * A custom feed window that can be moved to another monitor
+   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/OpenFeed.gif)
+ * Grid mode or single image
+   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/Modes.gif)
+ * toggle which nodes you want to see output from
+   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/VisibilityToggle.gif)
+ * JSON prompt explorer (png only)
+   * ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/JsonExplorer.gif)
 
-## Custom Autocomplete (modified from ComfyUI-Custom-Scripts)
+### Custom Autocomplete (modified from ComfyUI-Custom-Scripts)
 ![image](https://github.com/pythongosssss/ComfyUI-Custom-Scripts/assets/125205205/b5971135-414f-4f4e-a6cf-2650dc01085f)  
-A customized version of the custom autocomplete from pythongosssss' ComfyUI-Custom-Scripts that includes some bugfixes and the following new features:
+A customized version of the autocomplete feature from pythongosssss' ComfyUI-Custom-Scripts that includes some bugfixes and the following new features:
 1. <b> Lora Preferences </b>: the ability to automatically insert preferred activation text and weight for a lora
    - ![image](todo)
    - You can save and edit your preferences by opening the lora info via
@@ -44,3 +51,7 @@ NOTE: it will conflict with the original version from pythongosssss if you have 
 
 <br>
 <br>
+
+## Credits
+
+pythongosssss/[ComfyUI-Custom-Scripts](https://github.com/comfyanonymous/ComfyUI) - The autocomplete and model dialog is heavily based on this work.

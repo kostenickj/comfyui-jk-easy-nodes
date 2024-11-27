@@ -164,7 +164,7 @@ class JKAnythingToString:
 
     RETURN_TYPES = ("STRING",)
     FUNCTION = "do_str"
-    CATEGORY = "JK Easy Nodes ( ͡° ͜ʖ ͡°)"
+    CATEGORY = "JK Comfy Helpers"
 
     def do_str(self, input):
         if isinstance(input, str):
@@ -222,7 +222,7 @@ class EasyHRFix:
     RETURN_TYPES = ("LATENT",)
     RETURN_NAMES = ( "LATENT",)
     FUNCTION = "apply"
-    CATEGORY = "JK Easy Nodes ( ͡° ͜ʖ ͡°)"
+    CATEGORY = "JK Comfy Helpers"
 
     def apply(
         self,
@@ -301,6 +301,6 @@ NODE_CLASS_MAPPINGS = {
     'JKAnythingToString': JKAnythingToString
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-  'JKAnythingToString': 'JK Anything to string ( ͡° ͜ʖ ͡°)',
-  'EasyHRFix': 'JK Easy HiRes Fix ( ͡° ͜ʖ ͡°)'
+  'JKAnythingToString': 'JK Anything to string',
+  'EasyHRFix': 'JK Easy HiRes Fix'
 }
