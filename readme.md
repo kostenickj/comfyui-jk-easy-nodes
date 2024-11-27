@@ -25,7 +25,7 @@ to your ComfyUI `custom_nodes` directory
 
 <details>
    <summary> A custom feed window that can be moved to another monitor</summary>
-   ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/OpenFeed.gif)
+   ![image](./img/OpenFeed.gif)
 </details> 
 <details> 
    <summary>Grid mode or single image</summary>
