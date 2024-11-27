@@ -50,7 +50,6 @@ My attempt to replicate the hi res fix process from  A1111/Forge in a single nod
 * noise is generated on the gpu by default, just like A1111/Forge
 * it requires the [inspire pack](https://github.com/ltdrdata/ComfyUI-Inspire-Pack) and [ComfyUI Noise](https://github.com/BlenderNeko/ComfyUI_Noise) to be installed. Both can be found by searching the manager.
 
-<br>
 # Installation
 
 ## VIA Manager
