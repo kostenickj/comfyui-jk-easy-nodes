@@ -1,23 +1,5 @@
 # jk-comfyui-helpers
-This repo contains a collection of helpers and nodes for ComfyUI
-
-# Installation
-
-## Manager
-
-[TODO](https://github.com/ltdrdata/ComfyUI-Manager#how-to-register-your-custom-node-into-comfyui-manager)
-
-## Manual install
-1. Clone the repository:
-`git clone https://github.com/kostenickj/jk-comfyui-helpers.git`  
-to your ComfyUI `custom_nodes` directory
-
-- For uninstallation:
-  - Delete the cloned repo in `custom_nodes`
-
-## Manual Update
-1. Navigate to the cloned repo e.g. `custom_nodes/jk-comfyui-helpers`
-2. `git pull`
+This repo contains a collection of UI helpers and nodes for ComfyUI
 
 ## Features
 
@@ -60,9 +42,34 @@ A customized version of the autocomplete feature from pythongosssss' ComfyUI-Cus
 
 <b>Important</b>: the autocomplete will conflict with the original version from pythongosssss if you have it installed, so disable one of them in the settings manager in comfy
 
+
+### Easy Hi Res Fix Node
+My attempt to replicate the hi res fix process from  A1111/Forge in a single node
+![image](./img/HRFix.JPG)
+* it injects a small amount of extra noise into the latent before upscaling
+* noise is generated on the gpu by default, just like A1111/Forge
+* it requires the [inspire pack](https://github.com/ltdrdata/ComfyUI-Inspire-Pack) and [ComfyUI Noise](https://github.com/BlenderNeko/ComfyUI_Noise) to be installed. Both can be found by searching the manager.
+
 <br>
-<br>
+# Installation
+
+## VIA Manager
+
+[TODO](https://github.com/ltdrdata/ComfyUI-Manager#how-to-register-your-custom-node-into-comfyui-manager)
+
+## Manual install
+1. Clone the repository:
+`git clone https://github.com/kostenickj/jk-comfyui-helpers.git`  
+to your ComfyUI `custom_nodes` directory
+
+- For uninstallation:
+  - Delete the cloned repo in `custom_nodes`
+
+## Manual Update
+1. Navigate to the cloned repo e.g. `custom_nodes/jk-comfyui-helpers`
+2. `git pull`
+
 
 ## Credits
 
-pythongosssss/[ComfyUI-Custom-Scripts](https://github.com/comfyanonymous/ComfyUI) - The autocomplete and model dialog is heavily based on this work.
+pythongosssss/[ComfyUI-Custom-Scripts](https://github.com/comfyanonymous/ComfyUI) - The autocomplete and model dialog is derived on this work.
