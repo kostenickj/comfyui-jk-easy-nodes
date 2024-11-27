@@ -50,7 +50,7 @@ A customized version of the autocomplete feature from pythongosssss' ComfyUI-Cus
 <video width="320" height="240" controls>
      <source src="./img/Autocomplete.mp4" type="video/mp4">
 </video>
-<details> 
+</details> 
    - You can save and edit your preferences by opening the lora info via
      - either right clicking a lora in the comfy ui sidebar
      - clicking the info icon inside the autocomplete entry
