@@ -26,7 +26,7 @@ from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModel
 sys.path.remove(comfy_dir)
 
 logging.basicConfig()
-log = logging.getLogger("jk-easy-nodes")
+log = logging.getLogger("jk-comfyui-helpers")
 
 class CachedLora(TypedDict):
     name: str

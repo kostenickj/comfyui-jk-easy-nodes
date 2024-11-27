@@ -1,4 +1,4 @@
-const NAMESPACE = 'jk-easy-nodes_';
+const NAMESPACE = 'jk-comfyui-helpers_';
 
 class StorageHelper {
     constructor(private storageImpl: Storage) {}

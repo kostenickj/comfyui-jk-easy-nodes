@@ -101,7 +101,7 @@ if (IS_FEED_WINDOW) {
                 feedWindow = null;
             } else {
                 feedWindow = window.open(
-                    `/extensions/comfyui-jk-easy-nodes/gallery/jk-image-window.html`,
+                    `/extensions/jk-comfyui-helpers/gallery/jk-image-window.html`,
                     `_blank`,
                     `width=1280,height=720,location=no,toolbar=no,menubar=no`
                 )!;

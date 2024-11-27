@@ -1,5 +1,5 @@
 // src_web/common/storage.ts
-var NAMESPACE = "jk-easy-nodes_";
+var NAMESPACE = "jk-comfyui-helpers_";
 var StorageHelper = class {
   constructor(storageImpl) {
     this.storageImpl = storageImpl;

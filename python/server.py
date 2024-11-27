@@ -10,7 +10,7 @@ from charset_normalizer import from_path
 import logging
 
 logging.basicConfig()
-log = logging.getLogger("jk-easy-nodes")
+log = logging.getLogger("jk-comfyui-helpers")
 
 def get_metadata(filepath):
     with open(filepath, "rb") as file:
@@ -99,7 +99,7 @@ async def get_autocomplete_files(request):
 
     global tagfile_cache
 
-    ext_dir = os.path.join(folder_paths.folder_names_and_paths['custom_nodes'][0][0], 'comfyui-jk-easy-nodes')
+    ext_dir = os.path.join(folder_paths.folder_names_and_paths['custom_nodes'][0][0], 'jk-comfyui-helpers')
     tags_dir = os.path.join(ext_dir, 'tags')
     all_tag_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(tags_dir) for f in filenames if f.lower().endswith('.csv') or f.lower().endswith('.txt')]
     ret: List[TagFile] = []

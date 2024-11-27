@@ -9,7 +9,7 @@ module_dir = os.path.join(this_dir, 'python')
 
 modules = glob.glob(os.path.join(module_dir, "*.py"), recursive=False)
 
-log = logging.getLogger("jk-easy-nodes")
+log = logging.getLogger("jk-comfyui-helpers")
 log.propagate = False
 if not log.handlers:
     stdout_handler = logging.StreamHandler(sys.stdout)
