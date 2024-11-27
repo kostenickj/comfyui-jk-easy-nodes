@@ -23,21 +23,21 @@ to your ComfyUI `custom_nodes` directory
 
 ### Custom Feed Window - Great for multi-monitor setups
 
-<details>
+<details open>
    <summary> A custom feed window that can be moved to another monitor</summary>
-   ![image](./img/OpenFeed.gif)
+   <img src="./img/OpenFeed.gif"> </img>
 </details> 
 <details> 
    <summary>Grid mode or single image</summary>
-   ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/Modes.gif)
+   <img src="./img/Modes.gif"> </img>
 </details>
 <details> 
    <summary>toggle which nodes you want to see output from</summary>
-   ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/VisibilityToggle.gif)
+   <img src="./img/VisibilityToggle.gif"> </img>
 </details>
 <details> 
    <summary>JSON prompt explorer (<b>.png only</b>)</summary>
-   ![image](https://raw.githubusercontent.com/kostenickj/jk-comfyui-helpers/refs/heads/master/img/JsonExplorer.gif)
+   <img src="./img/JsonExplorer.gif"> </img>
 </details>
 
 ### Custom Autocomplete (modified from ComfyUI-Custom-Scripts)
