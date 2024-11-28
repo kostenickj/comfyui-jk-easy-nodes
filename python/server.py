@@ -170,7 +170,7 @@ async def load_wildcards(request):
 
     #TODO, support yaml?
     custom_nodes_dir = Path(folder_paths.folder_names_and_paths['custom_nodes'][0][0]).absolute()
-    ext_wildcard_dirs = list(custom_nodes_dir.glob("*/wildcards/"))
+    ext_wildcard_dirs = list(custom_nodes_dir.glob("*/wildcards/")) + list(custom_nodes_dir.glob("*/custom_wildcards/"))
     wildcard_files: List[str] = []
     for path in ext_wildcard_dirs:
         wildcard_files.append(path.as_posix())
