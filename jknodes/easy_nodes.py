@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import hashlib
 import json
 from torch import Tensor
 import os
@@ -323,6 +324,7 @@ class JKEasyDetailer:
                 "image": ("IMAGE", ),
                 "detector": (detectors, ),
                 "model": ("MODEL",),
+                "clip": ("CLIP",),
                 "vae": ("VAE",),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
@@ -331,31 +333,56 @@ class JKEasyDetailer:
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
                 "positive": ("CONDITIONING",),
                 "negative": ("CONDITIONING",),
+                "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
 
                 "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
                 "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+
+                "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+
+                "guide_size": ("FLOAT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                "iterations": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+            },
+            "optional": {
+                "detailer_hook": ("DETAILER_HOOK",),
             }
         }
     
     def apply(
         self, 
-        image, 
+        image: Tensor, 
         detector: str, 
         model: comfy.model_patcher.ModelPatcher, 
-        vae, 
-        seed, 
-        steps, 
-        cfg, 
-        sampler_name, 
-        scheduler, 
+        clip,
+        vae: comfy.sd.VAE, 
+        seed: int, 
+        steps: int, 
+        cfg: float, 
+        sampler_name: str, 
+        scheduler: str,
         positive, 
         negative,
-        threshold,
-        dilation,
-        crop_factor,
-        drop_size
+        denoise: float,
+        threshold: float,
+        dilation: int,
+        crop_factor: float,
+        drop_size: int,
+        feather: int, 
+        noise_mask: bool, 
+        force_inpaint: bool,
+        guide_size: float,
+        guide_size_for: bool,
+        max_size: float,
+        noise_mask_feather: int,
+        iterations: int,
+        detailer_hook
     ):
 
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
@@ -392,18 +419,50 @@ class JKEasyDetailer:
             drop_size,
             'all'
         )
-        print(segs)
-        # detector_full_path = folder_paths.get_full_path("ultralytics", detector)
-        # yolo = YOLO(detector_full_path)
-        # start_img = utils.tensor2pil(image)
 
-        # DetailerForEach
+        detailer_node = nodes.NODE_CLASS_MAPPINGS['DetailerForEach']
 
-        return (image,)
+        # todo, see what else this returns, maybe u want to use it
+        # also, make sure this shows live preview like the node itself does
+        enhanced_img, *_ = detailer_node.do_detail(
+            image,
+            segs,
+            model,
+            clip,
+            vae,
+            guide_size,
+            guide_size_for,
+            max_size,
+            seed,
+            steps,
+            cfg,
+            sampler_name,
+            scheduler,
+            positive,
+            negative,
+            denoise,
+            feather,
+            noise_mask,
+            force_inpaint,
+            "",
+            detailer_hook=detailer_hook,
+            cycle=iterations,
+            inpaint_model=force_inpaint,
+            noise_mask_feather=noise_mask_feather,
+            scheduler_func_opt=None,
+        )
+
+        return (enhanced_img,)
 
     @classmethod
 
+    #TODO, cache hashes segs and other params of models etc and return a hash string
+    # hasing the image is not an option, could be huge
+    # also check if u even need to cache...
+    # definitely cache the segs, and the yolo model, everything else needs to re-run on change
+    @classmethod
     def IS_CHANGED(self):
+       #hash()
        return ""
     
 
