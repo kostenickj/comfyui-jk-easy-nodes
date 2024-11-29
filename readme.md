@@ -46,7 +46,7 @@ A customized version of the autocomplete feature from pythongosssss' ComfyUI-Cus
 ### Easy Hi Res Fix Node
 My attempt to replicate the hi res fix process from  A1111/Forge in a single node
 ![image](./img/HRFix.JPG)
-* it injects a small amount of extra noise into the latent before upscaling
+* it injects a small amount of extra noise into the latent before upscaling, just like happens in the A1111/forge hires fix
 * noise is generated on the gpu by default, just like A1111/Forge
 * it requires the [inspire pack](https://github.com/ltdrdata/ComfyUI-Inspire-Pack) and [ComfyUI Noise](https://github.com/BlenderNeko/ComfyUI_Noise) to be installed. Both can be found by searching the manager.
 

@@ -19,6 +19,8 @@ from pathlib import Path
 from ultralytics import YOLO
 import cv2
 from torchvision.transforms.functional import to_pil_image
+import inspect
+from nodes import MAX_RESOLUTION
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -303,133 +305,109 @@ class EasyHRFix:
 
         return (samples,)
 
-# T = TypeVar("T", int, float)
-# @dataclass
-# class PredictOutput(Generic[T]):
-#     bboxes: list[list[T]] = field(default_factory=list)
-#     masks: list[Image.Image] = field(default_factory=list)
-#     preview: Optional[Image.Image] = None
 
-# def mask_to_pil(masks: torch.Tensor, shape: tuple[int, int]) -> list[Image.Image]:
-#     """
-#     Parameters
-#     ----------
-#     masks: torch.Tensor, dtype=torch.float32, shape=(N, H, W).
-#         The device can be CUDA, but `to_pil_image` takes care of that.
+class JKEasyDetailer:
+    #todo
+    RETURN_TYPES = ("IMAGE", )
+    RETURN_NAMES = ( "IMAGE", )
+    FUNCTION = "apply"
+    CATEGORY = "JK Comfy Helpers"
 
-#     shape: tuple[int, int]
-#         (W, H) of the original image
-#     """
-#     n = masks.shape[0]
-#     return [to_pil_image(masks[i], mode="L").resize(shape) for i in range(n)]
+    @classmethod
+    def INPUT_TYPES(s):
+        bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("ultralytics_bbox")]
+        segms = ["segm/"+x for x in folder_paths.get_filename_list("ultralytics_segm")]
+        detectors = bboxs + segms
+        return {
+            "required": {
+                "image": ("IMAGE", ),
+                "detector": (detectors, ),
+                "model": ("MODEL",),
+                "vae": ("VAE",),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step":0.1, "round": 0.01}),
+                "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                "positive": ("CONDITIONING",),
+                "negative": ("CONDITIONING",),
 
-# def create_mask_from_bbox(
-#     bboxes: list[list[float]], shape: tuple[int, int]
-# ) -> list[Image.Image]:
-#     """
-#     Parameters
-#     ----------
-#         bboxes: list[list[float]]
-#             list of [x1, y1, x2, y2]
-#             bounding boxes
-#         shape: tuple[int, int]
-#             shape of the image (width, height)
-
-#     Returns
-#     -------
-#         masks: list[Image.Image]
-#         A list of masks
-
-#     """
-#     masks = []
-#     for bbox in bboxes:
-#         mask = Image.new("L", shape, 0)
-#         mask_draw = ImageDraw.Draw(mask)
-#         mask_draw.rectangle(bbox, fill=255)
-#         masks.append(mask)
-#     return masks
-
-# def ultralytics_predict(
-#     yolo: YOLO,
-#     image: Image.Image,
-#     confidence: float = 0.3,
-#     device: str = "",
-# ) -> PredictOutput[float]:
-
-#     pred = yolo(image, conf=confidence, device=device)
-
-#     bboxes = pred[0].boxes.xyxy.cpu().numpy()
-#     if bboxes.size == 0:
-#         return PredictOutput()
-#     bboxes = bboxes.tolist()
-
-#     if pred[0].masks is None:
-#         masks = create_mask_from_bbox(bboxes, image.size)
-#     else:
-#         masks = mask_to_pil(pred[0].masks.data, image.size)
-#     preview = pred[0].plot()
-#     preview = cv2.cvtColor(preview, cv2.COLOR_BGR2RGB)
-#     preview = Image.fromarray(preview)
-
-#     return PredictOutput(bboxes=bboxes, masks=masks, preview=preview)
-
-# class JKEasyDetailer:
-#     #todo
-#     RETURN_TYPES = ("IMAGE", )
-#     RETURN_NAMES = ( "IMAGE", )
-#     FUNCTION = "apply"
-#     CATEGORY = "JK Comfy Helpers"
-
-#     @classmethod
-#     def INPUT_TYPES(s):
-#         bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("ultralytics_bbox")]
-#         segms = ["segm/"+x for x in folder_paths.get_filename_list("ultralytics_segm")]
-#         detectors = bboxs + segms
-#         return {
-#             "required": {
-#                 "image": ("IMAGE", ),
-#                 "detector": (detectors, ),
-#                 "model": ("MODEL",),
-#                 "vae": ("VAE",),
-#                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-#                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-#                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step":0.1, "round": 0.01}),
-#                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-#                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-#                 "positive": ("CONDITIONING",),
-#                 "negative": ("CONDITIONING",),
-#             }
-#         }
+                "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
+                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
+                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+            }
+        }
     
-#     def apply(
-#         self, 
-#         image, 
-#         detector: str, 
-#         model: comfy.model_patcher.ModelPatcher, 
-#         vae, 
-#         seed, 
-#         steps, 
-#         cfg, 
-#         sampler_name, 
-#         scheduler, 
-#         positive, 
-#         negative
-#     ):
+    def apply(
+        self, 
+        image, 
+        detector: str, 
+        model: comfy.model_patcher.ModelPatcher, 
+        vae, 
+        seed, 
+        steps, 
+        cfg, 
+        sampler_name, 
+        scheduler, 
+        positive, 
+        negative,
+        threshold,
+        dilation,
+        crop_factor,
+        drop_size
+    ):
 
-#         detector_full_path = folder_paths.get_full_path("ultralytics", detector)
-#         yolo = YOLO(detector_full_path)
-#         start_img = utils.ensure_pil_image(image[0], "RGB")
+        if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
+        if 'UltralyticsDetectorProvider' not in nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
+        if 'BboxDetectorSEGS' not in nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
+        if 'SegmDetectorSEGS' not in  nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
 
-#         output = ultralytics_predict(yolo, start_img)
+        provider_loader = nodes.NODE_CLASS_MAPPINGS['UltralyticsDetectorProvider']()
 
-#         return (image,)
+        path_toclass = inspect.getfile(provider_loader.__class__)
+        if path_toclass not in sys.path:
+            sys.path.append(os.path.dirname(path_toclass))
+        # hack but i dont care, this imports from impact subpack
+        from subcore import UltraBBoxDetector, UltraSegmDetector, load_yolo
 
-#     @classmethod
+        detector_full_path = folder_paths.get_full_path("ultralytics", detector)
+        yolo = load_yolo(detector_full_path)
+        has_segm = yolo.task == 'segment'
+        detector_inst = UltraSegmDetector(yolo) if has_segm else UltraBBoxDetector(yolo)
 
-#     def IS_CHANGED(self):
-#        return ""
+        bbox_detector_node = nodes.NODE_CLASS_MAPPINGS['BboxDetectorSEGS']
+        segm_detector_node = nodes.NODE_CLASS_MAPPINGS['SegmDetectorSEGS']
+        detector_node_to_use = segm_detector_node() if has_segm else bbox_detector_node()
+        segs = detector_node_to_use.doit(
+            detector_inst, 
+            image, 
+            threshold, 
+            dilation, 
+            crop_factor, 
+            drop_size,
+            'all'
+        )
+        print(segs)
+        # detector_full_path = folder_paths.get_full_path("ultralytics", detector)
+        # yolo = YOLO(detector_full_path)
+        # start_img = utils.tensor2pil(image)
+
+        # DetailerForEach
+
+        return (image,)
+
+    @classmethod
+
+    def IS_CHANGED(self):
+       return ""
     
 
+# only exists so i can pass a variable scheduler into the inspire pack scheduler, most people wont need or care about this
 class JKInspireSchedulerAdapter:
     @classmethod
     def INPUT_TYPES(s):
@@ -452,12 +430,12 @@ class JKInspireSchedulerAdapter:
 NODE_CLASS_MAPPINGS = {
     'EasyHRFix': EasyHRFix,
     'JKAnythingToString': JKAnythingToString,
-    'JKInspireSchedulerAdapter': JKInspireSchedulerAdapter
-#    'JKEasyDetailer': JKEasyDetailer
+    'JKInspireSchedulerAdapter': JKInspireSchedulerAdapter,
+    'JKEasyDetailer': JKEasyDetailer
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
   'JKAnythingToString': 'JK Anything to string',
   'EasyHRFix': 'JK Easy HiRes Fix',
-  'JKInspireSchedulerAdapter': 'JK Inspire Scheduler Adapter'
-#  'JKEasyDetailer': 'JK Easy Detailer'
+  'JKInspireSchedulerAdapter': 'JK Inspire Scheduler Adapter',
+  'JKEasyDetailer': 'JK Easy Detailer'
 }
