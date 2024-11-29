@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 import hashlib
 import json
 from torch import Tensor
@@ -11,21 +10,17 @@ import comfy.model_patcher
 import comfy.model_management
 import comfy.utils
 import folder_paths
-from PIL import Image, ImageDraw
+from PIL import Image
 import numpy as np
 import logging
-from typing import Any, Dict, Literal, TypedDict, List, Generic, Optional, TypeVar
+from typing import Any, Dict, Literal, TypedDict, List
 import re
 from pathlib import Path
-from ultralytics import YOLO
-import cv2
-from torchvision.transforms.functional import to_pil_image
 import inspect
 from nodes import MAX_RESOLUTION
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.abspath(this_dir))
 sys.path.append(os.path.dirname(this_dir))
 
 custom_nodes_dir = os.path.abspath(os.path.join(this_dir, '..'))
@@ -384,6 +379,12 @@ class JKEasyDetailer:
         iterations: int,
         detailer_hook
     ):
+
+        # TODO, maybe cache this and compare with new image
+        # test these for hashing
+        image_id = id(image)
+        image_id2 = image.storage().data_ptr()
+        print(image is image)  # True, they are the same instance
 
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
