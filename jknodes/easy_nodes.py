@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 import json
 from torch import Tensor
 import os
@@ -9,21 +10,36 @@ import comfy.model_patcher
 import comfy.model_management
 import comfy.utils
 import folder_paths
-from PIL import Image
+from PIL import Image, ImageDraw
 import numpy as np
 import logging
-from typing import Any, Dict, Literal, TypedDict, List
+from typing import Any, Dict, Literal, TypedDict, List, Generic, Optional, TypeVar
 import re
 from pathlib import Path
+from ultralytics import YOLO
+import cv2
+from torchvision.transforms.functional import to_pil_image
+
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.abspath(this_dir))
+sys.path.append(os.path.dirname(this_dir))
+
 custom_nodes_dir = os.path.abspath(os.path.join(this_dir, '..'))
 comfy_dir = os.path.abspath(os.path.join(this_dir, '..', '..'))
 sys.path.append(comfy_dir)
+
 import nodes
 from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler, CLIPTextEncode
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 sys.path.remove(comfy_dir)
+
+from jknodes import utils
+
+model_path = folder_paths.models_dir
+utils.add_folder_path_and_extensions("ultralytics_bbox", [os.path.join(model_path, "ultralytics", "bbox")], folder_paths.supported_pt_extensions)
+utils.add_folder_path_and_extensions("ultralytics_segm", [os.path.join(model_path, "ultralytics", "segm")], folder_paths.supported_pt_extensions)
+utils.add_folder_path_and_extensions("ultralytics", [os.path.join(model_path, "ultralytics")], folder_paths.supported_pt_extensions)
 
 logging.basicConfig()
 log = logging.getLogger("jk-comfyui-helpers")
@@ -145,13 +161,6 @@ def process_text(anything):
 
 
 # endregion
-class AnyType(str):
-  """A special class that is always equal in not equal comparisons. Credit to pythongosssss"""
-
-  def __ne__(self, __value: object) -> bool:
-    return False
-
-any = AnyType("*")
 
 # originally from MTB nodes, modified to actually work with anything using AnyType
 class JKAnythingToString:
@@ -159,7 +168,7 @@ class JKAnythingToString:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {"input": (any, {})},
+            "required": {"input": (utils.any_type_helper, {})},
         }
 
     RETURN_TYPES = ("STRING",)
@@ -294,13 +303,161 @@ class EasyHRFix:
 
         return (samples,)
 
+# T = TypeVar("T", int, float)
+# @dataclass
+# class PredictOutput(Generic[T]):
+#     bboxes: list[list[T]] = field(default_factory=list)
+#     masks: list[Image.Image] = field(default_factory=list)
+#     preview: Optional[Image.Image] = None
 
+# def mask_to_pil(masks: torch.Tensor, shape: tuple[int, int]) -> list[Image.Image]:
+#     """
+#     Parameters
+#     ----------
+#     masks: torch.Tensor, dtype=torch.float32, shape=(N, H, W).
+#         The device can be CUDA, but `to_pil_image` takes care of that.
+
+#     shape: tuple[int, int]
+#         (W, H) of the original image
+#     """
+#     n = masks.shape[0]
+#     return [to_pil_image(masks[i], mode="L").resize(shape) for i in range(n)]
+
+# def create_mask_from_bbox(
+#     bboxes: list[list[float]], shape: tuple[int, int]
+# ) -> list[Image.Image]:
+#     """
+#     Parameters
+#     ----------
+#         bboxes: list[list[float]]
+#             list of [x1, y1, x2, y2]
+#             bounding boxes
+#         shape: tuple[int, int]
+#             shape of the image (width, height)
+
+#     Returns
+#     -------
+#         masks: list[Image.Image]
+#         A list of masks
+
+#     """
+#     masks = []
+#     for bbox in bboxes:
+#         mask = Image.new("L", shape, 0)
+#         mask_draw = ImageDraw.Draw(mask)
+#         mask_draw.rectangle(bbox, fill=255)
+#         masks.append(mask)
+#     return masks
+
+# def ultralytics_predict(
+#     yolo: YOLO,
+#     image: Image.Image,
+#     confidence: float = 0.3,
+#     device: str = "",
+# ) -> PredictOutput[float]:
+
+#     pred = yolo(image, conf=confidence, device=device)
+
+#     bboxes = pred[0].boxes.xyxy.cpu().numpy()
+#     if bboxes.size == 0:
+#         return PredictOutput()
+#     bboxes = bboxes.tolist()
+
+#     if pred[0].masks is None:
+#         masks = create_mask_from_bbox(bboxes, image.size)
+#     else:
+#         masks = mask_to_pil(pred[0].masks.data, image.size)
+#     preview = pred[0].plot()
+#     preview = cv2.cvtColor(preview, cv2.COLOR_BGR2RGB)
+#     preview = Image.fromarray(preview)
+
+#     return PredictOutput(bboxes=bboxes, masks=masks, preview=preview)
+
+# class JKEasyDetailer:
+#     #todo
+#     RETURN_TYPES = ("IMAGE", )
+#     RETURN_NAMES = ( "IMAGE", )
+#     FUNCTION = "apply"
+#     CATEGORY = "JK Comfy Helpers"
+
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("ultralytics_bbox")]
+#         segms = ["segm/"+x for x in folder_paths.get_filename_list("ultralytics_segm")]
+#         detectors = bboxs + segms
+#         return {
+#             "required": {
+#                 "image": ("IMAGE", ),
+#                 "detector": (detectors, ),
+#                 "model": ("MODEL",),
+#                 "vae": ("VAE",),
+#                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+#                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+#                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step":0.1, "round": 0.01}),
+#                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+#                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+#                 "positive": ("CONDITIONING",),
+#                 "negative": ("CONDITIONING",),
+#             }
+#         }
     
+#     def apply(
+#         self, 
+#         image, 
+#         detector: str, 
+#         model: comfy.model_patcher.ModelPatcher, 
+#         vae, 
+#         seed, 
+#         steps, 
+#         cfg, 
+#         sampler_name, 
+#         scheduler, 
+#         positive, 
+#         negative
+#     ):
+
+#         detector_full_path = folder_paths.get_full_path("ultralytics", detector)
+#         yolo = YOLO(detector_full_path)
+#         start_img = utils.ensure_pil_image(image[0], "RGB")
+
+#         output = ultralytics_predict(yolo, start_img)
+
+#         return (image,)
+
+#     @classmethod
+
+#     def IS_CHANGED(self):
+#        return ""
+    
+
+class JKInspireSchedulerAdapter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"defaultInput": True, }),
+        }}
+
+    CATEGORY = "JK Comfy Helpers"
+
+    # common.core in inspire pack
+    RETURN_TYPES = (comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', "GITS[coeff=1.2]"],)
+    RETURN_NAMES = ("scheduler",)
+
+    FUNCTION = "doit"
+
+    def doit(self, scheduler):
+        return (scheduler,)
+
+
 NODE_CLASS_MAPPINGS = {
     'EasyHRFix': EasyHRFix,
-    'JKAnythingToString': JKAnythingToString
+    'JKAnythingToString': JKAnythingToString,
+    'JKInspireSchedulerAdapter': JKInspireSchedulerAdapter
+#    'JKEasyDetailer': JKEasyDetailer
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
   'JKAnythingToString': 'JK Anything to string',
-  'EasyHRFix': 'JK Easy HiRes Fix'
+  'EasyHRFix': 'JK Easy HiRes Fix',
+  'JKInspireSchedulerAdapter': 'JK Inspire Scheduler Adapter'
+#  'JKEasyDetailer': 'JK Easy Detailer'
 }
