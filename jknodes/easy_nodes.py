@@ -377,13 +377,16 @@ class JKEasyDetailer:
         max_size: float,
         noise_mask_feather: int,
         iterations: int,
-        detailer_hook
+        detailer_hook = None
     ):
 
         # TODO, maybe cache this and compare with new image
         # test these for hashing
+        # https://stackoverflow.com/questions/67289617/pytorch-tensor-storages-have-the-same-id-when-calling-the-storage-method
         image_id = id(image)
+        print(image_id)
         image_id2 = image.storage().data_ptr()
+        print(image_id2)
         print(image is image)  # True, they are the same instance
 
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
@@ -425,9 +428,10 @@ class JKEasyDetailer:
 
         # todo, see what else this returns, maybe u want to use it
         # also, make sure this shows live preview like the node itself does
+        # TODO, do this in a loop...
         enhanced_img, *_ = detailer_node.do_detail(
             image,
-            segs,
+            segs[0],
             model,
             clip,
             vae,
