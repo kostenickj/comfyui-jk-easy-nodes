@@ -1,4 +1,3 @@
-import hashlib
 import json
 from torch import Tensor
 import os
@@ -20,7 +19,6 @@ from pathlib import Path
 import inspect
 from nodes import MAX_RESOLUTION
 
-
 this_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(this_dir))
 
@@ -29,7 +27,7 @@ comfy_dir = os.path.abspath(os.path.join(this_dir, '..', '..'))
 sys.path.append(comfy_dir)
 
 import nodes
-from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, KSampler, CLIPTextEncode
+from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, CLIPTextEncode
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 sys.path.remove(comfy_dir)
 
@@ -304,8 +302,8 @@ class EasyHRFix:
 
 
 class JKEasyDetailer:
-    RETURN_TYPES = ("IMAGE", )
-    RETURN_NAMES = ( "IMAGE", )
+    RETURN_TYPES = ("IMAGE", "SEGS",)
+    RETURN_NAMES = ( "IMAGE", "SEGS")
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
@@ -385,9 +383,6 @@ class JKEasyDetailer:
         iterations: int,
         detailer_hook = None
     ):
-
-        # TODO, cache the yolo model and segs
-        # for segs, run again reload if image id is different or any of the args that go into detector_node_to_use.doit() changes
        
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
@@ -399,6 +394,9 @@ class JKEasyDetailer:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
 
         provider_loader = nodes.NODE_CLASS_MAPPINGS['UltralyticsDetectorProvider']()
+        bbox_detector_node = nodes.NODE_CLASS_MAPPINGS['BboxDetectorSEGS']
+        segm_detector_node = nodes.NODE_CLASS_MAPPINGS['SegmDetectorSEGS']
+        detailer_node = nodes.NODE_CLASS_MAPPINGS['DetailerForEach']
 
         path_toclass = inspect.getfile(provider_loader.__class__)
         if path_toclass not in sys.path:
@@ -408,11 +406,9 @@ class JKEasyDetailer:
 
         if self.last_yolo is not None and self.last_detector == detector:
             log.info('using cached yolo model')
-            yolo = self.last_yolo
         else:
             detector_full_path = folder_paths.get_full_path("ultralytics", detector)
-            yolo: YOLO = load_yolo(detector_full_path)
-            self.last_yolo = yolo
+            self.last_yolo = load_yolo(detector_full_path)
             self.last_detector = detector
 
         segs_args = detector + '_' + str(threshold)+ '_' + str(dilation)+ '_' + str(crop_factor)+ '_' + str(drop_size)+ '_' + str(id(image))
@@ -420,10 +416,8 @@ class JKEasyDetailer:
         if self.last_segs is not None and self.last_segs_args == segs_args:
             log.info('using cached segs')
         else:
-            has_segm = yolo.task == 'segment'
-            detector_inst = UltraSegmDetector(yolo) if has_segm else UltraBBoxDetector(yolo)
-            bbox_detector_node = nodes.NODE_CLASS_MAPPINGS['BboxDetectorSEGS']
-            segm_detector_node = nodes.NODE_CLASS_MAPPINGS['SegmDetectorSEGS']
+            has_segm = self.last_yolo.task == 'segment'
+            detector_inst = UltraSegmDetector(self.last_yolo) if has_segm else UltraBBoxDetector(self.last_yolo)
             detector_node_to_use = segm_detector_node() if has_segm else bbox_detector_node()
             self.last_segs = detector_node_to_use.doit(
                 detector_inst, 
@@ -437,7 +431,6 @@ class JKEasyDetailer:
 
         self.last_segs_args = segs_args
 
-        detailer_node = nodes.NODE_CLASS_MAPPINGS['DetailerForEach']
         enhanced_img, *_ = detailer_node.do_detail(
             image,
             self.last_segs[0],
@@ -466,7 +459,7 @@ class JKEasyDetailer:
             scheduler_func_opt=None,
         )
 
-        return (enhanced_img,)
+        return (enhanced_img, self.last_segs,)
 
 # only exists so i can pass a variable scheduler into the inspire pack scheduler, most people wont need or care about this
 class JKInspireSchedulerAdapter:
@@ -488,15 +481,33 @@ class JKInspireSchedulerAdapter:
         return (scheduler,)
 
 
+# this only exists because the comfy types system is annoying
+class JKEasyCheckpointLoader:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": { "ckpt_name": (folder_paths.get_filename_list("checkpoints"), ),}}
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE", folder_paths.get_filename_list("checkpoints"), folder_paths.get_filename_list("checkpoints"), )
+    RETURN_NAMES = ("MODEL", "CLIP", "VAE", "CKPT_NAME_FULL", "CKPT_NAME")
+    FUNCTION = "load_checkpoint"
+
+    CATEGORY = "JK Comfy Helpers"
+
+    def load_checkpoint(self, ckpt_name):
+        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
+        out = comfy.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+        return (out[0], out[1], out[2], ckpt_name, os.path.splitext(os.path.basename(ckpt_name))[0])
+
 NODE_CLASS_MAPPINGS = {
     'EasyHRFix': EasyHRFix,
     'JKAnythingToString': JKAnythingToString,
     'JKInspireSchedulerAdapter': JKInspireSchedulerAdapter,
-    'JKEasyDetailer': JKEasyDetailer
+    'JKEasyDetailer': JKEasyDetailer,
+    'JKEasyCheckpointLoader': JKEasyCheckpointLoader
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
   'JKAnythingToString': 'JK Anything to string',
   'EasyHRFix': 'JK Easy HiRes Fix',
   'JKInspireSchedulerAdapter': 'JK Inspire Scheduler Adapter',
-  'JKEasyDetailer': 'JK Easy Detailer'
+  'JKEasyDetailer': 'JK Easy Detailer',
+  'JKEasyCheckpointLoader': 'JK Easy Checkpoint Loader'
 }
