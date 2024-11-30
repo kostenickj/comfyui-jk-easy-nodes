@@ -403,7 +403,7 @@ class JKEasyDetailer:
         path_toclass = inspect.getfile(provider_loader.__class__)
         if path_toclass not in sys.path:
             sys.path.append(os.path.dirname(path_toclass))
-        # hack but i dont care, this imports from impact subpack
+        # import from impact subpack
         from subcore import UltraBBoxDetector, UltraSegmDetector, load_yolo
 
         if self.last_yolo is not None and self.last_detector == detector:
@@ -415,35 +415,32 @@ class JKEasyDetailer:
             self.last_yolo = yolo
             self.last_detector = detector
 
-        segs_args = detector + str(threshold) + str(dilation) + str(crop_factor) + str(drop_size) + str(id(image))
+        segs_args = detector + '_' + str(threshold)+ '_' + str(dilation)+ '_' + str(crop_factor)+ '_' + str(drop_size)+ '_' + str(id(image))
         print(segs_args)
         if self.last_segs is not None and self.last_segs_args == segs_args:
             log.info('using cached segs')
         else:
-            log.info('todo')
+            has_segm = yolo.task == 'segment'
+            detector_inst = UltraSegmDetector(yolo) if has_segm else UltraBBoxDetector(yolo)
+            bbox_detector_node = nodes.NODE_CLASS_MAPPINGS['BboxDetectorSEGS']
+            segm_detector_node = nodes.NODE_CLASS_MAPPINGS['SegmDetectorSEGS']
+            detector_node_to_use = segm_detector_node() if has_segm else bbox_detector_node()
+            self.last_segs = detector_node_to_use.doit(
+                detector_inst, 
+                image, 
+                threshold, 
+                dilation, 
+                crop_factor, 
+                drop_size,
+                'all'
+            )
 
         self.last_segs_args = segs_args
-        has_segm = yolo.task == 'segment'
-        detector_inst = UltraSegmDetector(yolo) if has_segm else UltraBBoxDetector(yolo)
-
-        bbox_detector_node = nodes.NODE_CLASS_MAPPINGS['BboxDetectorSEGS']
-        segm_detector_node = nodes.NODE_CLASS_MAPPINGS['SegmDetectorSEGS']
-        detector_node_to_use = segm_detector_node() if has_segm else bbox_detector_node()
-        segs = detector_node_to_use.doit(
-            detector_inst, 
-            image, 
-            threshold, 
-            dilation, 
-            crop_factor, 
-            drop_size,
-            'all'
-        )
 
         detailer_node = nodes.NODE_CLASS_MAPPINGS['DetailerForEach']
-
         enhanced_img, *_ = detailer_node.do_detail(
             image,
-            segs[0],
+            self.last_segs[0],
             model,
             clip,
             vae,
