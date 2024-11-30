@@ -4,6 +4,7 @@ from torch import Tensor
 import os
 import sys
 import torch
+from ultralytics import YOLO
 import comfy.sd
 import comfy.samplers
 import comfy.model_patcher
@@ -303,7 +304,6 @@ class EasyHRFix:
 
 
 class JKEasyDetailer:
-    #todo
     RETURN_TYPES = ("IMAGE", )
     RETURN_NAMES = ( "IMAGE", )
     FUNCTION = "apply"
@@ -312,6 +312,11 @@ class JKEasyDetailer:
     bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("ultralytics_bbox")]
     segms = ["segm/"+x for x in folder_paths.get_filename_list("ultralytics_segm")]
     detectors = bboxs + segms
+
+    last_yolo: YOLO = None
+    last_detector: str = ''
+    last_segs_args: str = ''
+    last_segs = None
     
     @classmethod
     def INPUT_TYPES(s):   
@@ -347,7 +352,7 @@ class JKEasyDetailer:
                 "iterations": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
             },
             "optional": {
-                "detailer_hook": ("DETAILER_HOOK",),
+                "detailer_hook": ("DETAILER_HOOK",{"tooltip": "Optional detailer hook from impact pack"}),
             }
         }
     
@@ -356,7 +361,7 @@ class JKEasyDetailer:
         image: Tensor, 
         detector: str, 
         model: comfy.model_patcher.ModelPatcher, 
-        clip,
+        clip:comfy.sd.CLIP,
         vae: comfy.sd.VAE, 
         seed: int, 
         steps: int, 
@@ -381,7 +386,8 @@ class JKEasyDetailer:
         detailer_hook = None
     ):
 
-        # TODO, cache the yolo model and segs?
+        # TODO, cache the yolo model and segs
+        # for segs, run again reload if image id is different or any of the args that go into detector_node_to_use.doit() changes
        
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
@@ -400,8 +406,23 @@ class JKEasyDetailer:
         # hack but i dont care, this imports from impact subpack
         from subcore import UltraBBoxDetector, UltraSegmDetector, load_yolo
 
-        detector_full_path = folder_paths.get_full_path("ultralytics", detector)
-        yolo = load_yolo(detector_full_path)
+        if self.last_yolo is not None and self.last_detector == detector:
+            log.info('using cached yolo model')
+            yolo = self.last_yolo
+        else:
+            detector_full_path = folder_paths.get_full_path("ultralytics", detector)
+            yolo: YOLO = load_yolo(detector_full_path)
+            self.last_yolo = yolo
+            self.last_detector = detector
+
+        segs_args = detector + str(threshold) + str(dilation) + str(crop_factor) + str(drop_size) + str(id(image))
+        print(segs_args)
+        if self.last_segs is not None and self.last_segs_args == segs_args:
+            log.info('using cached segs')
+        else:
+            log.info('todo')
+
+        self.last_segs_args = segs_args
         has_segm = yolo.task == 'segment'
         detector_inst = UltraSegmDetector(yolo) if has_segm else UltraBBoxDetector(yolo)
 
