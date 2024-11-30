@@ -309,15 +309,16 @@ class JKEasyDetailer:
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
+    bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("ultralytics_bbox")]
+    segms = ["segm/"+x for x in folder_paths.get_filename_list("ultralytics_segm")]
+    detectors = bboxs + segms
+    
     @classmethod
-    def INPUT_TYPES(s):
-        bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("ultralytics_bbox")]
-        segms = ["segm/"+x for x in folder_paths.get_filename_list("ultralytics_segm")]
-        detectors = bboxs + segms
+    def INPUT_TYPES(s):   
         return {
             "required": {
                 "image": ("IMAGE", ),
-                "detector": (detectors, ),
+                "detector": (s.detectors, ),
                 "model": ("MODEL",),
                 "clip": ("CLIP",),
                 "vae": ("VAE",),
@@ -380,15 +381,8 @@ class JKEasyDetailer:
         detailer_hook = None
     ):
 
-        # TODO, maybe cache this and compare with new image
-        # test these for hashing
-        # https://stackoverflow.com/questions/67289617/pytorch-tensor-storages-have-the-same-id-when-calling-the-storage-method
-        image_id = id(image)
-        print(image_id)
-        image_id2 = image.storage().data_ptr()
-        print(image_id2)
-        print(image is image)  # True, they are the same instance
-
+        # TODO, cache the yolo model and segs?
+       
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
         if 'UltralyticsDetectorProvider' not in nodes.NODE_CLASS_MAPPINGS:
@@ -426,9 +420,6 @@ class JKEasyDetailer:
 
         detailer_node = nodes.NODE_CLASS_MAPPINGS['DetailerForEach']
 
-        # todo, see what else this returns, maybe u want to use it
-        # also, make sure this shows live preview like the node itself does
-        # TODO, do this in a loop...
         enhanced_img, *_ = detailer_node.do_detail(
             image,
             segs[0],
@@ -458,18 +449,6 @@ class JKEasyDetailer:
         )
 
         return (enhanced_img,)
-
-    @classmethod
-
-    #TODO, cache hashes segs and other params of models etc and return a hash string
-    # hasing the image is not an option, could be huge
-    # also check if u even need to cache...
-    # definitely cache the segs, and the yolo model, everything else needs to re-run on change
-    @classmethod
-    def IS_CHANGED(self):
-       #hash()
-       return ""
-    
 
 # only exists so i can pass a variable scheduler into the inspire pack scheduler, most people wont need or care about this
 class JKInspireSchedulerAdapter:
