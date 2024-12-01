@@ -330,8 +330,8 @@ class JKEasyDetailer:
                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step":0.1, "round": 0.01}),
                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                "positive": ("CONDITIONING",),
-                "negative": ("CONDITIONING",),
+                "positive": ("CONDITIONING",),             
+                "negative": ("CONDITIONING",),                
                 "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
 
                 "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -351,6 +351,8 @@ class JKEasyDetailer:
             },
             "optional": {
                 "detailer_hook": ("DETAILER_HOOK",{"tooltip": "Optional detailer hook from impact pack"}),
+                "positive_text": ("STRING", {"default": "","multiline": True, "dynamicPrompts": False, "tooltip": "if non empty, will be encoded and used instead of positive conditioning"}),
+                "negative_text": ("STRING", {"default": "", "multiline": True, "dynamicPrompts": False, "tooltip": "if non empty, will be encoded and used instead of negative conditioning"}),
             }
         }
     
@@ -381,7 +383,9 @@ class JKEasyDetailer:
         max_size: float,
         noise_mask_feather: int,
         iterations: int,
-        detailer_hook = None
+        detailer_hook = None,
+        positive_text = '',
+        negative_text = ''
     ):
        
         if 'DetailerForEach' not in nodes.NODE_CLASS_MAPPINGS:
@@ -392,11 +396,28 @@ class JKEasyDetailer:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
         if 'SegmDetectorSEGS' not in  nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
+        if 'ImpactWildcardEncode' not in nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
 
         provider_loader = nodes.NODE_CLASS_MAPPINGS['UltralyticsDetectorProvider']()
         bbox_detector_node = nodes.NODE_CLASS_MAPPINGS['BboxDetectorSEGS']
         segm_detector_node = nodes.NODE_CLASS_MAPPINGS['SegmDetectorSEGS']
         detailer_node = nodes.NODE_CLASS_MAPPINGS['DetailerForEach']
+        encoder_node = nodes.NODE_CLASS_MAPPINGS['ImpactWildcardEncode']
+
+        model_use = model
+        clip_use = clip
+        pos_cond_use = positive
+        neg_cond_use = negative
+
+        if positive_text != '':
+            (_model, _clip, cond, encoded_text) = encoder_node().doit(model=model, clip=clip, wildcard_text=positive_text,populated_text=positive_text, seed=seed)
+            model_use = _model
+            clip_use = clip
+            pos_cond_use = cond
+        if negative_text != '':
+            (_, _, cond, encoded_text) = encoder_node().doit(model=model, clip=clip, wildcard_text=positive_text,populated_text=negative_text, seed=seed)
+            neg_cond_use = cond
 
         path_toclass = inspect.getfile(provider_loader.__class__)
         if path_toclass not in sys.path:
@@ -434,8 +455,8 @@ class JKEasyDetailer:
         enhanced_img, *_ = detailer_node.do_detail(
             image,
             self.last_segs[0],
-            model,
-            clip,
+            model_use,
+            clip_use,
             vae,
             guide_size,
             guide_size_for,
@@ -445,8 +466,8 @@ class JKEasyDetailer:
             cfg,
             sampler_name,
             scheduler,
-            positive,
-            negative,
+            pos_cond_use,
+            neg_cond_use,
             denoise,
             feather,
             noise_mask,

@@ -35,7 +35,7 @@ log.propagate = False
 if not log.handlers:
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
-    stdout_handler.setFormatter(logging.Formatter( colors.COLORS['GREEN'] + "[%(levelname)s] JKEasyNodes: %(message)s"))
+    stdout_handler.setFormatter(logging.Formatter("[%(levelname)s] JKEasyNodes: %(message)s"))
     log.addHandler(stdout_handler)
     stderr_handler = logging.StreamHandler(sys.stderr)
     stderr_handler.addFilter(lambda record: record.levelno > logging.INFO)
