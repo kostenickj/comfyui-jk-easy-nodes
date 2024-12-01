@@ -50,6 +50,7 @@ def vae_encode_image(vae: comfy.sd.VAE, image):
     return VAEEncode().encode(vae, image)[0]
 
 
+# todo, make _context version of this and allow to override the conditioning with a new prompt inline like the detail_context one
 class EasyHRFix:
     default_latent_upscalers = LatentUpscaleBy.INPUT_TYPES()["required"][
         "upscale_method"
@@ -239,6 +240,8 @@ class JKEasyDetailer:
     last_detector: str = ""
     last_segs_args: str = ""
     last_segs = None
+
+    # TODO, add ability to override the seed if a bool is enabled
 
     @classmethod
     def INPUT_TYPES(s):
@@ -492,11 +495,7 @@ class JKEasyDetailer:
 
 
 class JKEasyDetailer_Context:
-    RETURN_TYPES = (
-        "IMAGE",
-        "SEGS",
-        "JK_CONTEXT"
-    )
+    RETURN_TYPES = ("IMAGE", "SEGS", "JK_CONTEXT")
     RETURN_NAMES = ("IMAGE", "SEGS", "CTX")
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
@@ -577,6 +576,15 @@ class JKEasyDetailer_Context:
                         "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
                     },
                 ),
+                "use_custom_seed": (["disable", "enable"], {"default": "disable"}),
+                "seed": (
+                    "INT",
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 0xFFFFFFFFFFFFFFFF,
+                    },
+                ),
             },
         }
 
@@ -600,6 +608,8 @@ class JKEasyDetailer_Context:
         detailer_hook=None,
         positive_text="",
         negative_text="",
+        use_custom_seed: Literal["disable", "enable"] = 'disable',
+        seed: int=None,
     ):
         model_use = ctx["model"]
         clip_use = ctx["clip"]
@@ -614,7 +624,7 @@ class JKEasyDetailer_Context:
             model_use,
             clip_use,
             ctx["vae"],
-            ctx["seed"],
+            seed if use_custom_seed == 'enable' else ctx["seed"],
             ctx["steps"],
             ctx["cfg"],
             ctx["sampler"],
@@ -641,9 +651,13 @@ class JKEasyDetailer_Context:
 
         # add new image to ctx
         new_ctx = ctx.copy()
-        new_ctx['images'] = image
+        new_ctx["images"] = image
 
-        return (image, segs, new_ctx,)
+        return (
+            image,
+            segs,
+            new_ctx,
+        )
 
 
 # this only exists because the comfy types system is annoying
