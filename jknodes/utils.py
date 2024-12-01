@@ -1,4 +1,10 @@
+
+import os
+import sys
 import folder_paths
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(this_dir))
 
 def add_folder_path_and_extensions(folder_name, full_folder_paths, extensions):
     # Iterate over the list of full folder paths
@@ -27,3 +33,37 @@ class AnyType(str):
     return False
 
 any_type_helper = AnyType("*")
+
+class JKLogger:
+    COLORS = {
+        'DEBUG': '\033[94m',  # Blue
+        'INFO': '\033[92m',   # Green
+        'WARNING': '\033[93m', # Yellow
+        'ERROR': '\033[91m',   # Red
+        'RESET': '\033[0m'     # Reset to default
+    }
+
+    @staticmethod
+    def _get_colored_message(level, message):
+        color = JKLogger.COLORS.get(level, JKLogger.COLORS['RESET'])
+        return f"{color}{message}{JKLogger.COLORS['RESET']}"
+
+    @staticmethod
+    def debug(message):
+        """Log a debug message in blue."""
+        print(JKLogger._get_colored_message('DEBUG', message))
+    
+    @staticmethod
+    def info(message):
+        """Log an info message in green."""
+        print(JKLogger._get_colored_message('INFO', message))
+
+    @staticmethod
+    def warning(message):
+        """Log a warning message in yellow."""
+        print(JKLogger._get_colored_message('WARNING', message))
+
+    @staticmethod
+    def error(message):
+        """Log an error message in red."""
+        print(JKLogger._get_colored_message('ERROR', message))

@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 import torch
@@ -14,8 +13,9 @@ import numpy as np
 this_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(this_dir))
 
-logging.basicConfig()
-log = logging.getLogger("jk-comfyui-helpers")
+from jknodes import utils
+
+log = utils.JKLogger
 
 class JKStringEquals:
     @classmethod

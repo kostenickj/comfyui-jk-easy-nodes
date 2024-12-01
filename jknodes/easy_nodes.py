@@ -22,13 +22,12 @@ sys.path.append(os.path.dirname(this_dir))
 
 from jknodes import utils
 
+log = utils.JKLogger
+
 model_path = folder_paths.models_dir
 utils.add_folder_path_and_extensions("ultralytics_bbox", [os.path.join(model_path, "ultralytics", "bbox")], folder_paths.supported_pt_extensions)
 utils.add_folder_path_and_extensions("ultralytics_segm", [os.path.join(model_path, "ultralytics", "segm")], folder_paths.supported_pt_extensions)
 utils.add_folder_path_and_extensions("ultralytics", [os.path.join(model_path, "ultralytics")], folder_paths.supported_pt_extensions)
-
-logging.basicConfig()
-log = logging.getLogger("jk-comfyui-helpers")
 
 
 def vae_decode_latent(vae: comfy.sd.VAE, samples):
