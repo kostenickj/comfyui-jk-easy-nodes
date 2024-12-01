@@ -459,7 +459,7 @@ class JKEasyDetailer:
             scheduler_func_opt=None,
         )
 
-        return (enhanced_img, self.last_segs,)
+        return (enhanced_img, self.last_segs[0],)
 
 # only exists so i can pass a variable scheduler into the inspire pack scheduler, most people wont need or care about this
 class JKInspireSchedulerAdapter:
