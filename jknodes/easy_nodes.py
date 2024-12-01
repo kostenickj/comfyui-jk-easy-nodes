@@ -170,7 +170,7 @@ class JKAnythingToString:
 
     RETURN_TYPES = ("STRING",)
     FUNCTION = "do_str"
-    CATEGORY = "JK Comfy Helpers"
+    CATEGORY = "JK Comfy Helpers/Util"
 
     def do_str(self, input):
         if isinstance(input, str):
@@ -511,24 +511,104 @@ class JKEasyCheckpointLoader:
     RETURN_NAMES = ("MODEL", "CLIP", "VAE", "CKPT_NAME_FULL", "CKPT_NAME")
     FUNCTION = "load_checkpoint"
 
-    CATEGORY = "JK Comfy Helpers"
+    CATEGORY = "JK Comfy Helpers/Loaders"
 
     def load_checkpoint(self, ckpt_name):
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         out = comfy.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
         return (out[0], out[1], out[2], ckpt_name, os.path.splitext(os.path.basename(ckpt_name))[0])
 
+
+class JKStringEquals:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "a": ('STRING', ),
+                "b": ('STRING', ),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "JK Comfy Helpers/Util"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, a, b):
+        return (a == b, )
+
+class JKStringNotEquals:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "a": ('STRING', ),
+                "b": ('STRING', ),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "JK Comfy Helpers/Util"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, a, b):
+        return (a != b, )
+
+class JKStringNotEmpty:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "a": ('STRING', ),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "JK Comfy Helpers/Util"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, a: str):
+        return (a.strip() != '', )
+    
+class JKStringEmpty:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "a": ('STRING', ),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "JK Comfy Helpers/Util"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, a: str):
+        return (a.strip() == '', )
+
 NODE_CLASS_MAPPINGS = {
     'EasyHRFix': EasyHRFix,
     'JKAnythingToString': JKAnythingToString,
     'JKInspireSchedulerAdapter': JKInspireSchedulerAdapter,
     'JKEasyDetailer': JKEasyDetailer,
-    'JKEasyCheckpointLoader': JKEasyCheckpointLoader
+    'JKEasyCheckpointLoader': JKEasyCheckpointLoader,
+    'JKStringNotEquals': JKStringNotEquals,
+    'JKStringEquals': JKStringEquals,
+    'JKStringEmpty': JKStringEmpty,
+    'JKStringNotEmpty': JKStringNotEmpty
+
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
   'JKAnythingToString': 'JK Anything to string',
   'EasyHRFix': 'JK Easy HiRes Fix',
   'JKInspireSchedulerAdapter': 'JK Inspire Scheduler Adapter',
   'JKEasyDetailer': 'JK Easy Detailer',
-  'JKEasyCheckpointLoader': 'JK Easy Checkpoint Loader'
+  'JKEasyCheckpointLoader': 'JK Easy Checkpoint Loader',
+  'JKStringEquals': 'JK String Equals',
+  'JKStringNotEquals': 'JK String Not Equals',
+  'JKStringNotEmpty': 'JK String Not Empty',
+  'JKStringEmpty': 'JK String Empty'
 }
