@@ -1,8 +1,6 @@
-import json
 from torch import Tensor
 import os
 import sys
-import torch
 from ultralytics import YOLO
 import comfy.sd
 import comfy.samplers
@@ -10,26 +8,17 @@ import comfy.model_patcher
 import comfy.model_management
 import comfy.utils
 import folder_paths
-from PIL import Image
-import numpy as np
 import logging
-from typing import Any, Dict, Literal, TypedDict, List
-import re
-from pathlib import Path
+from typing import Literal
 import inspect
 from nodes import MAX_RESOLUTION
 
+import nodes
+from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy
+from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
+
 this_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(this_dir))
-
-custom_nodes_dir = os.path.abspath(os.path.join(this_dir, '..'))
-comfy_dir = os.path.abspath(os.path.join(this_dir, '..', '..'))
-sys.path.append(comfy_dir)
-
-import nodes
-from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy, CLIPTextEncode
-from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
-sys.path.remove(comfy_dir)
 
 from jknodes import utils
 
@@ -41,159 +30,12 @@ utils.add_folder_path_and_extensions("ultralytics", [os.path.join(model_path, "u
 logging.basicConfig()
 log = logging.getLogger("jk-comfyui-helpers")
 
-class CachedLora(TypedDict):
-    name: str
-    filepath: str
-    lora: (Dict[str, Tensor] | Any)
-
-class LoraParams(TypedDict):
-    name: str
-    weight: float
-    weight_clip: float
-    text: str
-
-def get_lora_full_name(lora_name: str):
-    all_loras = folder_paths.get_filename_list("loras")
-
-    if lora_name in all_loras:
-        return lora_name
-    
-    no_ext = lora_name.split('.')[0]
-    for n in [no_ext, lora_name, lora_name.replace(" ", "_")]:
-        for f in all_loras:
-            p = Path(f).with_suffix("")
-            if p.name == n or str(p) == n:
-                return f
-    return None
 
 def vae_decode_latent(vae: comfy.sd.VAE, samples):
     return VAEDecode().decode(vae,samples)[0]
 
 def vae_encode_image(vae: comfy.sd.VAE, image):
     return VAEEncode().encode(vae,image)[0]
-
-# Function to parse LoRA details from the prompt
-def parse_lora_details(prompt) -> List[LoraParams]:
-    try:
-        pattern = r"<([^>]+)>"
-        ret: List[LoraParams] = []
-        matches: List[str] = re.findall(pattern, prompt)
-        for m in matches:
-            if m.startswith('lora'):
-                spl = m.split(':')
-                if len(spl) > 2:
-                    name = spl[1].strip()
-                    try:
-                        weight_str = spl[2].strip()
-                        weight = float(weight_str)
-                        weight_clip = weight
-                        try:
-                            weight_clip = float(spl(3).strip())
-                        except:
-                            log.debug(f'no clip weight found for lora {name}, using {weight}')
-                            pass
-                        ret.append({ "name": name, "weight": weight, 'weight_clip': weight_clip, "text": f'<{m}>' })
-                        
-                    except ValueError:
-                        log.error(f'invalid weight for {name}')
-                        
-        return ret
-    except Exception as e:
-        print(f"Error parsing prompt: {e}")
-        return []
-
-
-def prompt_encode(clip: comfy.sd.CLIP, text: str):
-    return CLIPTextEncode().encode(clip, text)
-
-
-# region processors
-
-def process_list(anything):
-    text = []
-    if not anything:
-        return {"text": []}
-
-    first_element = anything[0]
-    if (
-        isinstance(first_element, list)
-        and first_element
-        and isinstance(first_element[0], torch.Tensor)
-    ):
-        text.append(
-            "List of List of Tensors: "
-            f"{first_element[0].shape} (x{len(anything)})"
-        )
-
-    elif isinstance(first_element, torch.Tensor):
-        text.append(
-            f"List of Tensors: {first_element.shape} (x{len(anything)})"
-        )
-    else:
-        text.append(f"Array ({len(anything)}): {anything}")
-
-    return {"text": text}
-
-
-def process_dict(anything):
-    text = []
-    if "samples" in anything:
-        is_empty = (
-            "(empty)" if torch.count_nonzero(anything["samples"]) == 0 else ""
-        )
-        text.append(f"Latent Samples: {anything['samples'].shape} {is_empty}")
-
-    else:
-        text.append(json.dumps(anything, indent=2))
-
-    return {"text": text}
-
-
-def process_bool(anything):
-    return {"text": ["True" if anything else "False"]}
-
-
-def process_text(anything):
-    return {"text": [str(anything)]}
-
-
-# endregion
-
-# originally from MTB nodes, modified to actually work with anything using AnyType
-class JKAnythingToString:
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {"input": (utils.any_type_helper, {})},
-        }
-
-    RETURN_TYPES = ("STRING",)
-    FUNCTION = "do_str"
-    CATEGORY = "JK Comfy Helpers/Util"
-
-    def do_str(self, input):
-        if isinstance(input, str):
-            return (input,)
-        elif isinstance(input, torch.Tensor):
-            return (f"Tensor of shape {input.shape} and dtype {input.dtype}",)
-        elif isinstance(input, Image.Image):
-            return (f"PIL Image of size {input.size} and mode {input.mode}",)
-        elif isinstance(input, np.ndarray):
-            return (
-                f"Numpy array of shape {input.shape} and dtype {input.dtype}",
-            )
-
-        elif isinstance(input, dict):
-            return (
-                f"Dictionary of {len(input)} items, with keys {input.keys()}",
-            )
-
-        else:
-            log.debug(f"Falling back to string conversion of {input}")
-            return (str(input),)
-
-
 
 class EasyHRFix:
 
@@ -482,25 +324,6 @@ class JKEasyDetailer:
 
         return (enhanced_img, self.last_segs[0],)
 
-# only exists so i can pass a variable scheduler into the inspire pack scheduler, most people wont need or care about this
-class JKInspireSchedulerAdapter:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"defaultInput": True, }),
-        }}
-
-    CATEGORY = "JK Comfy Helpers"
-
-    # common.core in inspire pack
-    RETURN_TYPES = (comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', "GITS[coeff=1.2]"],)
-    RETURN_NAMES = ("scheduler",)
-
-    FUNCTION = "doit"
-
-    def doit(self, scheduler):
-        return (scheduler,)
-
 
 # this only exists because the comfy types system is annoying
 class JKEasyCheckpointLoader:
@@ -519,96 +342,14 @@ class JKEasyCheckpointLoader:
         return (out[0], out[1], out[2], ckpt_name, os.path.splitext(os.path.basename(ckpt_name))[0])
 
 
-class JKStringEquals:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "a": ('STRING', ),
-                "b": ('STRING', ),
-            },
-        }
-
-    FUNCTION = "doit"
-    CATEGORY = "JK Comfy Helpers/Util"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, a, b):
-        return (a == b, )
-
-class JKStringNotEquals:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "a": ('STRING', ),
-                "b": ('STRING', ),
-            },
-        }
-
-    FUNCTION = "doit"
-    CATEGORY = "JK Comfy Helpers/Util"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, a, b):
-        return (a != b, )
-
-class JKStringNotEmpty:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "a": ('STRING', ),
-            },
-        }
-
-    FUNCTION = "doit"
-    CATEGORY = "JK Comfy Helpers/Util"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, a: str):
-        return (a.strip() != '', )
-    
-class JKStringEmpty:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "a": ('STRING', ),
-            },
-        }
-
-    FUNCTION = "doit"
-    CATEGORY = "JK Comfy Helpers/Util"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, a: str):
-        return (a.strip() == '', )
 
 NODE_CLASS_MAPPINGS = {
-    'EasyHRFix': EasyHRFix,
-    'JKAnythingToString': JKAnythingToString,
-    'JKInspireSchedulerAdapter': JKInspireSchedulerAdapter,
-    'JKEasyDetailer': JKEasyDetailer,
-    'JKEasyCheckpointLoader': JKEasyCheckpointLoader,
-    'JKStringNotEquals': JKStringNotEquals,
-    'JKStringEquals': JKStringEquals,
-    'JKStringEmpty': JKStringEmpty,
-    'JKStringNotEmpty': JKStringNotEmpty
-
+    "EasyHRFix": EasyHRFix,
+    "JKEasyDetailer": JKEasyDetailer,
+    "JKEasyCheckpointLoader": JKEasyCheckpointLoader,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-  'JKAnythingToString': 'JK Anything to string',
-  'EasyHRFix': 'JK Easy HiRes Fix',
-  'JKInspireSchedulerAdapter': 'JK Inspire Scheduler Adapter',
-  'JKEasyDetailer': 'JK Easy Detailer',
-  'JKEasyCheckpointLoader': 'JK Easy Checkpoint Loader',
-  'JKStringEquals': 'JK String Equals',
-  'JKStringNotEquals': 'JK String Not Equals',
-  'JKStringNotEmpty': 'JK String Not Empty',
-  'JKStringEmpty': 'JK String Empty'
+    "EasyHRFix": "JK Easy HiRes Fix",
+    "JKEasyDetailer": "JK Easy Detailer",
+    "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader",
 }

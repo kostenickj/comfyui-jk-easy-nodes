@@ -6,6 +6,7 @@ import importlib.util
 
 this_dir = os.path.dirname(__file__)
 module_dir = os.path.join(this_dir, 'jknodes')
+sys.path.append(module_dir)
 
 modules = glob.glob(os.path.join(module_dir, "*.py"), recursive=False)
 
