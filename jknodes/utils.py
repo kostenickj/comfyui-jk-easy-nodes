@@ -2,9 +2,20 @@
 import os
 import sys
 import folder_paths
+import comfy.sd
+from nodes import VAEDecode, VAEEncode
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(this_dir))
+
+
+
+def vae_decode_latent(vae: comfy.sd.VAE, samples):
+    return VAEDecode().decode(vae, samples)[0]
+
+
+def vae_encode_image(vae: comfy.sd.VAE, image):
+    return VAEEncode().encode(vae, image)[0]
 
 def add_folder_path_and_extensions(folder_name, full_folder_paths, extensions):
     # Iterate over the list of full folder paths

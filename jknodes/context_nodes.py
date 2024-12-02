@@ -56,23 +56,14 @@ def _create_context_data(input_list=None):
         data = _all_context_input_output_data[inp]
         list_ctx_return_types.append(data[1])
         list_ctx_return_names.append(data[2])
-        ctx_optional_inputs[data[0]] = tuple(
-            [data[1]]
-            + (
-                [{"forceInput": True}]
-                if data[1] in force_input_types or data[0] in force_input_names
-                else []
-            )
-        )
+        ctx_optional_inputs[data[0]] = tuple([data[1]] + ([{"forceInput": True}] if data[1] in force_input_types or data[0] in force_input_names else []))
 
     ctx_return_types = tuple(list_ctx_return_types)
     ctx_return_names = tuple(list_ctx_return_names)
     return (ctx_optional_inputs, ctx_return_types, ctx_return_names)
 
 
-ALL_CTX_OPTIONAL_INPUTS, ALL_CTX_RETURN_TYPES, ALL_CTX_RETURN_NAMES = (
-    _create_context_data()
-)
+ALL_CTX_OPTIONAL_INPUTS, ALL_CTX_RETURN_TYPES, ALL_CTX_RETURN_NAMES = (_create_context_data())
 
 _original_ctx_inputs_list = [
     "base_ctx",
@@ -87,9 +78,7 @@ _original_ctx_inputs_list = [
     "images",
     "seed",
 ]
-ORIG_CTX_OPTIONAL_INPUTS, ORIG_CTX_RETURN_TYPES, ORIG_CTX_RETURN_NAMES = (
-    _create_context_data(_original_ctx_inputs_list)
-)
+ORIG_CTX_OPTIONAL_INPUTS, ORIG_CTX_RETURN_TYPES, ORIG_CTX_RETURN_NAMES = (_create_context_data(_original_ctx_inputs_list))
 
 
 def new_context(base_ctx, **kwargs):
@@ -100,13 +89,7 @@ def new_context(base_ctx, **kwargs):
         if key == "base_ctx":
             continue
         v = kwargs[key] if key in kwargs else None
-        new_ctx[key] = (
-            v
-            if v is not None
-            else context[key]
-            if context is not None and key in context
-            else None
-        )
+        new_ctx[key] = (v if v is not None else context[key] if context is not None and key in context else None)
     return new_ctx
 
 

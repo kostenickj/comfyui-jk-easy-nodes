@@ -8,13 +8,12 @@ import comfy.model_patcher
 import comfy.model_management
 import comfy.utils
 import folder_paths
-import logging
 from typing import Literal
 import inspect
 from nodes import MAX_RESOLUTION
 
 import nodes
-from nodes import LatentUpscaleBy, VAEDecode, VAEEncode, ImageScaleBy
+from nodes import LatentUpscaleBy, ImageScaleBy
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -42,19 +41,8 @@ utils.add_folder_path_and_extensions(
 )
 
 
-def vae_decode_latent(vae: comfy.sd.VAE, samples):
-    return VAEDecode().decode(vae, samples)[0]
-
-
-def vae_encode_image(vae: comfy.sd.VAE, image):
-    return VAEEncode().encode(vae, image)[0]
-
-
-# todo, make _context version of this and allow to override the conditioning with a new prompt inline like the detail_context one
 class EasyHRFix:
-    default_latent_upscalers = LatentUpscaleBy.INPUT_TYPES()["required"][
-        "upscale_method"
-    ][0]
+    default_latent_upscalers = LatentUpscaleBy.INPUT_TYPES()["required"]["upscale_method"][0]
     latent_upscalers = default_latent_upscalers + ["lanczos"]
     pixel_upscalers = folder_paths.get_filename_list("upscale_models")
 
@@ -62,7 +50,8 @@ class EasyHRFix:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": ("MODEL",),
+                "model": ("MODEL", ),
+                "clip": ("CLIP", ),
                 "vae": (
                     "VAE",
                     {"tooltip": "The VAE model used for decoding the latent."},
@@ -104,33 +93,27 @@ class EasyHRFix:
                 ),
                 "scheduler": (
                     comfy.samplers.KSampler.SCHEDULERS,
-                    {
-                        "tooltip": "The scheduler controls how noise is gradually removed to form the image."
-                    },
+                    {"tooltip": "The scheduler controls how noise is gradually removed to form the image."},
                 ),
                 "positive": (
                     "CONDITIONING",
-                    {
-                        "tooltip": "The conditioning describing the attributes you want to include in the image."
-                    },
+                    {"tooltip": "The conditioning describing the attributes you want to include in the image."},
                 ),
                 "negative": (
                     "CONDITIONING",
-                    {
-                        "tooltip": "The conditioning describing the attributes you want to exclude from the image."
-                    },
+                    {"tooltip": "The conditioning describing the attributes you want to exclude from the image."},
                 ),
                 "upscale_by": (
                     "FLOAT",
                     {"default": 1.5, "min": 1.05, "max": 4.0, "step": 0.05},
                 ),
-                "latent_image": ("LATENT",),
+                "latent_image": ("LATENT", ),
                 "denoise": (
                     "FLOAT",
                     {"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},
                 ),
                 "latent_upscaler": (cls.latent_upscalers, {"default": "lanczos"}),
-                "pixel_upscaler": (cls.pixel_upscalers,),
+                "pixel_upscaler": (cls.pixel_upscalers, ),
                 "noise_mode": (["GPU(=A1111)", "CPU"], {"default": "GPU(=A1111)"}),
                 "inject_extra_noise": (["disable", "enable"], {"default": "enable"}),
                 "extra_noise_strength": (
@@ -138,16 +121,37 @@ class EasyHRFix:
                     {"default": 2.5, "min": 0.00, "max": 100, "step": 0.1},
                 ),
             },
+            "optional": {
+                "positive_text": (
+                    "STRING",
+                    {
+                        "default": "",
+                        "multiline": True,
+                        "dynamicPrompts": False,
+                        "tooltip": "if non empty, will be encoded and used instead of positive conditioning",
+                    },
+                ),
+                "negative_text": (
+                    "STRING",
+                    {
+                        "default": "",
+                        "multiline": True,
+                        "dynamicPrompts": False,
+                        "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
+                    },
+                ),
+            },
         }
 
-    RETURN_TYPES = ("LATENT",)
-    RETURN_NAMES = ("LATENT",)
+    RETURN_TYPES = ("LATENT", )
+    RETURN_NAMES = ("LATENT", )
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
     def apply(
         self,
         model: comfy.model_patcher.ModelPatcher,
+        clip: comfy.sd.CLIP,
         vae: comfy.sd.VAE,
         seed: int,
         steps: int,
@@ -164,33 +168,29 @@ class EasyHRFix:
         noise_mode: Literal["GPU(=A1111)", "CPU"],
         inject_extra_noise: Literal["disable", "enable"],
         extra_noise_strength: float,
+        positive_text: str,
+        negative_text: str,
     ):
         if "KSampler //Inspire" not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
+        if positive_text != "" or negative_text != "":
+            if "ImpactWildcardEncode" not in nodes.NODE_CLASS_MAPPINGS:
+                raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
 
         size = latent_image["samples"].shape
         inject_noise = inject_extra_noise == "enable"
 
         if inject_noise and extra_noise_strength > 0:
-            if (
-                "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS
-                and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS
-            ):
+            if "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS:
                 NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
                 InjectNoise = nodes.NODE_CLASS_MAPPINGS["BNK_InjectNoise"]
-                noise = NoisyLatentImage().create_noisy_latents(
-                    noise_mode, seed, size[3] * 8, size[2] * 8, size[0]
-                )[0]
-                latent_image = InjectNoise().inject_noise(
-                    latent_image, extra_noise_strength, noise
-                )[0]
+                noise = NoisyLatentImage().create_noisy_latents(noise_mode, seed, size[3] * 8, size[2] * 8, size[0])[0]
+                latent_image = InjectNoise().inject_noise(latent_image, extra_noise_strength, noise)[0]
 
             else:
-                raise Exception(
-                    "'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed."
-                )
+                raise Exception("'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed.")
 
-        low_res = vae_decode_latent(vae, latent_image)
+        low_res = utils.vae_decode_latent(vae, latent_image)
         pixel_upscale_model = UpscaleModelLoader().load_model(pixel_upscaler)[0]
 
         # pixel upscale
@@ -201,27 +201,131 @@ class EasyHRFix:
         if downsize_scale != 1:
             image = ImageScaleBy().upscale(image, latent_upscaler, downsize_scale)[0]
 
-        upscaled_samples = vae_encode_image(vae, image)
+        upscaled_samples = utils.vae_encode_image(vae, image)
+
+        model_use = model
+        pos_cond_use = positive
+        neg_cond_use = negative
+
+        if positive_text != "":
+            encoder_node = nodes.NODE_CLASS_MAPPINGS["ImpactWildcardEncode"]
+            (_model, _clip, cond, encoded_text) = encoder_node().doit(
+                model=model,
+                clip=clip,
+                wildcard_text=positive_text,
+                populated_text=positive_text,
+                seed=seed,
+            )
+            model_use = _model
+            pos_cond_use = cond
+        if negative_text != "":
+            encoder_node = nodes.NODE_CLASS_MAPPINGS["ImpactWildcardEncode"]
+            (_, _, cond, encoded_text) = encoder_node().doit(
+                model=model,
+                clip=clip,
+                wildcard_text=positive_text,
+                populated_text=negative_text,
+                seed=seed,
+            )
+            neg_cond_use = cond
 
         inspire_sampler = nodes.NODE_CLASS_MAPPINGS["KSampler //Inspire"]
         # img2img with gpu noise like a1111
         samples = inspire_sampler.doit(
-            model,
+            model_use,
             seed,
             steps,
             cfg,
             sampler_name,
             scheduler,
-            positive,
-            negative,
+            pos_cond_use,
+            neg_cond_use,
             upscaled_samples,
             denoise,
             noise_mode,
             "comfy",
         )[0]
 
-        return (samples,)
+        return (samples, )
 
+
+class EasyHRFix_Context:
+    default_latent_upscalers = EasyHRFix.default_latent_upscalers
+    latent_upscalers = EasyHRFix.latent_upscalers
+    pixel_upscalers = EasyHRFix.pixel_upscalers
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "ctx": ("JK_CONTEXT", ),
+                "upscale_by": (
+                    "FLOAT",
+                    {"default": 1.5, "min": 1.05, "max": 4.0, "step": 0.05},
+                ),
+                "denoise": (
+                    "FLOAT",
+                    {"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},
+                ),
+                "latent_upscaler": (cls.latent_upscalers, {"default": "lanczos"}),
+                "pixel_upscaler": (cls.pixel_upscalers, ),
+                "noise_mode": (["GPU(=A1111)", "CPU"], {"default": "GPU(=A1111)"}),
+                "inject_extra_noise": (["disable", "enable"], {"default": "enable"}),
+                "extra_noise_strength": (
+                    "FLOAT",
+                    {"default": 2.5, "min": 0.00, "max": 100, "step": 0.1},
+                ),
+            },
+            "optional": {
+                "positive_text": (
+                    "STRING",
+                    {
+                        "default": "",
+                        "multiline": True,
+                        "dynamicPrompts": False,
+                        "tooltip": "if non empty, will be encoded and used instead of positive conditioning",
+                    },
+                ),
+                "negative_text": (
+                    "STRING",
+                    {
+                        "default": "",
+                        "multiline": True,
+                        "dynamicPrompts": False,
+                        "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
+                    },
+                ),
+            },
+        }
+
+    RETURN_TYPES = ("LATENT", )
+    RETURN_NAMES = ("LATENT", )
+    FUNCTION = "apply"
+    CATEGORY = "JK Comfy Helpers"
+
+    def apply(
+        self,
+        ctx,
+        upscale_by: float,
+        denoise: float,
+        latent_upscaler: str,
+        pixel_upscaler: str,
+        noise_mode: Literal["GPU(=A1111)", "CPU"],
+        inject_extra_noise: Literal["disable", "enable"],
+        extra_noise_strength: float,
+        positive_text: str,
+        negative_text: str,
+    ):
+        model_use = ctx["model"]
+        clip_use = ctx["clip"]
+
+        if positive_text != "":
+            model_use = ctx["base_model"]
+            clip_use = ctx["base_clip"]
+
+        ret = EasyHRFix().apply(model_use, clip_use, ctx['vae'], ctx['seed'], ctx['step_refiner'], ctx['cfg'], ctx['sampler'], ctx['scheduler'], ctx['positive'], ctx['negative'], upscale_by, ctx['latent'], denoise, latent_upscaler, pixel_upscaler, noise_mode, inject_extra_noise, extra_noise_strength, positive_text, negative_text)
+
+        return ret
 
 class JKEasyDetailer:
     RETURN_TYPES = (
@@ -241,17 +345,15 @@ class JKEasyDetailer:
     last_segs_args: str = ""
     last_segs = None
 
-    # TODO, add ability to override the seed if a bool is enabled
-
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "image": ("IMAGE",),
-                "detector": (s.detectors,),
-                "model": ("MODEL",),
-                "clip": ("CLIP",),
-                "vae": ("VAE",),
+                "image": ("IMAGE", ),
+                "detector": (s.detectors, ),
+                "model": ("MODEL", ),
+                "clip": ("CLIP", ),
+                "vae": ("VAE", ),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                 "cfg": (
@@ -264,10 +366,10 @@ class JKEasyDetailer:
                         "round": 0.01,
                     },
                 ),
-                "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                "positive": ("CONDITIONING",),
-                "negative": ("CONDITIONING",),
+                "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                "positive": ("CONDITIONING", ),
+                "negative": ("CONDITIONING", ),
                 "denoise": (
                     "FLOAT",
                     {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01},
@@ -428,35 +530,16 @@ class JKEasyDetailer:
             self.last_yolo = load_yolo(detector_full_path)
             self.last_detector = detector
 
-        segs_args = (
-            detector
-            + "_"
-            + str(threshold)
-            + "_"
-            + str(dilation)
-            + "_"
-            + str(crop_factor)
-            + "_"
-            + str(drop_size)
-            + "_"
-            + str(id(image))
-        )
+        segs_args = detector + "_" + str(threshold) + "_" + str(dilation) + "_" + str(crop_factor) + "_" + str(drop_size) + "_" + str(
+            id(image))
         print(segs_args)
         if self.last_segs is not None and self.last_segs_args == segs_args:
             log.info("using cached segs")
         else:
             has_segm = self.last_yolo.task == "segment"
-            detector_inst = (
-                UltraSegmDetector(self.last_yolo)
-                if has_segm
-                else UltraBBoxDetector(self.last_yolo)
-            )
-            detector_node_to_use = (
-                segm_detector_node() if has_segm else bbox_detector_node()
-            )
-            self.last_segs = detector_node_to_use.doit(
-                detector_inst, image, threshold, dilation, crop_factor, drop_size, "all"
-            )
+            detector_inst = UltraSegmDetector(self.last_yolo) if has_segm else UltraBBoxDetector(self.last_yolo)
+            detector_node_to_use = segm_detector_node() if has_segm else bbox_detector_node()
+            self.last_segs = detector_node_to_use.doit(detector_inst, image, threshold, dilation, crop_factor, drop_size, "all")
 
         self.last_segs_args = segs_args
 
@@ -504,8 +587,8 @@ class JKEasyDetailer_Context:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "ctx": ("JK_CONTEXT",),
-                "detector": (JKEasyDetailer.detectors,),
+                "ctx": ("JK_CONTEXT", ),
+                "detector": (JKEasyDetailer.detectors, ),
                 "denoise": (
                     "FLOAT",
                     {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01},
@@ -608,13 +691,13 @@ class JKEasyDetailer_Context:
         detailer_hook=None,
         positive_text="",
         negative_text="",
-        use_custom_seed: Literal["disable", "enable"] = 'disable',
-        seed: int=None,
+        use_custom_seed: Literal["disable", "enable"] = "disable",
+        seed: int = None,
     ):
         model_use = ctx["model"]
         clip_use = ctx["clip"]
 
-        if positive_text != "" or negative_text != "":
+        if positive_text != "":
             model_use = ctx["base_model"]
             clip_use = ctx["base_clip"]
 
@@ -624,7 +707,7 @@ class JKEasyDetailer_Context:
             model_use,
             clip_use,
             ctx["vae"],
-            seed if use_custom_seed == 'enable' else ctx["seed"],
+            seed if use_custom_seed == "enable" else ctx["seed"],
             ctx["steps"],
             ctx["cfg"],
             ctx["sampler"],
@@ -662,13 +745,12 @@ class JKEasyDetailer_Context:
 
 # this only exists because the comfy types system is annoying
 class JKEasyCheckpointLoader:
+
     @classmethod
     def INPUT_TYPES(s):
-        return {
-            "required": {
-                "ckpt_name": (folder_paths.get_filename_list("checkpoints"),),
-            }
-        }
+        return {"required": {
+            "ckpt_name": (folder_paths.get_filename_list("checkpoints"), ),
+        }}
 
     RETURN_TYPES = (
         "MODEL",
@@ -701,12 +783,14 @@ class JKEasyCheckpointLoader:
 
 NODE_CLASS_MAPPINGS = {
     "EasyHRFix": EasyHRFix,
+    "EasyHRFix_Context": EasyHRFix_Context,
     "JKEasyDetailer": JKEasyDetailer,
     "JKEasyDetailer_Context": JKEasyDetailer_Context,
     "JKEasyCheckpointLoader": JKEasyCheckpointLoader,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "EasyHRFix": "JK Easy HiRes Fix",
+    "EasyHRFix_Context": "JK Easy HiRes Fix (Context)",
     "JKEasyDetailer": "JK Easy Detailer",
     "JKEasyDetailer_Context": "JK Easy Detailer (Context)",
     "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader",
