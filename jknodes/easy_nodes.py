@@ -13,7 +13,7 @@ import inspect
 from nodes import MAX_RESOLUTION
 
 import nodes
-from nodes import LatentUpscaleBy, ImageScaleBy
+from nodes import LatentUpscaleBy, ImageScaleBy, ConditioningAverage, ConditioningCombine, ConditioningConcat
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel, UpscaleModelLoader
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -39,6 +39,8 @@ utils.add_folder_path_and_extensions(
     [os.path.join(model_path, "ultralytics")],
     folder_paths.supported_pt_extensions,
 )
+
+ExtraConditioningModes = ["replace", "combine", "concat", "average"]
 
 
 class EasyHRFix:
@@ -122,24 +124,26 @@ class EasyHRFix:
                 ),
             },
             "optional": {
-                "positive_text": (
+                "extra_positive_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of positive conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_positive_conditioning_mode",
                     },
                 ),
-                "negative_text": (
+                "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
+                "extra_negative_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_negative_conditioning_mode",
                     },
                 ),
+                "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
             },
         }
 
@@ -168,12 +172,14 @@ class EasyHRFix:
         noise_mode: Literal["GPU(=A1111)", "CPU"],
         inject_extra_noise: Literal["disable", "enable"],
         extra_noise_strength: float,
-        positive_text: str,
-        negative_text: str,
+        extra_positive_text: str,
+        extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"],
+        extra_negative_text: str,
+        extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"],
     ):
         if "KSampler //Inspire" not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
-        if positive_text != "" or negative_text != "":
+        if extra_positive_text != "" or extra_negative_text != "":
             if "ImpactWildcardEncode" not in nodes.NODE_CLASS_MAPPINGS:
                 raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
 
@@ -207,27 +213,48 @@ class EasyHRFix:
         pos_cond_use = positive
         neg_cond_use = negative
 
-        if positive_text != "":
+        if extra_positive_text != "":
             encoder_node = nodes.NODE_CLASS_MAPPINGS["ImpactWildcardEncode"]
             (_model, _clip, cond, encoded_text) = encoder_node().doit(
                 model=model,
                 clip=clip,
-                wildcard_text=positive_text,
-                populated_text=positive_text,
+                wildcard_text=extra_positive_text,
+                populated_text=extra_positive_text,
                 seed=seed,
             )
+            match extra_positive_conditioning_mode:
+                case 'average':
+                    pos_cond_use = ConditioningAverage().addWeighted(cond, positive, 0.5)[0]
+                case 'combine':
+                    pos_cond_use = ConditioningCombine().combine(positive, cond)[0]
+                case 'concat':
+                    pos_cond_use = ConditioningConcat().concat(positive, cond)[0]
+                case 'replace':
+                    pos_cond_use = cond
+                case _:
+                    raise Exception(f'[ERROR] Unrecognized extra_positive_conditioning_mode "{extra_positive_conditioning_mode}"')
+
             model_use = _model
-            pos_cond_use = cond
-        if negative_text != "":
+        if extra_negative_text != "":
             encoder_node = nodes.NODE_CLASS_MAPPINGS["ImpactWildcardEncode"]
             (_, _, cond, encoded_text) = encoder_node().doit(
                 model=model,
                 clip=clip,
-                wildcard_text=positive_text,
-                populated_text=negative_text,
+                wildcard_text=extra_negative_text,
+                populated_text=extra_negative_text,
                 seed=seed,
             )
-            neg_cond_use = cond
+            match extra_negative_conditioning_mode:
+                case 'average':
+                    neg_cond_use = ConditioningAverage().addWeighted(cond, negative, 0.5)[0]
+                case 'combine':
+                    neg_cond_use = ConditioningCombine().combine(negative, cond)[0]
+                case 'concat':
+                    neg_cond_use = ConditioningConcat().concat(negative, cond)[0]
+                case 'replace':
+                    neg_cond_use = cond
+                case _:
+                    raise Exception(f'[ERROR] Unrecognized extra_negative_conditioning_mode "{extra_negative_conditioning_mode}"')
 
         inspire_sampler = nodes.NODE_CLASS_MAPPINGS["KSampler //Inspire"]
         # img2img with gpu noise like a1111
@@ -277,24 +304,26 @@ class EasyHRFix_Context:
                 ),
             },
             "optional": {
-                "positive_text": (
+                "extra_positive_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of positive conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_positive_conditioning_mode",
                     },
                 ),
-                "negative_text": (
+                "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
+                "extra_negative_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_negative_conditioning_mode",
                     },
                 ),
+                "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
             },
         }
 
@@ -313,19 +342,22 @@ class EasyHRFix_Context:
         noise_mode: Literal["GPU(=A1111)", "CPU"],
         inject_extra_noise: Literal["disable", "enable"],
         extra_noise_strength: float,
-        positive_text: str,
-        negative_text: str,
+        extra_positive_text: str,
+        extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"],
+        extra_negative_text: str,
+        extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"],
     ):
         model_use = ctx["model"]
         clip_use = ctx["clip"]
 
-        if positive_text != "":
+        if extra_positive_text != "" and extra_negative_conditioning_mode == 'replace':
             model_use = ctx["base_model"]
             clip_use = ctx["base_clip"]
 
-        ret = EasyHRFix().apply(model_use, clip_use, ctx['vae'], ctx['seed'], ctx['step_refiner'], ctx['cfg'], ctx['sampler'], ctx['scheduler'], ctx['positive'], ctx['negative'], upscale_by, ctx['latent'], denoise, latent_upscaler, pixel_upscaler, noise_mode, inject_extra_noise, extra_noise_strength, positive_text, negative_text)
+        ret = EasyHRFix().apply(model_use, clip_use, ctx['vae'], ctx['seed'], ctx['step_refiner'], ctx['cfg'], ctx['sampler'], ctx['scheduler'], ctx['positive'], ctx['negative'], upscale_by, ctx['latent'], denoise, latent_upscaler, pixel_upscaler, noise_mode, inject_extra_noise, extra_noise_strength, extra_positive_text, extra_positive_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
 
         return ret
+
 
 class JKEasyDetailer:
     RETURN_TYPES = (
@@ -422,24 +454,26 @@ class JKEasyDetailer:
                     "DETAILER_HOOK",
                     {"tooltip": "Optional detailer hook from impact pack"},
                 ),
-                "positive_text": (
+                "extra_positive_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of positive conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_positive_conditioning_mode",
                     },
                 ),
-                "negative_text": (
+                "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
+                "extra_negative_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_negative_conditioning_mode",
                     },
                 ),
+                "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
             },
         }
 
@@ -471,8 +505,10 @@ class JKEasyDetailer:
         noise_mask_feather: int,
         iterations: int,
         detailer_hook=None,
-        positive_text="",
-        negative_text="",
+        extra_positive_text: str = '',
+        extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"] = 'replace',
+        extra_negative_text: str = '',
+        extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"] = 'replace',
     ):
         if "DetailerForEach" not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Impact-Pack'")
@@ -496,26 +532,48 @@ class JKEasyDetailer:
         pos_cond_use = positive
         neg_cond_use = negative
 
-        if positive_text != "":
+        if extra_positive_text != "":
             (_model, _clip, cond, encoded_text) = encoder_node().doit(
                 model=model,
                 clip=clip,
-                wildcard_text=positive_text,
-                populated_text=positive_text,
+                wildcard_text=extra_positive_text,
+                populated_text=extra_positive_text,
                 seed=seed,
             )
+            match extra_positive_conditioning_mode:
+                case 'average':
+                    pos_cond_use = ConditioningAverage().addWeighted(cond, positive, 0.5)[0]
+                case 'combine':
+                    pos_cond_use = ConditioningCombine().combine(positive, cond)[0]
+                case 'concat':
+                    pos_cond_use = ConditioningConcat().concat(positive, cond)[0]
+                case 'replace':
+                    pos_cond_use = cond
+                case _:
+                    raise Exception(f'[ERROR] Unrecognized extra_positive_conditioning_mode "{extra_positive_conditioning_mode}"')
+
             model_use = _model
-            clip_use = clip
+            clip_use = _clip
             pos_cond_use = cond
-        if negative_text != "":
+        if extra_negative_text != "":
             (_, _, cond, encoded_text) = encoder_node().doit(
                 model=model,
                 clip=clip,
-                wildcard_text=positive_text,
-                populated_text=negative_text,
+                wildcard_text=extra_negative_text,
+                populated_text=extra_negative_text,
                 seed=seed,
             )
-            neg_cond_use = cond
+            match extra_negative_conditioning_mode:
+                case 'average':
+                    neg_cond_use = ConditioningAverage().addWeighted(cond, negative, 0.5)[0]
+                case 'combine':
+                    neg_cond_use = ConditioningCombine().combine(negative, cond)[0]
+                case 'concat':
+                    neg_cond_use = ConditioningConcat().concat(negative, cond)[0]
+                case 'replace':
+                    neg_cond_use = cond
+                case _:
+                    raise Exception(f'[ERROR] Unrecognized extra_negative_conditioning_mode "{extra_negative_conditioning_mode}"')
 
         path_toclass = inspect.getfile(provider_loader.__class__)
         if path_toclass not in sys.path:
@@ -641,24 +699,26 @@ class JKEasyDetailer_Context:
                     "DETAILER_HOOK",
                     {"tooltip": "Optional detailer hook from impact pack"},
                 ),
-                "positive_text": (
+                "extra_positive_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of positive conditioning",
+                       "tooltip": "if non empty, will be encoded and used depending on the value of extra_positive_conditioning_mode",
                     },
                 ),
-                "negative_text": (
+                "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
+                "extra_negative_text": (
                     "STRING",
                     {
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                        "tooltip": "if non empty, will be encoded and used instead of negative conditioning",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_negative_conditioning_mode",
                     },
                 ),
+                "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "use_custom_seed": (["disable", "enable"], {"default": "disable"}),
                 "seed": (
                     "INT",
@@ -671,66 +731,37 @@ class JKEasyDetailer_Context:
             },
         }
 
-    def apply(
-        self,
-        ctx: dict,
-        detector: str,
-        denoise: float,
-        threshold: float,
-        dilation: int,
-        crop_factor: float,
-        drop_size: int,
-        feather: int,
-        noise_mask: bool,
-        force_inpaint: bool,
-        guide_size: float,
-        guide_size_for: bool,
-        max_size: float,
-        noise_mask_feather: int,
-        iterations: int,
-        detailer_hook=None,
-        positive_text="",
-        negative_text="",
-        use_custom_seed: Literal["disable", "enable"] = "disable",
-        seed: int = None,
-    ):
+    def apply(self,
+              ctx: dict,
+              detector: str,
+              denoise: float,
+              threshold: float,
+              dilation: int,
+              crop_factor: float,
+              drop_size: int,
+              feather: int,
+              noise_mask: bool,
+              force_inpaint: bool,
+              guide_size: float,
+              guide_size_for: bool,
+              max_size: float,
+              noise_mask_feather: int,
+              iterations: int,
+              detailer_hook=None,
+              extra_positive_text="",
+              extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"] = 'replace',
+              extra_negative_text="",
+              extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"] = 'replace',
+              use_custom_seed: Literal["disable", "enable"] = "disable",
+              seed: int = None):
         model_use = ctx["model"]
         clip_use = ctx["clip"]
 
-        if positive_text != "":
+        if extra_positive_text != "" and extra_positive_conditioning_mode == 'replace':
             model_use = ctx["base_model"]
             clip_use = ctx["base_clip"]
 
-        (image, segs) = JKEasyDetailer().apply(
-            ctx["images"],
-            detector,
-            model_use,
-            clip_use,
-            ctx["vae"],
-            seed if use_custom_seed == "enable" else ctx["seed"],
-            ctx["steps"],
-            ctx["cfg"],
-            ctx["sampler"],
-            ctx["scheduler"],
-            ctx["positive"],
-            ctx["negative"],
-            denoise,
-            threshold,
-            dilation,
-            crop_factor,
-            drop_size,
-            feather,
-            noise_mask,
-            force_inpaint,
-            guide_size,
-            guide_size_for,
-            max_size,
-            noise_mask_feather,
-            iterations,
-            detailer_hook,
-            positive_text,
-            negative_text,
-        )
+        (image, segs) = JKEasyDetailer().apply(ctx["images"], detector, model_use, clip_use, ctx["vae"], seed if use_custom_seed == "enable" else ctx["seed"], ctx["steps"], ctx["cfg"], ctx["sampler"], ctx["scheduler"], ctx["positive"], ctx["negative"], denoise, threshold, dilation, crop_factor, drop_size, feather, noise_mask, force_inpaint, guide_size, guide_size_for, max_size, noise_mask_feather, iterations, detailer_hook, extra_positive_text, extra_negative_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
 
         # add new image to ctx
         new_ctx = ctx.copy()
