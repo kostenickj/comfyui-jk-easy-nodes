@@ -36,7 +36,8 @@ class JKDynamicThresholdingMultiModel:
     @classmethod
     def INPUT_TYPES(cls):
         if dynamic_thresholding_module is not None:
-            required_args_dict: dict = dynamic_thresholding_module.dynthres_comfyui.DynamicThresholdingComfyNode().INPUT_TYPES()['required']
+            required_args_dict: dict = dynamic_thresholding_module.dynthres_comfyui.DynamicThresholdingComfyNode().INPUT_TYPES(
+            )['required']
             required_args_dict.pop('model', None)
             return {
                 "required": required_args_dict, "optional": {
@@ -59,6 +60,14 @@ class JKDynamicThresholdingMultiModel:
         "MODEL",
         "MODEL",
     )
+    RETURN_NAMES = (
+        "model1",
+        "model2",
+        "model3",
+        "model4",
+        "model5",
+        "model6",
+    )
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers/Util"
 
@@ -78,27 +87,27 @@ class JKDynamicThresholdingMultiModel:
 
         m_1 = model1.clone() if model1 is not None else None
         if m_1 is not None:
-            m_1 = thresh_node().patch(model=m_1, **kwargs)
-        
+            m_1 = thresh_node().patch(model=m_1, **kwargs)[0]
+
         m_2 = model2.clone() if model2 is not None else None
         if m_2 is not None:
-            m_2 = thresh_node().patch(model=m_2, **kwargs)
+            m_2 = thresh_node().patch(model=m_2, **kwargs)[0]
 
         m_3 = model3.clone() if model3 is not None else None
         if m_3 is not None:
-            m_3 = thresh_node().patch(model=m_3, **kwargs)
+            m_3 = thresh_node().patch(model=m_3, **kwargs)[0]
 
         m_4 = model4.clone() if model4 is not None else None
         if m_4 is not None:
-            m_4 = thresh_node().patch(model=m_4, **kwargs)
+            m_4 = thresh_node().patch(model=m_4, **kwargs)[0]
 
         m_5 = model5.clone() if model5 is not None else None
         if m_5 is not None:
-            m_5 = thresh_node().patch(model=m_5, **kwargs)
+            m_5 = thresh_node().patch(model=m_5, **kwargs)[0]
 
         m_6 = model6.clone() if model6 is not None else None
         if m_6 is not None:
-            m_6 = thresh_node().patch(model=m_6, **kwargs)
+            m_6 = thresh_node().patch(model=m_6, **kwargs)[0]
 
         return (
             m_1,
@@ -246,20 +255,8 @@ class JKAnythingToString:
 
 
 NODE_CLASS_MAPPINGS = {
-    "JKStringNotEquals": JKStringNotEquals,
-    "JKStringEquals": JKStringEquals,
-    "JKStringEmpty": JKStringEmpty,
-    "JKStringNotEmpty": JKStringNotEmpty,
-    "JKInspireSchedulerAdapter": JKInspireSchedulerAdapter,
-    "JKAnythingToString": JKAnythingToString,
-    'JKDynamicThresholdingMultiModel': JKDynamicThresholdingMultiModel
+    "JKStringNotEquals": JKStringNotEquals, "JKStringEquals": JKStringEquals, "JKStringEmpty": JKStringEmpty, "JKStringNotEmpty": JKStringNotEmpty, "JKInspireSchedulerAdapter": JKInspireSchedulerAdapter, "JKAnythingToString": JKAnythingToString, 'JKDynamicThresholdingMultiModel': JKDynamicThresholdingMultiModel
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "JKStringEquals": "JK String Equals",
-    "JKStringNotEquals": "JK String Not Equals",
-    "JKStringNotEmpty": "JK String Not Empty",
-    "JKStringEmpty": "JK String Empty",
-    "JKInspireSchedulerAdapter": "JK Inspire Scheduler Adapter",
-    "JKAnythingToString": "JK Anything to string",
-    'JKDynamicThresholdingMultiModel': "JKDynamic Thresholding Multi Model Apply"
+    "JKStringEquals": "JK String Equals", "JKStringNotEquals": "JK String Not Equals", "JKStringNotEmpty": "JK String Not Empty", "JKStringEmpty": "JK String Empty", "JKInspireSchedulerAdapter": "JK Inspire Scheduler Adapter", "JKAnythingToString": "JK Anything to string", 'JKDynamicThresholdingMultiModel': "JKDynamic Thresholding Multi Model Apply"
 }
