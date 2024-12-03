@@ -10,8 +10,8 @@ sys.path.append(os.path.dirname(this_dir))
 
 _all_context_input_output_data = {
     "base_ctx": ("base_ctx", "JK_CONTEXT", "CONTEXT"),
-    "base_model": ("base_model", "MODEL", "BASE_MODEL"),
-    "model": ("model", "MODEL", "MODEL"),
+    "base_model": ("base_model", "MODEL", "BASE_MODEL", "the base model without any patching or LORA applied"),
+    "model": ("model", "MODEL", "MODEL", "model with loras applied (if any)"),
     "base_clip": ("base_clip", "CLIP", "BASE_CLIP"),
     "clip": ("clip", "CLIP", "CLIP"),
     "vae": ("vae", "VAE", "VAE"),
@@ -57,6 +57,10 @@ def _create_context_data(input_list=None):
         list_ctx_return_types.append(data[1])
         list_ctx_return_names.append(data[2])
         ctx_optional_inputs[data[0]] = tuple([data[1]] + ([{"forceInput": True}] if data[1] in force_input_types or data[0] in force_input_names else []))
+        if len(data) > 3:
+            if len(ctx_optional_inputs[data[0]]) < 2:
+                ctx_optional_inputs[data[0]] = ctx_optional_inputs[data[0]] + ({},)
+            ctx_optional_inputs[data[0]][1]['tooltip'] = data[3]
 
     ctx_return_types = tuple(list_ctx_return_types)
     ctx_return_names = tuple(list_ctx_return_names)
