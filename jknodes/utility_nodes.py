@@ -30,8 +30,9 @@ except:
     dynamic_thresholding_module = None
 
 
-# helper to apply dynamic thresholding settings to multiple models at once
 class JKDynamicThresholdingMultiModel:
+
+    DESCRIPTION = "helper to apply dynamic thresholding settings to multiple models at once, requires sd-dynamic-thresholding to be installed"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -108,6 +109,87 @@ class JKDynamicThresholdingMultiModel:
         m_6 = model6.clone() if model6 is not None else None
         if m_6 is not None:
             m_6 = thresh_node().patch(model=m_6, **kwargs)[0]
+
+        return (
+            m_1,
+            m_2,
+            m_3,
+            m_4,
+            m_5,
+            m_6,
+        )
+
+
+class JKMultiModelSamplerUnpatch:
+
+    DESCRIPTION = "Helper to remove sampler function overrides from a model (e.g dynamic thresholding)"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+
+        return {
+            "required": {}, "optional": {
+                "model1": ("MODEL", ),
+                "model2": ("MODEL", ),
+                "model3": ("MODEL", ),
+                "model4": ("MODEL", ),
+                "model5": ("MODEL", ),
+                "model6": ("MODEL", ),
+            }
+        }
+
+    RETURN_TYPES = (
+        "MODEL",
+        "MODEL",
+        "MODEL",
+        "MODEL",
+        "MODEL",
+        "MODEL",
+    )
+    RETURN_NAMES = (
+        "model1",
+        "model2",
+        "model3",
+        "model4",
+        "model5",
+        "model6",
+    )
+    FUNCTION = "apply"
+    CATEGORY = "JK Comfy Helpers/Util"
+
+    def apply(
+        self,
+        model1: comfy.model_patcher.ModelPatcher = None,
+        model2: comfy.model_patcher.ModelPatcher = None,
+        model3: comfy.model_patcher.ModelPatcher = None,
+        model4: comfy.model_patcher.ModelPatcher = None,
+        model5: comfy.model_patcher.ModelPatcher = None,
+        model6: comfy.model_patcher.ModelPatcher = None,
+    ):
+
+        m_1 = model1.clone() if model1 is not None else None
+        if m_1 is not None and "sampler_cfg_function" in m_1.model_options.keys():
+            m_1.model_options.pop("sampler_cfg_function", None)
+
+        m_2 = model2.clone() if model2 is not None else None
+        if m_2 is not None and "sampler_cfg_function" in m_2.model_options.keys():
+            m_2.model_options.pop("sampler_cfg_function", None)
+
+        m_3 = model3.clone() if model3 is not None else None
+        if m_3 is not None and "sampler_cfg_function" in m_3.model_options.keys():
+            m_3.model_options.pop("sampler_cfg_function", None)
+
+        m_4 = model4.clone() if model4 is not None else None
+        if m_4 is not None and "sampler_cfg_function" in m_4.model_options.keys():
+            m_4.model_options.pop("sampler_cfg_function", None)
+
+        m_5 = model5.clone() if model5 is not None else None
+        if m_5 is not None and "sampler_cfg_function" in m_5.model_options.keys():
+            m_5.model_options.pop("sampler_cfg_function", None)
+
+        m_6 = model6.clone() if model6 is not None else None
+        if m_6 is not None and "sampler_cfg_function" in m_6.model_options.keys():
+            m_6.model_options.pop("sampler_cfg_function", None)
 
         return (
             m_1,
@@ -255,8 +337,8 @@ class JKAnythingToString:
 
 
 NODE_CLASS_MAPPINGS = {
-    "JKStringNotEquals": JKStringNotEquals, "JKStringEquals": JKStringEquals, "JKStringEmpty": JKStringEmpty, "JKStringNotEmpty": JKStringNotEmpty, "JKInspireSchedulerAdapter": JKInspireSchedulerAdapter, "JKAnythingToString": JKAnythingToString, 'JKDynamicThresholdingMultiModel': JKDynamicThresholdingMultiModel
+    "JKStringNotEquals": JKStringNotEquals, "JKStringEquals": JKStringEquals, "JKStringEmpty": JKStringEmpty, "JKStringNotEmpty": JKStringNotEmpty, "JKInspireSchedulerAdapter": JKInspireSchedulerAdapter, "JKAnythingToString": JKAnythingToString, 'JKDynamicThresholdingMultiModel': JKDynamicThresholdingMultiModel, "JKMultiModelSamplerUnpatch": JKMultiModelSamplerUnpatch
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "JKStringEquals": "JK String Equals", "JKStringNotEquals": "JK String Not Equals", "JKStringNotEmpty": "JK String Not Empty", "JKStringEmpty": "JK String Empty", "JKInspireSchedulerAdapter": "JK Inspire Scheduler Adapter", "JKAnythingToString": "JK Anything to string", 'JKDynamicThresholdingMultiModel': "JKDynamic Thresholding Multi Model Apply"
+    "JKStringEquals": "JK String Equals", "JKStringNotEquals": "JK String Not Equals", "JKStringNotEmpty": "JK String Not Empty", "JKStringEmpty": "JK String Empty", "JKInspireSchedulerAdapter": "JK Inspire Scheduler Adapter", "JKAnythingToString": "JK Anything to string", 'JKDynamicThresholdingMultiModel': "JK Dynamic Thresholding Multi Model Apply", "JKMultiModelSamplerUnpatch": "JK Multi Model Sampler Unpatcher"
 }

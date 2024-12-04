@@ -651,6 +651,17 @@ class JKEasyDetailer_Context:
                     "FLOAT",
                     {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01},
                 ),
+                "cfg": (
+                    "FLOAT",
+                    {
+                        "default": 8.0,
+                        "min": 0.0,
+                        "max": 100.0,
+                        "step": 0.1,
+                        "round": 0.01,
+                        "tooltip": "The Classifier-Free Guidance scale balances creativity and adherence to the prompt. Higher values result in images more closely matching the prompt however too high values will negatively impact quality.",
+                    },
+                ),
                 "threshold": (
                     "FLOAT",
                     {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01},
@@ -705,7 +716,7 @@ class JKEasyDetailer_Context:
                         "default": "",
                         "multiline": True,
                         "dynamicPrompts": False,
-                       "tooltip": "if non empty, will be encoded and used depending on the value of extra_positive_conditioning_mode",
+                        "tooltip": "if non empty, will be encoded and used depending on the value of extra_positive_conditioning_mode",
                     },
                 ),
                 "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
@@ -735,6 +746,7 @@ class JKEasyDetailer_Context:
               ctx: dict,
               detector: str,
               denoise: float,
+              cfg: float,
               threshold: float,
               dilation: int,
               crop_factor: float,
@@ -761,7 +773,7 @@ class JKEasyDetailer_Context:
             model_use = ctx["base_model"]
             clip_use = ctx["base_clip"]
 
-        (image, segs) = JKEasyDetailer().apply(ctx["images"], detector, model_use, clip_use, ctx["vae"], seed if use_custom_seed == "enable" else ctx["seed"], ctx["steps"], ctx["cfg"], ctx["sampler"], ctx["scheduler"], ctx["positive"], ctx["negative"], denoise, threshold, dilation, crop_factor, drop_size, feather, noise_mask, force_inpaint, guide_size, guide_size_for, max_size, noise_mask_feather, iterations, detailer_hook, extra_positive_text, extra_negative_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
+        (image, segs) = JKEasyDetailer().apply(ctx["images"], detector, model_use, clip_use, ctx["vae"], seed if use_custom_seed == "enable" else ctx["seed"], ctx["steps"], cfg, ctx["sampler"], ctx["scheduler"], ctx["positive"], ctx["negative"], denoise, threshold, dilation, crop_factor, drop_size, feather, noise_mask, force_inpaint, guide_size, guide_size_for, max_size, noise_mask_feather, iterations, detailer_hook, extra_positive_text, extra_negative_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
 
         # add new image to ctx
         new_ctx = ctx.copy()
