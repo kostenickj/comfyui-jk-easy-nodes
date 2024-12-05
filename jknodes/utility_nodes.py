@@ -305,6 +305,22 @@ class JKInspireSchedulerAdapter:
         return (scheduler, )
 
 
+class JKStringToSamplerAdapter:
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "sampler_str": ("STRING", ),
+        }}
+
+    RETURN_TYPES = (comfy.samplers.KSampler.SAMPLERS, )
+    RETURN_NAMES = ("sampler", )
+    FUNCTION = "doit"
+
+    def doit(self, sampler_str):
+        return (sampler_str, )
+
+
 # originally from MTB nodes, modified to actually work with anything using AnyType
 class JKAnythingToString:
 
@@ -337,8 +353,8 @@ class JKAnythingToString:
 
 
 NODE_CLASS_MAPPINGS = {
-    "JKStringNotEquals": JKStringNotEquals, "JKStringEquals": JKStringEquals, "JKStringEmpty": JKStringEmpty, "JKStringNotEmpty": JKStringNotEmpty, "JKInspireSchedulerAdapter": JKInspireSchedulerAdapter, "JKAnythingToString": JKAnythingToString, 'JKDynamicThresholdingMultiModel': JKDynamicThresholdingMultiModel, "JKMultiModelSamplerUnpatch": JKMultiModelSamplerUnpatch
+    "JKStringNotEquals": JKStringNotEquals, "JKStringEquals": JKStringEquals, "JKStringEmpty": JKStringEmpty, "JKStringNotEmpty": JKStringNotEmpty, "JKInspireSchedulerAdapter": JKInspireSchedulerAdapter, "JKAnythingToString": JKAnythingToString, 'JKDynamicThresholdingMultiModel': JKDynamicThresholdingMultiModel, "JKMultiModelSamplerUnpatch": JKMultiModelSamplerUnpatch, "JKStringToSamplerAdapter": JKStringToSamplerAdapter
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "JKStringEquals": "JK String Equals", "JKStringNotEquals": "JK String Not Equals", "JKStringNotEmpty": "JK String Not Empty", "JKStringEmpty": "JK String Empty", "JKInspireSchedulerAdapter": "JK Inspire Scheduler Adapter", "JKAnythingToString": "JK Anything to string", 'JKDynamicThresholdingMultiModel': "JK Dynamic Thresholding Multi Model Apply", "JKMultiModelSamplerUnpatch": "JK Multi Model Sampler Unpatcher"
+    "JKStringEquals": "JK String Equals", "JKStringNotEquals": "JK String Not Equals", "JKStringNotEmpty": "JK String Not Empty", "JKStringEmpty": "JK String Empty", "JKInspireSchedulerAdapter": "JK Inspire Scheduler Adapter", "JKAnythingToString": "JK Anything to string", 'JKDynamicThresholdingMultiModel': "JK Dynamic Thresholding Multi Model Apply", "JKMultiModelSamplerUnpatch": "JK Multi Model Sampler Unpatcher", "JKStringToSamplerAdapter": "JK String Sampler Adapter"
 }

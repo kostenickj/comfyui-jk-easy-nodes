@@ -324,6 +324,12 @@ class EasyHRFix_Context:
                     },
                 ),
                 "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
+                "bleh_sampler_override": (
+                    utils.BLEH_PRESET_LIST,
+                    {
+                        "tooltip": "optional bleh sampler preset override", "default": "disabled"
+                    },
+                ),
             },
         }
 
@@ -332,29 +338,29 @@ class EasyHRFix_Context:
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
-    def apply(
-        self,
-        ctx,
-        upscale_by: float,
-        denoise: float,
-        latent_upscaler: str,
-        pixel_upscaler: str,
-        noise_mode: Literal["GPU(=A1111)", "CPU"],
-        inject_extra_noise: Literal["disable", "enable"],
-        extra_noise_strength: float,
-        extra_positive_text: str,
-        extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"],
-        extra_negative_text: str,
-        extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"],
-    ):
+    def apply(self,
+              ctx,
+              upscale_by: float,
+              denoise: float,
+              latent_upscaler: str,
+              pixel_upscaler: str,
+              noise_mode: Literal["GPU(=A1111)", "CPU"],
+              inject_extra_noise: Literal["disable", "enable"],
+              extra_noise_strength: float,
+              extra_positive_text: str,
+              extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"],
+              extra_negative_text: str,
+              extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"],
+              bleh_sampler_override: str = 'disabled'):
         model_use = ctx["model"]
         clip_use = ctx["clip"]
+        sampler_use = bleh_sampler_override if bleh_sampler_override != 'disabled' else ctx['sampler']
 
         if extra_positive_text != "" and extra_negative_conditioning_mode == 'replace':
             model_use = ctx["base_model"]
             clip_use = ctx["base_clip"]
 
-        ret = EasyHRFix().apply(model_use, clip_use, ctx['vae'], ctx['seed'], ctx['step_refiner'], ctx['cfg'], ctx['sampler'], ctx['scheduler'], ctx['positive'], ctx['negative'], upscale_by, ctx['latent'], denoise, latent_upscaler, pixel_upscaler, noise_mode, inject_extra_noise, extra_noise_strength, extra_positive_text, extra_positive_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
+        ret = EasyHRFix().apply(model_use, clip_use, ctx['vae'], ctx['seed'], ctx['step_refiner'], ctx['cfg'], sampler_use, ctx['scheduler'], ctx['positive'], ctx['negative'], upscale_by, ctx['latent'], denoise, latent_upscaler, pixel_upscaler, noise_mode, inject_extra_noise, extra_noise_strength, extra_positive_text, extra_positive_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
 
         return ret
 
@@ -730,13 +736,10 @@ class JKEasyDetailer_Context:
                     },
                 ),
                 "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
-                "use_custom_seed": (["disable", "enable"], {"default": "disable"}),
-                "seed": (
-                    "INT",
+                "bleh_sampler_override": (
+                    utils.BLEH_PRESET_LIST,
                     {
-                        "default": 0,
-                        "min": 0,
-                        "max": 0xFFFFFFFFFFFFFFFF,
+                        "tooltip": "optional bleh sampler preset override", "default": "disabled"
                     },
                 ),
             },
@@ -764,16 +767,16 @@ class JKEasyDetailer_Context:
               extra_positive_conditioning_mode: Literal["replace", "combine", "concat", "average"] = 'replace',
               extra_negative_text="",
               extra_negative_conditioning_mode: Literal["replace", "combine", "concat", "average"] = 'replace',
-              use_custom_seed: Literal["disable", "enable"] = "disable",
-              seed: int = None):
+              bleh_sampler_override: str = 'disabled'):
         model_use = ctx["model"]
         clip_use = ctx["clip"]
+        sampler_use = bleh_sampler_override if bleh_sampler_override != 'disabled' else ctx['sampler']
 
         if extra_positive_text != "" and extra_positive_conditioning_mode == 'replace':
             model_use = ctx["base_model"]
             clip_use = ctx["base_clip"]
 
-        (image, segs) = JKEasyDetailer().apply(ctx["images"], detector, model_use, clip_use, ctx["vae"], seed if use_custom_seed == "enable" else ctx["seed"], ctx["steps"], cfg, ctx["sampler"], ctx["scheduler"], ctx["positive"], ctx["negative"], denoise, threshold, dilation, crop_factor, drop_size, feather, noise_mask, force_inpaint, guide_size, guide_size_for, max_size, noise_mask_feather, iterations, detailer_hook, extra_positive_text, extra_negative_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
+        (image, segs) = JKEasyDetailer().apply(ctx["images"], detector, model_use, clip_use, ctx["vae"], ctx["seed"], ctx["steps"], cfg, sampler_use, ctx["scheduler"], ctx["positive"], ctx["negative"], denoise, threshold, dilation, crop_factor, drop_size, feather, noise_mask, force_inpaint, guide_size, guide_size_for, max_size, noise_mask_feather, iterations, detailer_hook, extra_positive_text, extra_negative_conditioning_mode, extra_negative_text, extra_negative_conditioning_mode)
 
         # add new image to ctx
         new_ctx = ctx.copy()
