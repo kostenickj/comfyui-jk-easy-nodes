@@ -326,9 +326,7 @@ class EasyHRFix_Context(ComfyNodeABC):
                 "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "bleh_sampler_override": (
                     utils.BLEH_PRESET_LIST,
-                    {
-                        "tooltip": "optional bleh sampler preset override", "default": "disabled"
-                    },
+                    {"tooltip": "optional bleh sampler preset override", "default": "disabled"},
                 ),
             },
         }
@@ -738,9 +736,7 @@ class JKEasyDetailer_Context(ComfyNodeABC):
                 "extra_negative_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "bleh_sampler_override": (
                     utils.BLEH_PRESET_LIST,
-                    {
-                        "tooltip": "optional bleh sampler preset override", "default": "disabled"
-                    },
+                    {"tooltip": "optional bleh sampler preset override", "default": "disabled"},
                 ),
             },
         }
@@ -789,7 +785,6 @@ class JKEasyDetailer_Context(ComfyNodeABC):
         )
 
 
-# this only exists because the comfy types system is annoying
 class JKEasyCheckpointLoader(ComfyNodeABC):
 
     @classmethod
@@ -826,6 +821,77 @@ class JKEasyCheckpointLoader(ComfyNodeABC):
             os.path.splitext(os.path.basename(ckpt_name))[0],
         )
 
+class JKEasyKSampler_Context(ComfyNodeABC):
+
+    @classmethod
+    def INPUT_TYPES(cls) -> InputTypeDict:
+        return {
+            "required": {
+                "ctx": ("JK_CONTEXT", ),
+                "denoise": (
+                    IO.FLOAT,
+                    {"default": 1.0, "min": 0.00, "max": 1.00, "step": 0.01},
+                ),
+                "noise_mode": (["GPU(=A1111)", "CPU"], {"default": "GPU(=A1111)"}),
+                "variation_seed": (IO.INT, {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "variation_strength": (IO.FLOAT, {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+            },
+            "optional": {
+                "bleh_sampler_override": (
+                    utils.BLEH_PRESET_LIST,
+                    {"tooltip": "optional bleh sampler preset override", "default": "disabled"},
+                ),
+                "variation_method": (["linear", "slerp"],),
+            },
+        }
+
+    RETURN_TYPES = (IO.LATENT, "JK_CONTEXT")
+    RETURN_NAMES = (IO.LATENT, "JK_CONTEXT")
+    FUNCTION = "apply"
+    CATEGORY = "JK Comfy Helpers"
+
+    def apply(
+        self,
+        ctx,
+        denoise: float,
+        noise_mode: Literal["GPU(=A1111)", "CPU"],
+        variation_seed: int,
+        variation_strength: float,
+        bleh_sampler_override: str = 'disabled',
+        variation_method="linear"
+    ):
+        if "KSampler //Inspire" not in nodes.NODE_CLASS_MAPPINGS:
+            raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
+        inspire_sampler = nodes.NODE_CLASS_MAPPINGS["KSampler //Inspire"]
+
+        sampler_use = bleh_sampler_override if bleh_sampler_override != 'disabled' else ctx['sampler']
+
+        samples = inspire_sampler.doit(
+            ctx['model'],
+            ctx['seed'],
+            ctx['steps'],
+            ctx['cfg'],
+            sampler_use,
+            ctx['scheduler'],
+            ctx['positive'],
+            ctx['negative'],
+            ctx['latent'],
+            denoise,
+            noise_mode,
+            "comfy",
+            variation_seed,
+            variation_strength,
+            variation_method
+        )[0]
+
+        new_ctx = ctx.copy()
+        new_ctx["latent"] = samples
+
+        return (
+            samples,
+            new_ctx,
+        )
+
 
 NODE_CLASS_MAPPINGS = {
     "EasyHRFix": EasyHRFix,
@@ -833,6 +899,7 @@ NODE_CLASS_MAPPINGS = {
     "JKEasyDetailer": JKEasyDetailer,
     "JKEasyDetailer_Context": JKEasyDetailer_Context,
     "JKEasyCheckpointLoader": JKEasyCheckpointLoader,
+    "JKEasyKSampler_Context": JKEasyKSampler_Context
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "EasyHRFix": "JK Easy HiRes Fix",
@@ -840,4 +907,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "JKEasyDetailer": "JK Easy Detailer",
     "JKEasyDetailer_Context": "JK Easy Detailer (Context)",
     "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader",
+    "JKEasyKSampler_Context": "JK Easy KSampler (Context)"
 }
