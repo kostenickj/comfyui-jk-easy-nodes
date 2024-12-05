@@ -10,7 +10,7 @@ import comfy.utils
 import folder_paths
 from typing import Literal
 import inspect
-from nodes import MAX_RESOLUTION
+from nodes import MAX_RESOLUTION, ComfyNodeABC, InputTypeDict, IO
 
 import nodes
 from nodes import LatentUpscaleBy, ImageScaleBy, ConditioningAverage, ConditioningCombine, ConditioningConcat
@@ -43,23 +43,23 @@ utils.add_folder_path_and_extensions(
 ExtraConditioningModes = ["replace", "combine", "concat", "average"]
 
 
-class EasyHRFix:
+class EasyHRFix(ComfyNodeABC):
     default_latent_upscalers = LatentUpscaleBy.INPUT_TYPES()["required"]["upscale_method"][0]
     latent_upscalers = default_latent_upscalers + ["lanczos"]
     pixel_upscalers = folder_paths.get_filename_list("upscale_models")
 
     @classmethod
-    def INPUT_TYPES(cls):
+    def INPUT_TYPES(cls) -> InputTypeDict:
         return {
             "required": {
-                "model": ("MODEL", ),
-                "clip": ("CLIP", ),
+                "model": (IO.MODEL, ),
+                "clip": (IO.CLIP, ),
                 "vae": (
                     "VAE",
                     {"tooltip": "The VAE model used for decoding the latent."},
                 ),
                 "seed": (
-                    "INT",
+                    IO.INT,
                     {
                         "default": 0,
                         "min": 0,
@@ -68,7 +68,7 @@ class EasyHRFix:
                     },
                 ),
                 "steps": (
-                    "INT",
+                    IO.INT,
                     {
                         "default": 20,
                         "min": 1,
@@ -77,7 +77,7 @@ class EasyHRFix:
                     },
                 ),
                 "cfg": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {
                         "default": 8.0,
                         "min": 0.0,
@@ -98,20 +98,20 @@ class EasyHRFix:
                     {"tooltip": "The scheduler controls how noise is gradually removed to form the image."},
                 ),
                 "positive": (
-                    "CONDITIONING",
+                    IO.CONDITIONING,
                     {"tooltip": "The conditioning describing the attributes you want to include in the image."},
                 ),
                 "negative": (
-                    "CONDITIONING",
+                    IO.CONDITIONING,
                     {"tooltip": "The conditioning describing the attributes you want to exclude from the image."},
                 ),
                 "upscale_by": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 1.5, "min": 1.05, "max": 4.0, "step": 0.05},
                 ),
-                "latent_image": ("LATENT", ),
+                "latent_image": (IO.LATENT, ),
                 "denoise": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},
                 ),
                 "latent_upscaler": (cls.latent_upscalers, {"default": "lanczos"}),
@@ -119,13 +119,13 @@ class EasyHRFix:
                 "noise_mode": (["GPU(=A1111)", "CPU"], {"default": "GPU(=A1111)"}),
                 "inject_extra_noise": (["disable", "enable"], {"default": "enable"}),
                 "extra_noise_strength": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 2.5, "min": 0.00, "max": 100, "step": 0.1},
                 ),
             },
             "optional": {
                 "extra_positive_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -135,7 +135,7 @@ class EasyHRFix:
                 ),
                 "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "extra_negative_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -147,8 +147,8 @@ class EasyHRFix:
             },
         }
 
-    RETURN_TYPES = ("LATENT", )
-    RETURN_NAMES = ("LATENT", )
+    RETURN_TYPES = (IO.LATENT, )
+    RETURN_NAMES = (IO.LATENT, )
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
@@ -276,22 +276,22 @@ class EasyHRFix:
         return (samples, )
 
 
-class EasyHRFix_Context:
+class EasyHRFix_Context(ComfyNodeABC):
     default_latent_upscalers = EasyHRFix.default_latent_upscalers
     latent_upscalers = EasyHRFix.latent_upscalers
     pixel_upscalers = EasyHRFix.pixel_upscalers
 
     @classmethod
-    def INPUT_TYPES(cls):
+    def INPUT_TYPES(cls) -> InputTypeDict:
         return {
             "required": {
                 "ctx": ("JK_CONTEXT", ),
                 "upscale_by": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 1.5, "min": 1.05, "max": 4.0, "step": 0.05},
                 ),
                 "denoise": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 0.5, "min": 0.00, "max": 1.00, "step": 0.01},
                 ),
                 "latent_upscaler": (cls.latent_upscalers, {"default": "lanczos"}),
@@ -299,13 +299,13 @@ class EasyHRFix_Context:
                 "noise_mode": (["GPU(=A1111)", "CPU"], {"default": "GPU(=A1111)"}),
                 "inject_extra_noise": (["disable", "enable"], {"default": "enable"}),
                 "extra_noise_strength": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 2.5, "min": 0.00, "max": 100, "step": 0.1},
                 ),
             },
             "optional": {
                 "extra_positive_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -315,7 +315,7 @@ class EasyHRFix_Context:
                 ),
                 "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "extra_negative_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -333,8 +333,8 @@ class EasyHRFix_Context:
             },
         }
 
-    RETURN_TYPES = ("LATENT", )
-    RETURN_NAMES = ("LATENT", )
+    RETURN_TYPES = (IO.LATENT, )
+    RETURN_NAMES = (IO.LATENT, )
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
@@ -365,7 +365,7 @@ class EasyHRFix_Context:
         return ret
 
 
-class JKEasyDetailer:
+class JKEasyDetailer(ComfyNodeABC):
     RETURN_TYPES = (
         "IMAGE",
         "SEGS",
@@ -384,18 +384,18 @@ class JKEasyDetailer:
     last_segs = None
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(s) -> InputTypeDict:
         return {
             "required": {
                 "image": ("IMAGE", ),
                 "detector": (s.detectors, ),
-                "model": ("MODEL", ),
-                "clip": ("CLIP", ),
+                "model": (IO.MODEL, ),
+                "clip": (IO.CLIP, ),
                 "vae": ("VAE", ),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
-                "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                "seed": (IO.INT, {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
+                "steps": (IO.INT, {"default": 20, "min": 1, "max": 10000}),
                 "cfg": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {
                         "default": 8.0,
                         "min": 0.0,
@@ -406,54 +406,54 @@ class JKEasyDetailer:
                 ),
                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                "positive": ("CONDITIONING", ),
-                "negative": ("CONDITIONING", ),
+                "positive": (IO.CONDITIONING, ),
+                "negative": (IO.CONDITIONING, ),
                 "denoise": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01},
                 ),
                 "threshold": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01},
                 ),
                 "dilation": (
-                    "INT",
+                    IO.INT,
                     {"default": 10, "min": -512, "max": 512, "step": 1},
                 ),
                 "crop_factor": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1},
                 ),
                 "drop_size": (
-                    "INT",
+                    IO.INT,
                     {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10},
                 ),
-                "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                "feather": (IO.INT, {"default": 5, "min": 0, "max": 100, "step": 1}),
                 "noise_mask": (
-                    "BOOLEAN",
+                    IO.BOOLEAN,
                     {"default": True, "label_on": "enabled", "label_off": "disabled"},
                 ),
                 "force_inpaint": (
-                    "BOOLEAN",
+                    IO.BOOLEAN,
                     {"default": True, "label_on": "enabled", "label_off": "disabled"},
                 ),
                 "guide_size": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8},
                 ),
                 "guide_size_for": (
-                    "BOOLEAN",
+                    IO.BOOLEAN,
                     {"default": True, "label_on": "bbox", "label_off": "crop_region"},
                 ),
                 "max_size": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 1024, "min": 64, "max": MAX_RESOLUTION, "step": 8},
                 ),
                 "noise_mask_feather": (
-                    "INT",
+                    IO.INT,
                     {"default": 20, "min": 0, "max": 100, "step": 1},
                 ),
-                "iterations": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                "iterations": (IO.INT, {"default": 1, "min": 1, "max": 10, "step": 1}),
             },
             "optional": {
                 "detailer_hook": (
@@ -461,7 +461,7 @@ class JKEasyDetailer:
                     {"tooltip": "Optional detailer hook from impact pack"},
                 ),
                 "extra_positive_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -471,7 +471,7 @@ class JKEasyDetailer:
                 ),
                 "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "extra_negative_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -641,24 +641,24 @@ class JKEasyDetailer:
         )
 
 
-class JKEasyDetailer_Context:
+class JKEasyDetailer_Context(ComfyNodeABC):
     RETURN_TYPES = ("IMAGE", "SEGS", "JK_CONTEXT")
     RETURN_NAMES = ("IMAGE", "SEGS", "CTX")
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(s) -> InputTypeDict:
         return {
             "required": {
                 "ctx": ("JK_CONTEXT", ),
                 "detector": (JKEasyDetailer.detectors, ),
                 "denoise": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01},
                 ),
                 "cfg": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {
                         "default": 8.0,
                         "min": 0.0,
@@ -669,47 +669,47 @@ class JKEasyDetailer_Context:
                     },
                 ),
                 "threshold": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01},
                 ),
                 "dilation": (
-                    "INT",
+                    IO.INT,
                     {"default": 10, "min": -512, "max": 512, "step": 1},
                 ),
                 "crop_factor": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1},
                 ),
                 "drop_size": (
-                    "INT",
+                    IO.INT,
                     {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10},
                 ),
-                "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                "feather": (IO.INT, {"default": 5, "min": 0, "max": 100, "step": 1}),
                 "noise_mask": (
-                    "BOOLEAN",
+                    IO.BOOLEAN,
                     {"default": True, "label_on": "enabled", "label_off": "disabled"},
                 ),
                 "force_inpaint": (
-                    "BOOLEAN",
+                    IO.BOOLEAN,
                     {"default": True, "label_on": "enabled", "label_off": "disabled"},
                 ),
                 "guide_size": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8},
                 ),
                 "guide_size_for": (
-                    "BOOLEAN",
+                    IO.BOOLEAN,
                     {"default": True, "label_on": "bbox", "label_off": "crop_region"},
                 ),
                 "max_size": (
-                    "FLOAT",
+                    IO.FLOAT,
                     {"default": 1024, "min": 64, "max": MAX_RESOLUTION, "step": 8},
                 ),
                 "noise_mask_feather": (
-                    "INT",
+                    IO.INT,
                     {"default": 20, "min": 0, "max": 100, "step": 1},
                 ),
-                "iterations": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                "iterations": (IO.INT, {"default": 1, "min": 1, "max": 10, "step": 1}),
             },
             "optional": {
                 "detailer_hook": (
@@ -717,7 +717,7 @@ class JKEasyDetailer_Context:
                     {"tooltip": "Optional detailer hook from impact pack"},
                 ),
                 "extra_positive_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -727,7 +727,7 @@ class JKEasyDetailer_Context:
                 ),
                 "extra_positive_conditioning_mode": (ExtraConditioningModes, {"default": "replace"}),
                 "extra_negative_text": (
-                    "STRING",
+                    IO.STRING,
                     {
                         "default": "",
                         "multiline": True,
@@ -790,22 +790,22 @@ class JKEasyDetailer_Context:
 
 
 # this only exists because the comfy types system is annoying
-class JKEasyCheckpointLoader:
+class JKEasyCheckpointLoader(ComfyNodeABC):
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(s) -> InputTypeDict:
         return {"required": {
             "ckpt_name": (folder_paths.get_filename_list("checkpoints"), ),
         }}
 
     RETURN_TYPES = (
-        "MODEL",
-        "CLIP",
+        IO.MODEL,
+        IO.CLIP,
         "VAE",
         folder_paths.get_filename_list("checkpoints"),
         folder_paths.get_filename_list("checkpoints"),
     )
-    RETURN_NAMES = ("MODEL", "CLIP", "VAE", "CKPT_NAME_FULL", "CKPT_NAME")
+    RETURN_NAMES = (IO.MODEL, IO.CLIP, "VAE", "CKPT_NAME_FULL", "CKPT_NAME")
     FUNCTION = "load_checkpoint"
 
     CATEGORY = "JK Comfy Helpers/Loaders"
