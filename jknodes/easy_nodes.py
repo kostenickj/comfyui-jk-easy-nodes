@@ -1,6 +1,10 @@
+import math
+import numpy as np
 from torch import Tensor
 import os
 import sys
+import torch
+import torch.nn.functional as F
 from ultralytics import YOLO
 import comfy.sd
 import comfy.samplers
@@ -11,6 +15,7 @@ import folder_paths
 from typing import Literal
 import inspect
 from nodes import MAX_RESOLUTION, ComfyNodeABC, InputTypeDict, IO
+from PIL import Image, ImageOps, ImageDraw, ImageFont
 
 import nodes
 from nodes import LatentUpscaleBy, ImageScaleBy, ConditioningAverage, ConditioningCombine, ConditioningConcat
@@ -365,10 +370,10 @@ class EasyHRFix_Context(ComfyNodeABC):
 
 class JKEasyDetailer(ComfyNodeABC):
     RETURN_TYPES = (
-        "IMAGE",
+        IO.IMAGE,
         "SEGS",
     )
-    RETURN_NAMES = ("IMAGE", "SEGS")
+    RETURN_NAMES = (IO.IMAGE, "SEGS")
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
@@ -385,7 +390,7 @@ class JKEasyDetailer(ComfyNodeABC):
     def INPUT_TYPES(s) -> InputTypeDict:
         return {
             "required": {
-                "image": ("IMAGE", ),
+                IO.IMAGE: (IO.IMAGE, ),
                 "detector": (s.detectors, ),
                 "model": (IO.MODEL, ),
                 "clip": (IO.CLIP, ),
@@ -640,8 +645,8 @@ class JKEasyDetailer(ComfyNodeABC):
 
 
 class JKEasyDetailer_Context(ComfyNodeABC):
-    RETURN_TYPES = ("IMAGE", "SEGS", "JK_CONTEXT")
-    RETURN_NAMES = ("IMAGE", "SEGS", "CTX")
+    RETURN_TYPES = (IO.IMAGE, "SEGS", "JK_CONTEXT")
+    RETURN_NAMES = (IO.IMAGE, "SEGS", "CTX")
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
@@ -821,6 +826,7 @@ class JKEasyCheckpointLoader(ComfyNodeABC):
             os.path.splitext(os.path.basename(ckpt_name))[0],
         )
 
+
 class JKEasyKSampler_Context(ComfyNodeABC):
 
     @classmethod
@@ -841,7 +847,7 @@ class JKEasyKSampler_Context(ComfyNodeABC):
                     utils.BLEH_PRESET_LIST,
                     {"tooltip": "optional bleh sampler preset override", "default": "disabled"},
                 ),
-                "variation_method": (["linear", "slerp"],),
+                "variation_method": (["linear", "slerp"], ),
             },
         }
 
@@ -850,39 +856,21 @@ class JKEasyKSampler_Context(ComfyNodeABC):
     FUNCTION = "apply"
     CATEGORY = "JK Comfy Helpers"
 
-    def apply(
-        self,
-        ctx,
-        denoise: float,
-        noise_mode: Literal["GPU(=A1111)", "CPU"],
-        variation_seed: int,
-        variation_strength: float,
-        bleh_sampler_override: str = 'disabled',
-        variation_method="linear"
-    ):
+    def apply(self,
+              ctx,
+              denoise: float,
+              noise_mode: Literal["GPU(=A1111)", "CPU"],
+              variation_seed: int,
+              variation_strength: float,
+              bleh_sampler_override: str = 'disabled',
+              variation_method="linear"):
         if "KSampler //Inspire" not in nodes.NODE_CLASS_MAPPINGS:
             raise Exception("[ERROR] You need to install 'ComfyUI-Inspire-Pack'")
         inspire_sampler = nodes.NODE_CLASS_MAPPINGS["KSampler //Inspire"]
 
         sampler_use = bleh_sampler_override if bleh_sampler_override != 'disabled' else ctx['sampler']
 
-        samples = inspire_sampler.doit(
-            ctx['model'],
-            ctx['seed'],
-            ctx['steps'],
-            ctx['cfg'],
-            sampler_use,
-            ctx['scheduler'],
-            ctx['positive'],
-            ctx['negative'],
-            ctx['latent'],
-            denoise,
-            noise_mode,
-            "comfy",
-            variation_seed,
-            variation_strength,
-            variation_method
-        )[0]
+        samples = inspire_sampler.doit(ctx['model'], ctx['seed'], ctx['steps'], ctx['cfg'], sampler_use, ctx['scheduler'], ctx['positive'], ctx['negative'], ctx['latent'], denoise, noise_mode, "comfy", variation_seed, variation_strength, variation_method)[0]
 
         new_ctx = ctx.copy()
         new_ctx["latent"] = samples
@@ -893,19 +881,243 @@ class JKEasyKSampler_Context(ComfyNodeABC):
         )
 
 
+class JKEasyWatermark(ComfyNodeABC):
+
+    def __init__(self):
+        self.watermark_x = None
+        self.watermark_y = None
+        self.text_x = None
+        self.text_y = None
+        self.x_direction = -1
+        self.y_direction = -1
+        self.rotation = 0
+        self.previous_resolution = None
+
+    @staticmethod
+    def INPUT_TYPES()-> InputTypeDict :
+        return {
+            "required": {"image": (IO.IMAGE, )}, "optional": {
+                "logo_image": (IO.IMAGE, ),
+                "mask": (IO.MASK, ),
+                "watermark_text": (IO.STRING, {"multiline": False, "default": "", "lazy": True}),
+                "font": (IO.STRING, {"default": "assets/fonts/DMSans-VariableFont_opsz,wght.ttf"}),
+                "font_size": (IO.INT, {"default": 16, "min": 1, "max": 256, "step": 1}),
+                "logo_scale_percentage": (IO.INT, {"default": 30, "min": 1, "max": 100, "step": 1}),
+                "x_padding": (IO.INT, {"default": 20, "min": 0, "max": MAX_RESOLUTION, "step": 5}),
+                "y_padding": (IO.INT, {"default": 20, "min": 0, "max": MAX_RESOLUTION, "step": 5}),
+                "opacity": (IO.FLOAT, {"default": 40, "min": 0, "max": 100, "step": 5}),
+                "position": (['topleft', 'bottomleft', 'topright', 'bottomright'], {"default": 'bottomright'}),
+            }
+        }
+
+    RETURN_TYPES = (IO.IMAGE, )
+    OUTPUT_IS_LIST = (True, )
+    FUNCTION = "execute"
+    CATEGORY = "JK Comfy Helpers"
+
+    def execute(self,
+                image,
+                logo_image=None,
+                mask=None,
+                watermark_text=None,
+                font=None,
+                font_size=16,
+                logo_scale_percentage=30,
+                x_padding=20,
+                y_padding=20,
+                opacity=40,
+                position: Literal['topleft', 'bottomleft', 'topright', 'bottomright'] = 'bottomright'):
+
+        # Fallbacks for missing inputs
+        logo_image = logo_image if logo_image is not None else self.generate_empty_image(1, 1)
+        watermark_text = watermark_text if watermark_text is not None else ""
+
+        # Get image and logo sizes
+        image_count, image_height, image_width = self.get_image_size(image)
+        watermark_width = self.calculate_watermark_width(image_width, logo_scale_percentage)
+        resized_logo_image, resized_logo_width, resized_logo_height = self.resize_logo(logo_image, watermark_width)
+
+        # Prepare text opacity and font size
+        text_opacity = self.calculate_text_opacity(opacity)
+        font_size = self.adjust_font_size(image_width, font_size)
+
+        # Initialize watermark and text positions if not provided
+        self.initialize_positions(image_width, image_height, resized_logo_width, resized_logo_height, font_size if watermark_text != '' else 0, x_padding, y_padding, position)
+
+        # Watermarking loop
+        x_direction, y_direction = self.x_direction, self.y_direction
+        images = self.apply_watermark_to_images(image, resized_logo_image, resized_logo_width, resized_logo_height, watermark_text, font, font_size, text_opacity, opacity, logo_image, mask, x_padding, y_padding, image_width, image_height, x_direction, y_direction)
+
+        # Update directions after the loop
+        self.x_direction, self.y_direction = x_direction, y_direction
+
+        return (images, )
+
+    # Helper methods
+
+    def calculate_watermark_width(self, image_width, logo_scale_percentage):
+        # Calculates the width of the watermark based on the image width and logo scale percentage.
+        return math.ceil(image_width * logo_scale_percentage / 100)
+
+    def resize_logo(self, logo_image, watermark_width):
+        # Resizes the logo image to match the specified watermark width while maintaining the logo's aspect ratio.
+
+        logo_image_count, logo_image_height, logo_image_width = self.get_image_size(logo_image)
+        resized_logo_image = self.resize_watermark_image(logo_image, logo_image_height, logo_image_width, watermark_width)
+        resized_logo_count, resized_logo_height, resized_logo_width = self.get_image_size(resized_logo_image)
+        return resized_logo_image, resized_logo_width, resized_logo_height
+
+    def calculate_text_opacity(self, opacity):
+        # Calculates text opacity based on input opacity to match watermark image
+        return int((100 - opacity) * 255 / 100)
+
+    def adjust_font_size(self, image_width, font_size):
+        # Adjusts font size to match bigger resolutions
+        width_baseline = 800
+        return int(image_width / width_baseline * font_size)
+
+    def initialize_positions(self, image_width, image_height, resized_logo_width, resized_logo_height, font_size, x_padding, y_padding, position: Literal['topleft', 'bottomleft', 'topright', 'bottomright']):
+
+        if position == 'topleft':
+            self.watermark_x = x_padding
+            self.watermark_y = y_padding + font_size
+        elif position == 'topright':
+            self.watermark_x = image_width - resized_logo_width - x_padding
+            self.watermark_y = y_padding + font_size
+        elif position == 'bottomleft':
+            self.watermark_x = x_padding
+            self.watermark_y = image_height - resized_logo_height - y_padding - font_size
+        else:
+            # bottomright
+            self.watermark_x = image_width - resized_logo_width - x_padding
+            self.watermark_y = image_height - resized_logo_height - y_padding - font_size
+
+
+        if position == 'topleft':
+            self.text_x = x_padding
+            self.text_y = y_padding
+        elif position == 'topright':
+            self.text_x = image_width - x_padding
+            self.text_y = y_padding
+        elif position == 'bottomleft':
+            self.text_x = x_padding
+            self.text_y = image_height - y_padding
+        else:
+            # bottomright
+            self.text_x = image_width - x_padding
+            self.text_y = image_height - y_padding
+
+    def apply_watermark_to_images(self, image, resized_logo_image, resized_logo_width, resized_logo_height, watermark_text, font, font_size, text_opacity, opacity, logo_image, mask, x_padding, y_padding, image_width, image_height, x_direction, y_direction):
+
+        images = []
+        for idx, image in enumerate(image):
+            # Apply text and logo to the image
+            image, text_width = self.draw_watermark_text(image, watermark_text, font_size, self.text_x, self.text_y, font, text_opacity)
+            watermarked_image = self.add_logo_image(image, resized_logo_image, self.watermark_x, self.watermark_y, opacity, self.rotation, mask)
+
+            images.append(watermarked_image)
+
+        return images
+
+    def generate_empty_image(self, width, height, batch_size=1):
+        # Create a fully transparent image (RGBA with 0 alpha)
+        r = torch.full([batch_size, height, width, 1], 0.0)
+        g = torch.full([batch_size, height, width, 1], 0.0)
+        b = torch.full([batch_size, height, width, 1], 0.0)
+        a = torch.full([batch_size, height, width, 1], 0.0)
+
+        # Concatenate all channels to form RGBA (4 channels)
+        return (torch.cat((r, g, b, a), dim=-1))
+
+    def get_image_size(self, image):
+        # Returns image's batch amount, height and width
+        return (image.shape[0], image.shape[1], image.shape[2])
+
+    def resize_watermark_image(self, logo_image, original_logo_height, original_logo_width, logo_width):
+        if logo_width <= 0:
+            logo_width = MAX_RESOLUTION if original_logo_height < MAX_RESOLUTION else original_logo_width
+
+        # Calculate resize ratio
+        ratio = min(logo_width / original_logo_width, MAX_RESOLUTION / original_logo_height)
+        new_width = round(original_logo_width * ratio)
+        new_height = round(original_logo_height * ratio)
+
+        # Resize the logo image
+        resized_logo_image = logo_image.permute(0, 3, 1, 2)  # Change to (N, C, H, W)
+        resized_logo_image = F.interpolate(resized_logo_image, size=(new_height, new_width), mode="nearest")
+        resized_logo_image = resized_logo_image.permute(0, 2, 3, 1)  # Change back to (N, H, W, C)
+        resized_logo_image = torch.clamp(resized_logo_image, 0, 1)  # Ensure values are within [0, 1]
+
+        return resized_logo_image
+
+    def draw_watermark_text(self, image_tensor, text, font_size, pos_x, pos_y, font_path, text_opacity):
+
+        # Convert the PyTorch tensor to a NumPy array and scale to uint8
+        image_pil = Image.fromarray(np.clip(image_tensor.cpu().numpy().squeeze() * 255, 0, 255).astype(np.uint8)).convert('RGBA')
+
+        # Create a transparent layer for the text
+        transparent_layer = Image.new('RGBA', image_pil.size, (0, 0, 0, 0))
+
+        # Set text color with opacity
+        text_color = (255, 255, 255, text_opacity)
+
+        # Initialize drawing context
+        draw = ImageDraw.Draw(transparent_layer)
+
+        # Load the specified font or fall back to the default font
+        try:
+            font = ImageFont.truetype(font_path, font_size)
+        except (IOError, OSError):
+            print(f"Font '{font_path}' not found. Using the default font.")
+            font = ImageFont.load_default()
+
+        # Calculate text dimensions
+        text_width = draw.textlength(text, font=font)
+
+        # Adjust position to align text to the bottom-right corner
+        pos_x = max(0, pos_x - text_width)
+        pos_y = max(0, pos_y - font_size)
+
+        # Draw the text on the image
+        draw.text((pos_x, pos_y), text, fill=text_color, font=font)
+
+        # Merge the image and text layer
+        image_pil_with_text = Image.alpha_composite(image_pil, transparent_layer).convert('RGB')
+
+        # Convert the result back to tensor and return with text width
+        image_tensor = torch.from_numpy(np.array(image_pil_with_text).astype(np.float32) / 255.0).unsqueeze(0)
+        return image_tensor, text_width
+
+    def add_logo_image(self, image_tensor, logo_image_tensor, watermark_x, watermark_y, opacity, rotation, mask=None):
+
+        # Convert image and logo image to PIL
+        image_pil = Image.fromarray(np.clip(image_tensor.cpu().numpy().squeeze() * 255, 0, 255).astype(np.uint8))
+        logo_image_pil = Image.fromarray(
+            np.clip(logo_image_tensor.cpu().numpy().squeeze() * 255, 0, 255).astype(np.uint8)).convert('RGBA')
+
+        # Rotate the logo image
+        logo_image_pil = logo_image_pil.rotate(rotation, expand=True)
+
+        # Apply the mask (if provided)
+        if mask is not None:
+            mask_pil = Image.fromarray(np.clip(mask.cpu().numpy().squeeze() * 255, 0, 255).astype(np.uint8)).resize(logo_image_pil.size)
+            logo_image_pil.putalpha(ImageOps.invert(mask_pil))
+
+        _, _, _, alpha = logo_image_pil.split()
+        alpha = alpha.point(lambda x: int(x * (1 - opacity / 100)))
+        logo_image_pil.putalpha(alpha)
+
+        # Paste the logo onto the image
+        image_pil.paste(logo_image_pil, (watermark_x, watermark_y), logo_image_pil)
+
+        # Convert the result back to tensor and return
+        image_tensor = torch.from_numpy(np.array(image_pil).astype(np.float32) / 255.0).unsqueeze(0)
+        return image_tensor
+
+
 NODE_CLASS_MAPPINGS = {
-    "EasyHRFix": EasyHRFix,
-    "EasyHRFix_Context": EasyHRFix_Context,
-    "JKEasyDetailer": JKEasyDetailer,
-    "JKEasyDetailer_Context": JKEasyDetailer_Context,
-    "JKEasyCheckpointLoader": JKEasyCheckpointLoader,
-    "JKEasyKSampler_Context": JKEasyKSampler_Context
+    "EasyHRFix": EasyHRFix, "EasyHRFix_Context": EasyHRFix_Context, "JKEasyDetailer": JKEasyDetailer, "JKEasyDetailer_Context": JKEasyDetailer_Context, "JKEasyCheckpointLoader": JKEasyCheckpointLoader, "JKEasyKSampler_Context": JKEasyKSampler_Context, "JKEasyWatermark": JKEasyWatermark
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "EasyHRFix": "JK Easy HiRes Fix",
-    "EasyHRFix_Context": "JK Easy HiRes Fix (Context)",
-    "JKEasyDetailer": "JK Easy Detailer",
-    "JKEasyDetailer_Context": "JK Easy Detailer (Context)",
-    "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader",
-    "JKEasyKSampler_Context": "JK Easy KSampler (Context)"
+    "EasyHRFix": "JK Easy HiRes Fix", "EasyHRFix_Context": "JK Easy HiRes Fix (Context)", "JKEasyDetailer": "JK Easy Detailer", "JKEasyDetailer_Context": "JK Easy Detailer (Context)", "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader", "JKEasyKSampler_Context": "JK Easy KSampler (Context)", "JKEasyWatermark": "JK Easy Watermark"
 }
