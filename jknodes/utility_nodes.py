@@ -314,6 +314,7 @@ class JKStringToSamplerAdapter:
         }}
 
     RETURN_TYPES = (comfy.samplers.KSampler.SAMPLERS, )
+    CATEGORY = "JK Comfy Helpers/Util"
     RETURN_NAMES = ("sampler", )
     FUNCTION = "doit"
 
