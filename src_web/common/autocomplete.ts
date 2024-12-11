@@ -501,7 +501,7 @@ export class TextAreaAutoComplete {
     }
 
     /** @param {string} term  */
-    #getFilteredWords(term) {
+    #getFilteredWords(term: string) {
         term = term.toLocaleLowerCase();
 
         const priorityMatches = [];
@@ -509,10 +509,12 @@ export class TextAreaAutoComplete {
         const includesMatches = [];
 
         const termIsLora = term?.startsWith('<lora:');
+        const termIsEmbed = term?.startsWith('embedding:')
         const termAfterLora = termIsLora ? term.substring(6) : undefined;
 
         const termIsWildcard = term?.startsWith('__');
         const termAfterWildcard = termIsWildcard ? term.substring(2) : undefined;
+        const termAfterEmbed = termIsEmbed ? term.substring(10) : undefined;
 
         for (const word of Object.keys(this.words)) {
             const lowerWord = word.toLocaleLowerCase();
@@ -530,9 +532,15 @@ export class TextAreaAutoComplete {
             }
 
             const wordIsLora = word.startsWith('<lora:');
+            const wordIsEmbed = word.startsWith('embedding:');
 
             const includeIt = (wordIsLora && termIsLora) || (!wordIsLora && !termIsLora);
             if (!includeIt) {
+                continue;
+            }
+
+            if(termIsEmbed && !wordIsEmbed)
+            {
                 continue;
             }
 
@@ -540,10 +548,13 @@ export class TextAreaAutoComplete {
                 term = termAfterLora;
             } else if (termIsWildcard && wordIsWildcard) {
                 term = termAfterWildcard;
+            }else if(termIsEmbed && wordIsEmbed)
+            {
+                term = termAfterEmbed;
             }
 
             const pos = lowerWord.indexOf(term);
-            if (pos === -1) {
+            if (pos < 0) {
                 // No match
                 continue;
             }
@@ -551,7 +562,7 @@ export class TextAreaAutoComplete {
             const wordInfo = this.words[word];
             if (wordInfo.priority) {
                 priorityMatches.push({ pos, wordInfo });
-            } else if (pos) {
+            } else if (pos > -1) {
                 includesMatches.push({ pos, wordInfo });
             } else {
                 prefixMatches.push({ pos, wordInfo });
@@ -564,7 +575,10 @@ export class TextAreaAutoComplete {
         );
 
         const top = priorityMatches.length * 0.2;
-        return priorityMatches.slice(0, top).concat(prefixMatches, priorityMatches.slice(top), includesMatches).slice(0, TextAreaAutoComplete.suggestionCount);
+        const ret = priorityMatches.slice(0, top).concat(prefixMatches, priorityMatches.slice(top), includesMatches).slice(0, TextAreaAutoComplete.suggestionCount);
+        console.log(ret);
+        console.log(ret.find(x => x.wordInfo?.text === 'embedding:S007_NataLee'))
+        return ret;
     }
 
     #update() {

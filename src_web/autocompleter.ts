@@ -410,12 +410,11 @@ app.registerExtension({
             const embeddings = await api.getEmbeddings();
             const words = {};
             words['embedding:'] = { text: 'embedding:' };
-
             for (const emb of embeddings) {
-                const v = `embedding:${emb}`;
                 const split = emb.includes('\\') ? emb.split('\\') : emb.split('/');
+                const v = `embedding:${split[split.length - 1]}`;
                 words[v] = {
-                    text: `embedding:${split[split.length - 1]}`,
+                    text: v,
                     info: () => new EmbeddingInfoDialog(emb).show('embeddings', emb),
                     use_replacer: false
                 };
