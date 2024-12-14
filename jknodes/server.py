@@ -35,6 +35,20 @@ class LoraPreference(TypedDict):
     meta: Any
 
 def try_find_lora_file_path(lora_name: str):
+
+    files = folder_paths.get_filename_list('loras')
+    for f in files:
+        lower_f = f.lower()
+        if lower_f == lora_name.lower():
+            file_path = folder_paths.get_full_path('loras', f)
+        else:
+            n = os.path.splitext(f)[0].lower()
+            if n == lora_name.lower():
+                file_path = folder_paths.get_full_path('loras', f)
+
+    if file_path is not None:
+        return file_path
+
     possible_paths = folder_paths.get_folder_paths('loras')
     for p in possible_paths:
         check_path = os.path.join(p, lora_name)

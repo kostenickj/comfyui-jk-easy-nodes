@@ -38,7 +38,7 @@ _all_context_input_output_data = {
     "text_neg_g": ("text_neg_g", "STRING", "TEXT_NEG_G"),
     "text_neg_l": ("text_neg_l", "STRING", "TEXT_NEG_L"),
     "mask": ("mask", "MASK", "MASK"),
-    "control_net": ("control_net", "CONTROL_NET", "CONTROL_NET"),
+    "control_net_stack": ("control_net_stack", "cnet_stack", "CONTROL_NET_STACK"),
 }
 
 force_input_types = ["INT", "STRING", "FLOAT"]
