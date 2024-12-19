@@ -5,6 +5,9 @@ import folder_paths
 import comfy.sd
 from os import environ
 from nodes import VAEDecode, VAEEncode
+import torch
+import numpy as np
+from PIL import Image
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(this_dir))
@@ -38,6 +41,13 @@ def add_folder_path_and_extensions(folder_name, full_folder_paths, extensions):
         # Also ensure that all paths are included (since add_model_folder_path adds only one path at a time)
         folder_paths.folder_names_and_paths[folder_name] = (full_folder_paths, extensions)
 
+# PIL to Tensor
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+
+# Tensor to PIL
+def tensor2pil(image):
+    return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
 
 class AnyType(str):
     """A special class that is always equal in not equal comparisons. Credit to pythongosssss"""

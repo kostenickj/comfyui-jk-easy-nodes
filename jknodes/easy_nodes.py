@@ -894,7 +894,7 @@ class JKEasyWatermark(ComfyNodeABC):
         self.previous_resolution = None
 
     @staticmethod
-    def INPUT_TYPES()-> InputTypeDict :
+    def INPUT_TYPES() -> InputTypeDict:
         return {
             "required": {"image": (IO.IMAGE, )}, "optional": {
                 "logo_image": (IO.IMAGE, ),
@@ -991,7 +991,6 @@ class JKEasyWatermark(ComfyNodeABC):
             # bottomright
             self.watermark_x = image_width - resized_logo_width - x_padding
             self.watermark_y = image_height - resized_logo_height - y_padding - font_size
-
 
         if position == 'topleft':
             self.text_x = x_padding
@@ -1115,9 +1114,104 @@ class JKEasyWatermark(ComfyNodeABC):
         return image_tensor
 
 
+class JKEasyUpscaleImage(ComfyNodeABC):
+
+    @classmethod
+    def INPUT_TYPES(s) -> InputTypeDict:
+
+        resampling_methods = ["lanczos", "nearest", "bilinear", "bicubic"]
+
+        return {
+            "required": {
+                "image": ("IMAGE", ),
+                "upscale_model": (folder_paths.get_filename_list("upscale_models"), ),
+                "min_dim": ("INT", {"default": 1024, "min": 1, "max": 48000, "step": 1}),
+                "resampling_method": (resampling_methods, ),
+                "supersample": (["true", "false"], ),
+                "rounding_modulus": ("INT", {"default": 8, "min": 8, "max": 1024, "step": 8}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", )
+    RETURN_NAMES = ("IMAGE", )
+    FUNCTION = "upscale"
+    CATEGORY = "JK Comfy Helpers"
+
+    # from comfy roll
+    def apply_resize_image(self, image: Image.Image,
+                           width: int,
+                           height: int,
+                           rounding_modulus,
+                           supersample='true',
+                           resample='bicubic'):
+
+        m = rounding_modulus
+        new_width = width if width % m == 0 else width + (m - width % m)
+        new_height = height if height % m == 0 else height + (m - height % m)
+
+        # Define a dictionary of resampling filters
+        resample_filters = {'nearest': 0, 'bilinear': 2, 'bicubic': 3, 'lanczos': 1}
+
+        # Apply supersample
+        if supersample == 'true':
+            image = image.resize((new_width * 8, new_height * 8), resample=Image.Resampling(resample_filters[resample]))
+
+        # Resize the image using the given resampling filter
+        resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
+
+        return resized_image
+
+    def upscale(self,
+                image,
+                upscale_model,
+                rounding_modulus=8,
+                supersample='true',
+                resampling_method="lanczos",
+                min_dim=1024):
+
+        pil_img = utils.tensor2pil(image[0])
+        original_width, original_height = pil_img.size
+
+        if original_width >= min_dim and original_height >= min_dim:
+            return (image[0], )
+
+        use_width = original_width <= original_height
+        up_model = UpscaleModelLoader().load_model(upscale_model)[0]
+        up_image = ImageUpscaleWithModel().upscale(up_model, image)[0]
+        
+        original_ratio = original_height / original_width
+
+        # Get new size
+        pil_img = utils.tensor2pil(up_image[0])
+        upscaled_width, upscaled_height = pil_img.size
+
+        # rescale it down until its smallest side is min dim calculate downsize scale
+        downsize_scale = 1
+        if use_width:
+            downsize_scale = original_width / min_dim
+        else:
+            downsize_scale = original_height / min_dim
+
+        if downsize_scale == 1:
+            return (up_image[0], )
+        else:
+            if use_width:
+                original_ratio = original_height / original_width
+                new_width = min_dim
+                new_height = int(float(new_width) * original_ratio)
+            else:
+                original_ratio = original_width / original_height
+                new_height = min_dim
+                new_width = int(float(new_height) * original_ratio)
+
+            ret = utils.pil2tensor(
+                self.apply_resize_image(utils.tensor2pil(up_image), new_width, new_height, rounding_modulus, supersample, resampling_method))
+            return (ret, )
+
+
 NODE_CLASS_MAPPINGS = {
-    "EasyHRFix": EasyHRFix, "EasyHRFix_Context": EasyHRFix_Context, "JKEasyDetailer": JKEasyDetailer, "JKEasyDetailer_Context": JKEasyDetailer_Context, "JKEasyCheckpointLoader": JKEasyCheckpointLoader, "JKEasyKSampler_Context": JKEasyKSampler_Context, "JKEasyWatermark": JKEasyWatermark
+    "EasyHRFix": EasyHRFix, "JKEasyUpscaleImage": JKEasyUpscaleImage, "EasyHRFix_Context": EasyHRFix_Context, "JKEasyDetailer": JKEasyDetailer, "JKEasyDetailer_Context": JKEasyDetailer_Context, "JKEasyCheckpointLoader": JKEasyCheckpointLoader, "JKEasyKSampler_Context": JKEasyKSampler_Context, "JKEasyWatermark": JKEasyWatermark
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "EasyHRFix": "JK Easy HiRes Fix", "EasyHRFix_Context": "JK Easy HiRes Fix (Context)", "JKEasyDetailer": "JK Easy Detailer", "JKEasyDetailer_Context": "JK Easy Detailer (Context)", "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader", "JKEasyKSampler_Context": "JK Easy KSampler (Context)", "JKEasyWatermark": "JK Easy Watermark"
+    "EasyHRFix": "JK Easy HiRes Fix", "JKEasyUpscaleImage": "JK Easy Upscale (If needed)", "EasyHRFix_Context": "JK Easy HiRes Fix (Context)", "JKEasyDetailer": "JK Easy Detailer", "JKEasyDetailer_Context": "JK Easy Detailer (Context)", "JKEasyCheckpointLoader": "JK Easy Checkpoint Loader", "JKEasyKSampler_Context": "JK Easy KSampler (Context)", "JKEasyWatermark": "JK Easy Watermark"
 }
