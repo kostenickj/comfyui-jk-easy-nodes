@@ -1173,7 +1173,7 @@ class JKEasyUpscaleImage(ComfyNodeABC):
         original_width, original_height = pil_img.size
 
         if original_width >= min_dim and original_height >= min_dim:
-            return (image[0], )
+            return (image, )
 
         use_width = original_width <= original_height
         up_model = UpscaleModelLoader().load_model(upscale_model)[0]
