@@ -1,0 +1,15 @@
+[project]
+name = "jk-comfyui-helpers"
+description = "NODES: EasyHRFix, EasyHRFix_Context, JKAnythingToString, JKBigContext, JKDynamicThresholdingMultiModel, JKEasyCheckpointLoader, JKEasyDetailer, JKEasyDetailer_Context, JKEasyKSampler_Context, JKEasyWatermark, JKInspireSchedulerAdapter, JKLilContext, JKMultiModelSamplerUnpatch, JKStringEmpty, JKStringEquals, JKStringNotEmpty, JKStringNotEquals, JKStringToSamplerAdapter"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["ultralytics!=8.2.87"]
+
+[project.urls]
+Repository = "https://github.com/kostenickj/jk-comfyui-helpers"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "jk-comfyui-helpers"
+Icon = ""
